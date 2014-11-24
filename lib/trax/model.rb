@@ -1,6 +1,7 @@
 require 'active_record'
 require 'default_value_for'
 require 'hashie/mash'
+require_relative './string'
 
 module Trax
   module Model
@@ -20,10 +21,25 @@ module Trax
 
     included do
       class_attribute :trax_defaults
+      @uuid_prefix = nil
+      @uuid_column = nil
+
+      class << self
+        attr_reader :uuid_prefix
+        attr_accessor :uuid_column
+      end
 
       self.trax_defaults = ::Hashie::Mash.new
 
+      default_value_for(:uuid) {
+        ::Trax::Model::UUID.generate(self.uuid_prefix)
+      }
+
       register_trax_models(self)
+    end
+
+    def uuid
+      ::Trax::Model::UUID.new(super)
     end
 
     module ClassMethods
@@ -39,12 +55,12 @@ module Trax
         name.underscore
       end
 
-      def uuid_prefix(prefix)
+      def uuid_prefix=(prefix)
         if prefix.length != 2 || prefix !~ /[a-f0-9]{2}/
           raise ERROR_MESSAGES[:invalid_uuid_prefix]
         end
 
-        self.trax_defaults.uuid_prefix = prefix
+        @uuid_prefix = prefix
       end
     end
   end
