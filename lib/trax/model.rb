@@ -5,9 +5,21 @@ require 'hashie/mash'
 module Trax
   module Model
     extend ::ActiveSupport::Concern
+    extend ::ActiveSupport::Autoload
+
+    ERROR_MESSAGES = {
+      :invalid_uuid_prefix => [
+        "UUID prefix must be 2 characters long",
+        "and can only include a-f0-9",
+        "for hexadecimal id compatibility"
+      ].join("\n")
+    }.freeze
+
+    autoload :Registry
+    autoload :UUID
 
     included do
-      class_attribute :guid_prefix
+      class_attribute :trax_defaults
 
       self.trax_defaults = ::Hashie::Mash.new
 
@@ -15,24 +27,24 @@ module Trax
     end
 
     module ClassMethods
-      def defaults(options={})
-
-      end
-
-      def register_trax_model(model)
-        unless Trax::Model::Registry.key?(name)
-          Trax::Model::Registry[registry_key] = model
-        end
-      end
-
-      def registry_key
-        name.underscore
-      end
+      delegate :register_trax_model, :to => "::Trax::Model::Registry"
 
       def register_trax_models(*models)
         models.each do |model|
           register_trax_model(model)
         end
+      end
+
+      def trax_registry_key
+        name.underscore
+      end
+
+      def uuid_prefix(prefix)
+        if prefix.length != 2 || prefix !~ /[a-f0-9]{2}/
+          raise ERROR_MESSAGES[:invalid_uuid_prefix]
+        end
+
+        self.trax_defaults.uuid_prefix = prefix
       end
     end
   end

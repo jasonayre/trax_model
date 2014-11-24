@@ -24,4 +24,7 @@ ActiveRecord::Schema.define(:version => 1) do
 end
 
 class Product < ::ActiveRecord::Base
+  include ::Trax::Model
+
+  uuid_prefix "a1"
 end
