@@ -20,6 +20,9 @@ module Trax
     autoload :Config
     autoload :Registry
     autoload :UUID
+    autoload :Matchable
+
+    include ::Trax::Model::Matchable
 
     included do
       class_attribute :trax_defaults
