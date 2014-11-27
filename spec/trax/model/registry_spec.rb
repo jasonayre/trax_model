@@ -14,5 +14,4 @@ describe ::Trax::Model::Registry do
   it "model_type_for_uuid" do
     subject.model_type_for_uuid("a1asdasdasd").should eq Product
   end
-
 end
