@@ -27,6 +27,14 @@ end
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
 
-  self.uuid_prefix = "a1"
-  self.uuid_column = "uuid"
+  defaults :uuid_prefix => "a1", :uuid_column => "uuid"
+
+  # defaults do |config|
+  #
+  # end
+  #
+  #
+  #
+  # self.uuid_prefix = "a1"
+  # self.uuid_column = "uuid"
 end
