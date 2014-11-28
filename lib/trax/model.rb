@@ -18,11 +18,14 @@ module Trax
     }.freeze
 
     autoload :Config
+    autoload :Freezable
     autoload :Registry
     autoload :UUID
     autoload :Matchable
+    autoload :Validators
 
     include ::Trax::Model::Matchable
+    include ::ActiveModel::Dirty
 
     included do
       class_attribute :trax_defaults

@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = TraxModel::VERSION
   spec.authors       = ["Jason Ayre"]
   spec.email         = ["jasonayre@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Higher level ActiveRecord models for rails}
+  spec.description   = %q{Supports uuid defaults and mapping, default attributes, and various other utilities via composition}
+  spec.homepage      = "http://github.com/jasonayre/trax_model"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
