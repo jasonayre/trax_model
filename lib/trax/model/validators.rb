@@ -7,6 +7,7 @@ module Trax
       autoload :Frozen
       autoload :FutureDate
       autoload :Subdomain
+      autoload :UrlValidator
     end
   end
 end

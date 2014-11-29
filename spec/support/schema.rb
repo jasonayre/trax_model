@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(:version => 1) do
   create_table "widgets", :force => true do |t|
     t.string   "email_address"
     t.string  "subdomain"
+    t.string  "website"
     t.integer  "status"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
@@ -53,8 +54,9 @@ class Widget < ::ActiveRecord::Base
 
   defaults :uuid_prefix => "a2", :uuid_column => "uuid"
 
-  validate :subdomain, :subdomain => true
-  validate :email_address, :email => true
+  validates :subdomain, :subdomain => true, :presence => false
+  validates :email_address, :email => true, :presence => false
+  validates :website, :url => true, :presence => false
 end
 
 class Message < ::ActiveRecord::Base
