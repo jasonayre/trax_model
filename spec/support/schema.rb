@@ -23,18 +23,19 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "updated_at",        :null => false
   end
 
-  create_table "organizations", :force => true do |t|
-    t.string   "subdomain"
+  create_table "messages", :force => true do |t|
+    t.string   "title"
+    t.text     "body"
     t.integer  "status"
     t.string   "uuid"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
 
-  create_table "messages", :force => true do |t|
-    t.string   "subject"
+  create_table "widgets", :force => true do |t|
+    t.string   "email_address"
+    t.string  "subdomain"
     t.integer  "status"
-    t.string   "uuid"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -42,19 +43,18 @@ end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
+  include ::Trax::Model::UniqueId
 
   defaults :uuid_prefix => "a1", :uuid_column => "uuid"
 end
 
-class Organization < ::ActiveRecord::Base
+class Widget < ::ActiveRecord::Base
   include ::Trax::Model
 
   defaults :uuid_prefix => "a2", :uuid_column => "uuid"
 
   validate :subdomain, :subdomain => true
-
-  ### Enums ###
-  enum :status => [:queued, :scheduled, :delivered, :delivery_failed] unless instance_methods.include? :status
+  validate :email_address, :email => true
 end
 
 class Message < ::ActiveRecord::Base

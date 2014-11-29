@@ -23,7 +23,7 @@ module Trax
       end
 
       def self.uuid_map
-        @uuid_map ||= models.values.inject(::Hashie::Mash.new) do |result, model|
+        @uuid_map ||= models.values.reject!{|model| !model.try(:uuid_prefix) }.inject(::Hashie::Mash.new) do |result, model|
           result[model.uuid_prefix] = model
           result
         end

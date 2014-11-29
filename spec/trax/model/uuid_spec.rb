@@ -6,10 +6,10 @@ describe ::Trax::Model::UUID do
 
   its(:record_type) { should eq ::Product }
   its(:record) { should eq product }
+  
   describe ".generate" do
     context "with prefix" do
       let(:prefixed_uuid) { described_class.generate("1a") }
-
       it { prefixed_uuid[0..1].should eq "1a" }
     end
 
