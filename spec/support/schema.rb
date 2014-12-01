@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text     "body"
     t.integer  "status"
     t.string   "uuid"
+    t.datetime "deliver_at"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -54,9 +55,9 @@ class Widget < ::ActiveRecord::Base
 
   defaults :uuid_prefix => "a2", :uuid_column => "uuid"
 
-  validates :subdomain, :subdomain => true, :presence => false
-  validates :email_address, :email => true, :presence => false
-  validates :website, :url => true, :presence => false
+  validates :subdomain, :subdomain => true, :allow_nil => true
+  validates :email_address, :email => true, :allow_nil => true
+  validates :website, :url => true, :allow_nil => true
 end
 
 class Message < ::ActiveRecord::Base
@@ -70,6 +71,8 @@ class Message < ::ActiveRecord::Base
   default_value_for :status do
     self.statuses[:queued]
   end
+
+  validates :deliver_at, :future => true, :allow_nil => true
 
   freezable_by_enum :status => [:delivered, :failed_delivery]
 end

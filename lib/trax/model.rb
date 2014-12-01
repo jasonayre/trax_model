@@ -6,6 +6,7 @@ require_relative './string'
 
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
+require_relative './validators/future_validator'
 require_relative './validators/subdomain_validator'
 require_relative './validators/url_validator'
 
