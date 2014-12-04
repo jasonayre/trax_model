@@ -28,7 +28,9 @@ describe ::Trax::Model::UUIDPrefix do
 
     context "lower to higher register transitions" do
       let(:test_subject) { ::Trax::Model::UUIDPrefix.new('9f') }
-      it { test_subject.next.should eq 'a0'}
+      it {
+        binding.pry
+         test_subject.next.should eq 'a0'}
     end
   end
 
