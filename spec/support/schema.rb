@@ -41,6 +41,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
+
+  create_table "things", :force => true do |t|
+    t.string "name"
+    t.string "uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
 end
 
 class Product < ::ActiveRecord::Base
@@ -75,4 +82,10 @@ class Message < ::ActiveRecord::Base
   validates :deliver_at, :future => true, :allow_nil => true
 
   freezable_by_enum :status => [:delivered, :failed_delivery]
+end
+
+class Thing < ::ActiveRecord::Base
+  include ::Trax::Model
+
+  defaults :uuid_prefix => "0a", :uuid_column => "uuid"
 end

@@ -28,11 +28,27 @@ module Trax
       end
 
       def self.next_prefix
-        models.values.reject!{|model| !model.try(:uuid_prefix) }
+        current_prefix = models.values
+                               .reject!{|model| !model.try(:uuid_prefix) }
+                               .map(&:uuid_prefix)
+                               .sort
+                               .last
+
+        current_prefix.next
       end
 
       def self.model_prefixes
         models.try(:keys)
+      end
+
+      def self.previous_prefix
+        current_prefix = models.values
+                               .reject!{|model| !model.try(:uuid_prefix) }
+                               .map(&:uuid_prefix)
+                               .sort
+                               .last
+
+        current_prefix.previous
       end
 
       def self.uuid_map
