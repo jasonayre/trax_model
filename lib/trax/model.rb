@@ -3,7 +3,6 @@ require 'default_value_for'
 require 'hashie/dash'
 require 'hashie/mash'
 require_relative './string'
-
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
 require_relative './validators/future_validator'
@@ -19,6 +18,7 @@ module Trax
     autoload :Freezable
     autoload :Registry
     autoload :UUID
+    autoload :UUIDPrefix
     autoload :UniqueId
     autoload :Matchable
     autoload :Validators
@@ -38,7 +38,6 @@ module Trax
     module ClassMethods
       delegate :register_trax_model, :to => "::Trax::Model::Registry"
       delegate :[], :to => :find
-
 
       def defaults(options = {})
         options.each_pair do |key, val|

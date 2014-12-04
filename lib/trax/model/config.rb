@@ -4,7 +4,8 @@ module Trax
       ERROR_MESSAGES = {
         :invalid_uuid_prefix => [
           "UUID prefix must be 2 characters long",
-          "and can only include a-f0-9",
+          "First Character must be an integer 0-9",
+          "Second character must be a letter a-f",
           "for hexadecimal id compatibility"
         ].join("\n")
       }.freeze
@@ -13,11 +14,11 @@ module Trax
       property :uuid_column, :default => :id
 
       def uuid_prefix=(prefix)
-        if prefix.length != 2 || prefix !~ /[a-f0-9]{2}/
+        if prefix.length != 2 || prefix.chars.first !~ /[0-9]/ || prefix.chars.last !~ /[a-f]/
           raise ERROR_MESSAGES[:invalid_uuid_prefix]
         end
 
-        self[:uuid_prefix] = prefix
+        self[:uuid_prefix] = ::Trax::Model::UUIDPrefix.new(prefix)
       end
     end
   end

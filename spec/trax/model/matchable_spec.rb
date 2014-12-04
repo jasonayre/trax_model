@@ -1,4 +1,5 @@
 require 'spec_helper'
+
 describe ::Trax::Model::Matchable do
   let(:product) { ::Product.create(:name => "27 inch iMac") }
   subject{ product }

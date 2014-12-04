@@ -4,7 +4,7 @@ describe ::Trax::Model::Registry do
   subject{ described_class }
 
   its(:models) { should be_instance_of(::Hashie::Mash) }
-  its(:uuid_map) { should have_key("a1") }
+  its(:uuid_map) { should have_key("1a") }
   its(:uuid_map) { should be_instance_of(::Hashie::Mash) }
 
   it "should have registered product model" do
@@ -12,6 +12,6 @@ describe ::Trax::Model::Registry do
   end
 
   it "model_type_for_uuid" do
-    subject.model_type_for_uuid("a1asdasdasd").should eq Product
+    subject.model_type_for_uuid("1absdasdasd").should eq Product
   end
 end

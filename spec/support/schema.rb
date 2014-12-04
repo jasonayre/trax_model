@@ -47,13 +47,13 @@ class Product < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::UniqueId
 
-  defaults :uuid_prefix => "a1", :uuid_column => "uuid"
+  defaults :uuid_prefix => "1a", :uuid_column => "uuid"
 end
 
 class Widget < ::ActiveRecord::Base
   include ::Trax::Model
 
-  defaults :uuid_prefix => "a2", :uuid_column => "uuid"
+  defaults :uuid_prefix => "2a", :uuid_column => "uuid"
 
   validates :subdomain, :subdomain => true, :allow_nil => true
   validates :email_address, :email => true, :allow_nil => true
@@ -64,7 +64,7 @@ class Message < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Freezable
 
-  defaults :uuid_prefix => "a3", :uuid_column => "uuid"
+  defaults :uuid_prefix => "3a", :uuid_column => "uuid"
 
   enum :status => [:queued, :scheduled, :delivered, :failed_delivery]
 

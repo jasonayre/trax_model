@@ -1,4 +1,5 @@
 require 'spec_helper'
+
 describe ::Trax::Model::Config do
   describe "uuid_prefix" do
     context "bad prefixes" do

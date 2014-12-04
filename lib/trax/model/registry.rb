@@ -8,6 +8,11 @@ module Trax
       class << self
         delegate :key?, :to => :models
         delegate :each, :to => :models
+        delegate :all, :to => :collection
+      end
+
+      def self.collection
+        models.try(:values)
       end
 
       def self.register_trax_model(model)
@@ -20,6 +25,14 @@ module Trax
         prefix = str[0..1]
 
         uuid_map.fetch(prefix)
+      end
+
+      def self.next_prefix
+        models.values.reject!{|model| !model.try(:uuid_prefix) }
+      end
+
+      def self.model_prefixes
+        models.try(:keys)
       end
 
       def self.uuid_map
