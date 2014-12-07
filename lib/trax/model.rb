@@ -21,6 +21,7 @@ module Trax
     autoload :UUIDPrefix
     autoload :UniqueId
     autoload :Matchable
+    autoload :MTI
     autoload :Validators
 
     include ::Trax::Model::Matchable
@@ -33,7 +34,6 @@ module Trax
 
       register_trax_models(self)
     end
-
 
     module ClassMethods
       delegate :register_trax_model, :to => "::Trax::Model::Registry"
