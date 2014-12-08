@@ -15,6 +15,16 @@ module Trax
         ::Trax::Model::UUID.new(super)
       end
 
+      #i.e, Blog::Post will = post
+      def uuid_type
+        uuid.record_type.name.demodulize.underscore
+      end
+
+      #i.e. Blog::Post
+      def uuid_type_full
+        uuid.record_type.name
+      end
+
       module ClassMethods
         delegate :uuid_prefix, :to => :trax_defaults
         delegate :uuid_column, :to => :trax_defaults
