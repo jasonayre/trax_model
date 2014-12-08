@@ -12,17 +12,25 @@ module Trax
       }.freeze
 
       def uuid
-        ::Trax::Model::UUID.new(super)
-      end
+        uuid_column = self.class.trax_defaults.uuid_column
+        uuid_value = (uuid_column == :uuid) ? super : __send__(uuid_column)
 
-      #i.e, Blog::Post will = post
-      def uuid_type
-        uuid.record_type.name.demodulize.underscore
+        ::Trax::Model::UUID.new(uuid_value)
       end
 
       #i.e. Blog::Post
-      def uuid_type_full
+      def uuid_type
+        uuid.record_type
+      end
+
+      #i.e. 'Blog::Post'
+      def uuid_type_name
         uuid.record_type.name
+      end
+
+      #i.e, Blog::Post will = post
+      def uuid_type_slug
+        uuid.record_type.name.demodulize.underscore
       end
 
       module ClassMethods
