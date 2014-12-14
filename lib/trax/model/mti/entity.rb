@@ -10,6 +10,20 @@ module Trax
           scope :records, lambda{
             map(&:entity)
           }
+
+          scope :fully_loaded, lambda{
+            relation = current_scope.dup
+            entity_ids = relation.pluck(:id)
+            entity_types = entity_ids.map { |id| ::Trax::Model::UUID.new(id[0..1]) }
+                                     .map(&:record_type)
+                                     .flatten
+                                     .compact
+                                     .uniq
+
+            relation_names = entity_types.map{ |type| :"#{type.name.demodulize.underscore}_entity" }
+
+            current_scope.includes(relation_names).references(relation_names)
+          }
         end
 
         def model_type
@@ -29,20 +43,6 @@ module Trax
         end
 
         module ClassMethods
-          def all
-            relation = super
-            entity_ids = relation.pluck(:id)
-            entity_types = entity_ids.map { |id| ::Trax::Model::UUID.new(id[0..1]) }
-                                     .map(&:record_type)
-                                     .flatten
-                                     .compact
-                                     .uniq
-
-            relation_names = entity_types.map{ |type| :"#{type.name.demodulize.underscore}_entity" }
-
-            relation.includes(relation_names).references(relation_names)
-          end
-
           def mti_namespace(namespace)
             _mti_namespace = (namespace.is_a?(String)) ? namespace.constantize : namespace
 
@@ -55,7 +55,6 @@ module Trax
           def multiple_table_inheritance_namespace(namespace)
             mti_namespace(namespace)
           end
-
         end
       end
     end
