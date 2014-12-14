@@ -11,8 +11,8 @@ describe ::Trax::Model::UUID do
       end
     end
 
-    its(:prefix_map) { should have_key("9a") }
-    its(:klass_prefix_map) { should have_key(Person) }
+    it { described_class.prefix_map.should have_key("9a") }
+    it { described_class.klass_prefix_map.should have_key(Person) }
   end
 
   its(:record_type) { should eq ::Product }

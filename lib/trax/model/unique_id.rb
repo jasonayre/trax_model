@@ -3,14 +3,6 @@ module Trax
     module UniqueId
       extend ::ActiveSupport::Concern
 
-      ERROR_MESSAGES = {
-        :invalid_uuid_prefix => [
-          "UUID prefix must be 2 characters long",
-          "and can only include a-f0-9",
-          "for hexadecimal id compatibility"
-        ].join("\n")
-      }.freeze
-
       included do
         #grab prefix from uuid registry if using that
         if ::Trax::Model::UUID.klass_prefix_map.has_key?(self.name)
@@ -20,7 +12,7 @@ module Trax
 
       def uuid
         uuid_column = self.class.trax_defaults.uuid_column
-        uuid_value = (uuid_column == :uuid) ? super : __send__(uuid_column)
+        uuid_value = (uuid_column == "uuid") ? super : __send__(uuid_column)
 
         ::Trax::Model::UUID.new(uuid_value)
       end
