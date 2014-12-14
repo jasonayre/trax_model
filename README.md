@@ -58,6 +58,16 @@ bx rails c
 => "1a"
 ```
 
+### Or, register prefixes using dsl rather than in each individual class
+
+``` ruby
+
+Trax::Model::UUID.register do
+  prefix "1a", Product
+  prefix "1b", Category
+end
+```
+
 But wait theires more!
 
 ### UUID utility methods
@@ -140,18 +150,18 @@ end
 
 The main advantages of Multiple Table Inheritance versus Single Table inheritance I see are:
 
-1) Table size. As databases grow, vertically adding more length to traverse the table will continue to get slower. One way to mitigate this issue would be to split up your table into multiple horizontal tables, if it makes sense for your data structure to do so (i.e. like above)
+1. Table size. As databases grow, vertically adding more length to traverse the table will continue to get slower. One way to mitigate this issue would be to split up your table into multiple horizontal tables, if it makes sense for your data structure to do so (i.e. like above)
 
-2) STI will get out of proportion likely. I.e. if 90% of your posts are text posts, then when you are looking for a video post, you are to some degree being slowed down by the video posts in your table. (or at least at some point when you reach past xxxxxx number of records)
+2. STI will get out of proportion likely. I.e. if 90% of your posts are text posts, then when you are looking for a video post, you are to some degree being slowed down by the video posts in your table. (or at least at some point when you reach past xxxxxx number of records)
 
-3) Further on that note, only storing what you need for each individual subset of your data, on that particular subset. I.e. if video post has a video_url attribute, but none of the other post types have that, it will keep holes out of your data tables since video_url is only on the video_posts table.
+3. Further on that note, only storing what you need for each individual subset of your data, on that particular subset. I.e. if video post has a video_url attribute, but none of the other post types have that, it will keep holes out of your data tables since video_url is only on the video_posts table.
 
-4) Real separation at the data level of non common attributes, so you dont have to write safeguards in child classes to make sure that a value didnt slip into a field or whatever, because each child class has its own individual interpretation of the schema.
+4. Real separation at the data level of non common attributes, so you dont have to write safeguards in child classes to make sure that a value didnt slip into a field or whatever, because each child class has its own individual interpretation of the schema.
 
 The main disadvantages are:
 
-1) No shared view between child types. I.E. thats what the MTI entity is for. (want to find all blog posts? You cant unless you select a type first, or are using this gem, or a postgres view or something else)
-2) More difficult to setup since each child table needs its own table.
+1. No shared view between child types. I.E. thats what the MTI entity is for. (want to find all blog posts? You cant unless you select a type first, or are using this gem, or a postgres view or something else)
+2. More difficult to setup since each child table needs its own table.
 
 
 ## Installation
