@@ -11,6 +11,13 @@ module Trax
         ].join("\n")
       }.freeze
 
+      included do
+        #grab prefix from uuid registry if using that
+        if ::Trax::Model::UUID.klass_prefix_map.has_key?(self.name)
+          self.trax_defaults.uuid_prefix = ::Trax::Model::UUIDPrefix.new(klass_prefix_map[self.name])
+        end
+      end
+
       def uuid
         uuid_column = self.class.trax_defaults.uuid_column
         uuid_value = (uuid_column == :uuid) ? super : __send__(uuid_column)

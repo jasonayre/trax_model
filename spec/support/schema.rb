@@ -48,6 +48,13 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
+
+  create_table "people", :force => true do |t|
+    t.string "name"
+    t.string "uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
 end
 
 class Product < ::ActiveRecord::Base
@@ -87,5 +94,11 @@ end
 class Thing < ::ActiveRecord::Base
   include ::Trax::Model
 
-  defaults :uuid_prefix => "0a", :uuid_column => "uuid"
+  defaults :uuid_prefix => "4a", :uuid_column => "uuid"
+end
+
+class Person < ::ActiveRecord::Base
+  include ::Trax::Model
+
+  defaults :uuid_column => "uuid"
 end

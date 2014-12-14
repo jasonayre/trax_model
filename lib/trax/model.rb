@@ -15,6 +15,7 @@ module Trax
     extend ::ActiveSupport::Autoload
 
     autoload :Config
+    autoload :Errors
     autoload :Freezable
     autoload :Registry
     autoload :UUID
