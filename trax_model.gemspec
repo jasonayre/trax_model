@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "trax_core", "~> 0.0.3"
   spec.add_dependency "default_value_for", "~> 3.0.0"
+  spec.add_dependency "simple_enum"
   spec.add_development_dependency "activerecord"
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
@@ -35,4 +36,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard-bundler', '~> 2'
   spec.add_development_dependency 'rb-fsevent'
   spec.add_development_dependency 'terminal-notifier-guard'
+
 end
