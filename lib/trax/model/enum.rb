@@ -37,20 +37,24 @@ module Trax
           }
         end
 
-        def as_enum(enum_name, args, options = {})
+        def as_enum(enum_name, enum_mapping, options = {})
+          # enum_mapping = options.extract!(enum_name)[enum_name]
+          enum_values = enum_mapping.is_a?(Hash) ? enum_mapping.keys : enum_mapping
           options.assert_valid_keys(:prefix, :source, :message, :default)
+
           options[:message] ||= "Invalid value selected for #{enum_name}"
           options[:prefix] ||= true
           options[:source] ||= enum_name
-          enum_values = args.is_a?(Hash) ? args.keys : args
+          default_value = options.extract!(:default)[:default] if options.key?(:default)
+
           validation_options = { :in => enum_values, :message => options.extract!(:message)[:message] }
 
           self.validates_inclusion_of(enum_name, validation_options)
           define_scopes_for_trax_enum(enum_name)
 
-          self.default_value_for(enum_name) { options.extract!(:default)[:default] } if options.key?(:default)
+          self.default_value_for(enum_name) { default_value } if default_value
 
-          super(enum_name, args, options)
+          super(enum_name, enum_mapping, options)
         end
       end
     end
