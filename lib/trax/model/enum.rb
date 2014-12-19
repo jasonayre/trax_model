@@ -23,15 +23,7 @@ module Trax
       extend ::ActiveSupport::Concern
 
       module ClassMethods
-        def as_enum(enum_name, args, options = {})
-          options.assert_valid_keys(:prefix, :source, :message)
-          options[:message] ||= "Is not a valid value for #{enum_name}"
-          options[:prefix] ||= true
-          options[:source] ||= enum_name
-          enum_values = args.is_a?(Hash) ? args.keys : args
-          validation_options = { :in => enum_values, :message => options.extract!(:message) }
-
-          self.validates_inclusion_of(enum_name, validation_options)
+        def define_scopes_for_trax_enum(enum_name)
           scope_method_name = :"by_#{enum_name}"
           scope_not_method_name = :"by_#{enum_name}_not"
 
@@ -43,6 +35,20 @@ module Trax
             enum_hash = self.__send__("#{enum_name}".pluralize).hash
             where.not(enum_name => enum_hash.with_indifferent_access.slice(*values.flatten.compact.uniq).values)
           }
+        end
+
+        def as_enum(enum_name, args, options = {})
+          options.assert_valid_keys(:prefix, :source, :message, :default)
+          options[:message] ||= "Invalid value selected for #{enum_name}"
+          options[:prefix] ||= true
+          options[:source] ||= enum_name
+          enum_values = args.is_a?(Hash) ? args.keys : args
+          validation_options = { :in => enum_values, :message => options.extract!(:message)[:message] }
+
+          self.validates_inclusion_of(enum_name, validation_options)
+          define_scopes_for_trax_enum(enum_name)
+
+          self.default_value_for(enum_name) { options.extract!(:default)[:default] } if options.key?(:default)
 
           super(enum_name, args, options)
         end
