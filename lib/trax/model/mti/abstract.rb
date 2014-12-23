@@ -8,7 +8,9 @@ module Trax
           class_attribute :mti_config
 
           self.abstract_class = true
-          self.mti_config = ::Hash.new(:foreign_key => :id)
+          self.mti_config = ::ActiveSupport::HashWithIndifferentAccess.new({
+            :foreign_key => :id
+          })
 
           scope :records, lambda{
             map(&:entity)
