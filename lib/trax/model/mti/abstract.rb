@@ -8,7 +8,7 @@ module Trax
           class_attribute :mti_config
 
           self.abstract_class = true
-          self.mti_config = ::Hashie::Mash.new(:foreign_key => :id)
+          self.mti_config = ::Hash.new(:foreign_key => :id)
 
           scope :records, lambda{
             map(&:entity)
@@ -50,6 +50,7 @@ module Trax
 
           def entity_model(options)
             valid_options = options.assert_valid_keys(:class_name, :foreign_key)
+
             mti_config.merge!(valid_options)
 
             self.has_one(:entity, mti_config.symbolize_keys)
