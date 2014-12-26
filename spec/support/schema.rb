@@ -55,6 +55,22 @@ ActiveRecord::Schema.define(:version => 1) do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
+
+  create_table "staplers", :force => true do |t|
+    t.string "name"
+    t.string "type"
+    t.integer "attribute_set_id"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "swingline_stapler_attribute_sets", :force => true do |t|
+    t.float "speed"
+    t.string "owner"
+
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
 end
 
 class Product < ::ActiveRecord::Base
@@ -101,4 +117,15 @@ class Person < ::ActiveRecord::Base
   include ::Trax::Model
 
   defaults :uuid_column => "uuid"
+end
+
+class Stapler < ::ActiveRecord::Base
+  include ::Trax::Model
+end
+
+class SwinglineStapler < ::Stapler
+  include ::Trax::Model::STI::Attributes
+end
+
+class SwinglineStaplerAttributeSet < ::ActiveRecord::Base
 end

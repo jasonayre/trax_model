@@ -26,6 +26,7 @@ module Trax
     autoload :UniqueId
     autoload :Matchable
     autoload :MTI
+    autoload :STI
     autoload :Validators
 
     include ::Trax::Model::Matchable

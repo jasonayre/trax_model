@@ -22,6 +22,12 @@ module Trax
           "following prefix was already registered"
         ]
       end
+
+      class STIAttributeNotFound < ::Trax::Model::Errors::Base
+        MESSAGE = [
+          "STI Attribute was not found for attribute"
+        ]
+      end
     end
   end
 end
