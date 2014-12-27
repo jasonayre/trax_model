@@ -19,10 +19,11 @@ module Trax
           self._attribute_set_class_name = "#{name}AttributeSet"
 
           self.belongs_to(self._attribute_set_relation_name, :class_name => self._attribute_set_class_name)
+          self.validates(self._attribute_set_relation_name, :presence => true)
         end
 
         def attribute_set
-          build_attribute_set if super.nil?
+          create_attribute_set if super.nil?
 
           super
         end
@@ -32,6 +33,7 @@ module Trax
             options = args.extract_options!
 
             args.each do |attribute_name|
+              return unless self._attribute_set_class_name.constantize.table_exists?
               raise ::Trax::Model::Errors::STIAttributeNotFound unless self._attribute_set_class_name.constantize.column_names.include?("#{attribute_name}")
 
               self._sti_attributes << attribute_name
