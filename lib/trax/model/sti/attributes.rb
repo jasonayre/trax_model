@@ -20,12 +20,27 @@ module Trax
 
           self.belongs_to(self._attribute_set_relation_name, :class_name => self._attribute_set_class_name)
           self.validates(self._attribute_set_relation_name, :presence => true)
+
+          self.before_create(:attribute_set)
+        end
+
+        def attributes
+          super.merge!(sti_attributes)
         end
 
         def attribute_set
-          create_attribute_set if super.nil?
+          build_attribute_set if super.nil?
 
           super
+        end
+
+        def sti_attributes
+          sti_attribute_hash = self.class._sti_attributes.inject({}) do |result, attribute|
+            result["#{attribute}"] = __send__(attribute)
+            result
+          end
+
+          sti_attribute_hash
         end
 
         module ClassMethods
