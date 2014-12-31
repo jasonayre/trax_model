@@ -43,6 +43,11 @@ module Trax
           sti_attribute_hash
         end
 
+        def super!(*args)
+          method_caller = caller_locations(1,1)[0].label
+          attribute_set.send(method_caller, *args)
+        end
+
         module ClassMethods
           def sti_attribute(*args)
             options = args.extract_options!

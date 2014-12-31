@@ -163,6 +163,53 @@ The main disadvantages are:
 1. No shared view between child types. I.E. thats what the MTI entity is for. (want to find all blog posts? You cant unless you select a type first, or are using this gem, or a postgres view or something else)
 2. More difficult to setup since each child table needs its own table.
 
+# STI
+
+Trax also has a specialized blend of STI, where you place the union of attributes in the parent table, but for the child specific attributes, you create one separate table per subclass, i.e. given the following pseudo schema
+``` ruby
+#(Note this may make more sense to be a has_one rather than a belongs_to, cant remember why I set it up that way)
+
+Post
+:type => string, :title => String, :attribute_set_id => (integer or uuid, this is required ATM.)
+
+VideoPost
+video_url => string
+video_thumbnail => binary
+
+TextPost
+body => text
+```
+You would have 2 additional models
+
+1. VideoPostAttributeSet
+2. TextPostAttributeSet
+
+Which contain the type specific columns.
+
+Then you just need to include
+
+``` ruby
+class VideoPost < Post
+  include ::Trax::Model::STI::Attributes
+
+  sti_attribute :video_url, :video_thumbnail
+end
+```
+
+STI Attribute will set up the delegation to the attribute_set model, so now you can do
+
+``` ruby
+VideoPost.new(:video_url => "http://whatever.com")
+```
+
+ETC..
+
+AttributeSet model will be built automatically if it does not exist, and delegated to accordingly.
+
+The idea is to hide the complexity of dealing with the attribute_set table, and do as much as possible in the main model, as its really just an extension of itself.
+
+If you need to override one of the attribute_sets methods, try super! as that will delegate to it and call super on the attribute set model.
+
 
 ## Installation
 
