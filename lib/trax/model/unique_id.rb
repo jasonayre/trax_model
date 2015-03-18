@@ -1,7 +1,7 @@
 module Trax
   module Model
     module UniqueId
-      extend ::ActiveSupport::Concern
+      include ::Trax::Model::Mixin
 
       included do
         #grab prefix from uuid registry if using that

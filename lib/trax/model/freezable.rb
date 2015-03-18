@@ -1,7 +1,7 @@
 module Trax
   module Model
     module Freezable
-      extend ::ActiveSupport::Concern
+      include ::Trax::Model::Mixin
 
       included do
         class_attribute :freezable_fields
@@ -11,7 +11,6 @@ module Trax
       module ClassMethods
         def freezable_by_enum(options = {})
           freezable_fields.merge!(options)
-
           define_frozen_validators_for_enum(options)
         end
 
@@ -26,6 +25,5 @@ module Trax
         end
       end
     end
-
   end
 end

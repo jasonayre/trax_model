@@ -20,7 +20,7 @@
 module Trax
   module Model
     module Enum
-      extend ::ActiveSupport::Concern
+      include ::Trax::Model::Mixin
 
       module ClassMethods
         def define_scopes_for_trax_enum(enum_name)
