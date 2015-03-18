@@ -76,9 +76,8 @@ module Trax
         mixin_klass = ::Trax::Model.mixin_registry[key]
 
         self.class_eval do
-          include(mixin_klass) unless self.ancestors.include?(mixin_klass)
-
-          if(options.is_a?(Hash) && !options.blank?)
+          unless self.ancestors.include?(mixin_klass)
+            include(mixin_klass)
             mixin_klass.apply_mixin(self, options) if mixin_klass.respond_to?(:apply_mixin)
           end
         end

@@ -37,7 +37,6 @@ describe ::Trax::Model::Restorable do
 
     it ".by_is_deleted" do
       subject.destroy
-      binding.pry
       Message.by_is_deleted.pluck(:id).should include(subject.id)
     end
   end
