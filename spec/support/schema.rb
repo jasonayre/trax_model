@@ -28,6 +28,8 @@ ActiveRecord::Schema.define(:version => 1) do
     t.text     "body"
     t.integer  "status"
     t.string   "uuid"
+    t.boolean  "deleted"
+    t.datetime "deleted_at"
     t.datetime "deliver_at"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
@@ -92,9 +94,11 @@ end
 
 class Message < ::ActiveRecord::Base
   include ::Trax::Model
-  include ::Trax::Model::Freezable
 
   defaults :uuid_prefix => "3a", :uuid_column => "uuid"
+
+  mixins :freezable => true,
+         :restorable => { :field => :deleted }
 
   enum :status => [:queued, :scheduled, :delivered, :failed_delivery]
 
@@ -104,7 +108,7 @@ class Message < ::ActiveRecord::Base
 
   validates :deliver_at, :future => true, :allow_nil => true
 
-  freezable_by_enum :status => [:delivered, :failed_delivery]
+  freezable_by_enum :status => [ :delivered, :failed_delivery ]
 end
 
 class Thing < ::ActiveRecord::Base
