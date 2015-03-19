@@ -5,6 +5,6 @@ class JsonAttributeValidator < ActiveModel::EachValidator
     json_attribute = object.class.json_attribute_fields[attribute]
     expected_json_attribute_keys = json_attribute.new.to_hash.keys
 
-    object.errors[attribute] << "Invalid Field Structure" unless value.keys.all?{ expected_json_attribute_keys.include?(attribute) }
+    object.errors[attribute] << "Invalid Field Structure" unless value.keys.all?{ |k| expected_json_attribute_keys.include?(k) }
   end
 end
