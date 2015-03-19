@@ -8,6 +8,7 @@ require_relative './string'
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
 require_relative './validators/future_validator'
+require_relative './validators/json_attribute_validator'
 require_relative './validators/subdomain_validator'
 require_relative './validators/url_validator'
 
@@ -20,6 +21,8 @@ module Trax
     autoload :Enum
     autoload :Errors
     autoload :Freezable
+    autoload :JsonAttribute
+    autoload :JsonAttributes
     autoload :Registry
     autoload :UUID
     autoload :UUIDPrefix
@@ -48,6 +51,7 @@ module Trax
     def self.eager_autoload_mixins!
       ::Trax::Model::Enum
       ::Trax::Model::Freezable
+      ::Trax::Model::JsonAttributes
       ::Trax::Model::Restorable
       ::Trax::Model::UniqueId
     end
