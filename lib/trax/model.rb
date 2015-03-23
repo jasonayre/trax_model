@@ -4,7 +4,6 @@ require 'hashie/dash'
 require 'hashie/mash'
 require 'simple_enum'
 require_relative './string'
-# require_relative './enum'
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
 require_relative './validators/future_validator'
@@ -31,11 +30,17 @@ module Trax
     autoload :Mixin
     autoload :MTI
     autoload :Restorable
+    autoload :Railtie
     autoload :STI
     autoload :Validators
 
     include ::Trax::Model::Matchable
     include ::ActiveModel::Dirty
+
+    define_configuration_options! do
+      option :auto_include, :default => false
+      option :auto_include_mixins, :default => []
+    end
 
     class << self
       attr_accessor :mixin_registry
@@ -59,22 +64,12 @@ module Trax
     eager_autoload_mixins!
 
     included do
-      class_attribute :trax_defaults
-
-      self.trax_defaults = ::Trax::Model::Config.new
-
       register_trax_models(self)
     end
 
     module ClassMethods
       delegate :register_trax_model, :to => "::Trax::Model::Registry"
       delegate :[], :to => :find
-
-      def defaults(options = {})
-        options.each_pair do |key, val|
-          self.trax_defaults.__send__("#{key}=", val)
-        end
-      end
 
       def mixin(key, options = {})
         mixin_klass = ::Trax::Model.mixin_registry[key]
@@ -111,3 +106,5 @@ module Trax
     end
   end
 end
+
+::Trax::Model::Railtie if defined?(Rails)

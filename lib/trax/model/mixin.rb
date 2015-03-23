@@ -5,7 +5,7 @@ module Trax
 
       included do
         self.extend(::ActiveSupport::Concern)
-
+        
         ::Trax::Model.register_mixin(self)
       end
     end

@@ -3,15 +3,44 @@ module Trax
     module UniqueId
       include ::Trax::Model::Mixin
 
+      define_configuration_options! do
+        option :uuid_column, :default => :id
+        option :uuid_map, :default => {}
+      end
+
       included do
-        #grab prefix from uuid registry if using that
-        if ::Trax::Model::UUID.klass_prefix_map.has_key?(self.name)
-          self.trax_defaults.uuid_prefix = ::Trax::Model::UUIDPrefix.new(klass_prefix_map[self.name])
+        define_configuration_options!(:unique_id) do
+          option :uuid_prefix,
+                 :setter => lambda{ |prefix|
+                   if(Trax::Model::UniqueId.config.uuid_map.values.include?(prefix))
+                     raise ::Trax::Model::Errors::DuplicatePrefixRegistered.new(:prefix => prefix, :model => self.source.name)
+                   end
+
+                   ::Trax::Model::UniqueId.config.uuid_map[self.source.name] = prefix
+                   ::Trax::Model::UUIDPrefix.new(prefix)
+                 },
+                 :validates => {
+                   :exclusion => {
+                     :in => ::Trax::Model::Registry.uuid_map.values
+                   },
+                   :inclusion => {
+                     :in => ::Trax::Model::UUIDPrefix.all,
+                     :message => "%{value} not a valid uuid prefix!\nRun Trax::Model::UUIDPrefix.all for valid prefix list"
+                   },
+                   :allow_nil => true
+                 }
+
+          option :uuid_column, :default => ::Trax::Model::UniqueId.config.uuid_column
+        end
+
+        #grab prefix from uuid registry if uuids are defined in an initializer
+        if ::Trax::Model.mixin_registry.key?(:unique_id) && ::Trax::Model::UUID.klass_prefix_map.key?(self.name)
+          self.unique_id_config.uuid_prefix = ::Trax::Model::UUID.klass_prefix_map[self.name]
         end
       end
 
       def uuid
-        uuid_column = self.class.trax_defaults.uuid_column
+        uuid_column = self.class.unique_id_config.uuid_column
         uuid_value = (uuid_column == "uuid") ? super : __send__(uuid_column)
 
         ::Trax::Model::UUID.new(uuid_value)
@@ -33,14 +62,17 @@ module Trax
       end
 
       module ClassMethods
-        delegate :uuid_prefix, :to => :trax_defaults
-        delegate :uuid_column, :to => :trax_defaults
+        def uuid_prefix
+          self.unique_id_config.uuid_prefix
+        end
+      end
 
-        def defaults(*args)
-          super(*args)
+      def self.apply_mixin(target, options)
+        target.unique_id_config.merge!(options)
 
-          self.default_value_for(:"#{self.trax_defaults.uuid_column}") {
-            ::Trax::Model::UUID.generate(self.trax_defaults.uuid_prefix)
+        if(target.unique_id_config.uuid_prefix)
+          target.default_value_for(:"#{target.unique_id_config.uuid_column}") {
+            ::Trax::Model::UUID.generate(target.unique_id_config.uuid_prefix)
           }
         end
       end

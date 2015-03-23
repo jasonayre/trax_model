@@ -3,7 +3,7 @@ module Trax
     class Registry
       class_attribute :models
 
-      self.models ||= ::Hashie::Mash.new
+      self.models = ::Hashie::Mash.new
 
       class << self
         delegate :key?, :to => :models
@@ -52,8 +52,8 @@ module Trax
       end
 
       def self.uuid_map
-        models.values.reject{|model| model.try(:uuid_prefix) == nil }.inject(::Hashie::Mash.new) do |result, model|
-          result[model.uuid_prefix] = model
+        models.values.reject{|model| model.try(:unique_id_config).try(:uuid_prefix) == nil }.inject(::Hashie::Mash.new) do |result, model|
+          result[model.unique_id_config.uuid_prefix] = model
           result
         end
       end

@@ -1,32 +1,33 @@
+require 'trax/core/errors'
+
 module Trax
   module Model
     module Errors
-      class Base < StandardError
-        def initialize(*args)
-          message = (self.class::MESSAGE + args).join("\n")
-          super(message)
-        end
-      end
+      class InvalidPrefix < ::Trax::Core::Errors::Base
+        argument :prefix, :required => true
 
-      class InvalidPrefix < Trax::Model::Errors::Base
-        MESSAGE = [
-          "UUID prefix must be 2 characters long",
-          "and be 0-9 or a-f",
+        message {
+          "Prefix #{prefix}"
+          "UUID prefix must be 2 characters long" \
+          "and be 0-9 or a-f" \
           "for hexadecimal id compatibility"
-        ]
+        }
       end
 
-      class DuplicatePrefixRegistered < Trax::Model::Errors::Base
-        MESSAGE = [
-          "UUID prefix must be unique, the",
-          "following prefix was already registered"
-        ]
+      class DuplicatePrefixRegistered < Trax::Core::Errors::Base
+        argument :prefix, :required => true
+        argument :model, :required => true
+
+        message {
+          "UUID prefix must be unique,\n" \
+          "#{prefix} was already registered by #{model}!"
+        }
       end
 
-      class STIAttributeNotFound < ::Trax::Model::Errors::Base
-        MESSAGE = [
-          "STI Attribute was not found for attribute"
-        ]
+      class STIAttributeNotFound < ::Trax::Core::Errors::Base
+        argument :attribute_name
+
+        message { "STI Attribute was not found for #{attribute_name}" }
       end
     end
   end
