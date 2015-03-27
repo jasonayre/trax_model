@@ -36,7 +36,8 @@ ActiveRecord::Schema.define(:version => 1) do
   end
 
   create_table "widgets", :force => true do |t|
-    t.string   "email_address"
+    t.string "uuid"
+    t.string  "email_address"
     t.string  "subdomain"
     t.string  "website"
     t.integer  "status"
@@ -77,15 +78,20 @@ end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
-  include ::Trax::Model::UniqueId
 
-  defaults :uuid_prefix => "1a", :uuid_column => "uuid"
+  mixins :unique_id => {
+    :uuid_column => "uuid",
+    :uuid_prefix => "1a"
+  }
 end
 
 class Widget < ::ActiveRecord::Base
   include ::Trax::Model
 
-  defaults :uuid_prefix => "2a", :uuid_column => "uuid"
+  mixins :unique_id => {
+    :uuid_column => "uuid",
+    :uuid_prefix => "2a"
+  }
 
   validates :subdomain, :subdomain => true, :allow_nil => true
   validates :email_address, :email => true, :allow_nil => true
@@ -95,12 +101,11 @@ end
 class Message < ::ActiveRecord::Base
   include ::Trax::Model
 
-  defaults :uuid_prefix => "3a", :uuid_column => "uuid"
-
-  mixins :freezable => true,
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3a" },
+         :freezable => true,
          :restorable => { :field => :deleted }
 
-  enum :status => [:queued, :scheduled, :delivered, :failed_delivery]
+  enum :status => [ :queued, :scheduled, :delivered, :failed_delivery ]
 
   default_value_for :status do
     self.statuses[:queued]
@@ -114,13 +119,13 @@ end
 class Thing < ::ActiveRecord::Base
   include ::Trax::Model
 
-  defaults :uuid_prefix => "4a", :uuid_column => "uuid"
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "4a" }
 end
 
 class Person < ::ActiveRecord::Base
   include ::Trax::Model
 
-  defaults :uuid_column => "uuid"
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "5a" }
 end
 
 class Stapler < ::ActiveRecord::Base
