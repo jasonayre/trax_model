@@ -12,7 +12,7 @@ module Trax
         define_configuration_options!(:unique_id) do
           option :uuid_prefix,
                  :setter => lambda{ |prefix|
-                   if(Trax::Model::UniqueId.config.uuid_map.values.include?(prefix))
+                   if(::Trax::Model::UniqueId.config.uuid_map.values.include?(prefix) && ::Trax::Model::UniqueId.config.uuid_map[self.source.name] != prefix)
                      raise ::Trax::Model::Errors::DuplicatePrefixRegistered.new(:prefix => prefix, :model => self.source.name)
                    end
 
