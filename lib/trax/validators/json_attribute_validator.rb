@@ -3,8 +3,8 @@ class JsonAttributeValidator < ActiveModel::EachValidator
   #i suppose though it should loop through the fields and catch any errors, and bubble them up to errors
   def validate_each(object, attribute, value)
     json_attribute = object.class.json_attribute_fields[attribute]
-    expected_json_attribute_keys = json_attribute.new.to_hash.keys
-
-    object.errors[attribute] << "Invalid Field Structure" unless value.keys.all?{ expected_json_attribute_keys.include?(attribute) }
+    # expected_json_attribute_keys = json_attribute.new.to_hash.keys
+    #
+    # object.errors[attribute] << "Invalid Field Structure" unless value.keys.all?{ |k| expected_json_attribute_keys.include?(k) }
   end
 end

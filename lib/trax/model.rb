@@ -21,6 +21,7 @@ module Trax
     autoload :Errors
     autoload :Freezable
     autoload :JsonAttribute
+    autoload :JsonAttributeType
     autoload :JsonAttributes
     autoload :Registry
     autoload :UUID
@@ -53,6 +54,10 @@ module Trax
       mixin_registry[mixin_key] = mixin_klass
     end
 
+    def self.root
+      File.dirname __dir__
+    end
+
     def self.eager_autoload_mixins!
       ::Trax::Model::Enum
       ::Trax::Model::Freezable
@@ -77,6 +82,8 @@ module Trax
         self.class_eval do
           unless self.ancestors.include?(mixin_klass)
             include(mixin_klass)
+
+            options = {} if options.is_a?(TrueClass)
             mixin_klass.apply_mixin(self, options) if mixin_klass.respond_to?(:apply_mixin)
           end
         end
