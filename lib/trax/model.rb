@@ -4,6 +4,7 @@ require 'hashie/dash'
 require 'hashie/mash'
 require 'simple_enum'
 require_relative './string'
+require_relative './validators/boolean_validator'
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
 require_relative './validators/future_validator'
@@ -55,7 +56,7 @@ module Trax
     end
 
     def self.root
-      File.dirname __dir__
+      ::Pathname.new(::File.path(__FILE__))
     end
 
     def self.eager_autoload_mixins!
