@@ -10,18 +10,15 @@ module Trax
       end
 
       def type_cast_from_user(value)
-        rval = value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value || {})
-        binding.pry
-        rval
+        value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value || {})
       end
 
       def type_cast_from_database(value)
-        hash = JSON.parse(value || "{}")
-        @target_klass.new(hash)
+        value.present? ? @target_klass.new(JSON.parse(value)) : value
       end
 
       def type_cast_for_database(value)
-        value.to_hash.to_json
+        value.present? ? value.to_hash.to_json : nil
       end
     end
   end

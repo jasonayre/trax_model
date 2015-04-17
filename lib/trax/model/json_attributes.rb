@@ -18,8 +18,8 @@ module Trax
           attributes_klass.instance_eval(&block)
 
           attribute(attribute_name, ::Trax::Model::JsonAttributeType.new(target_klass: attributes_klass))
-
           self.json_attribute_fields[attribute_name] = attributes_klass
+
           self.default_value_for(attribute_name) { {} }
           self.validates(attribute_name, :json_attribute => true)
         end
