@@ -4,6 +4,9 @@ module Trax
   module Model
     module JsonAttributes
       include ::Trax::Model::Mixin
+      include ::Trax::Model::Attributes::AttributesMixin
+
+      ::Trax::Model::Attributes.register_attribute_type(self)
 
       included do
         class_attribute :json_attribute_fields
@@ -12,7 +15,7 @@ module Trax
       end
 
       module ClassMethods
-        def json_attribute(attribute_name, &block)
+        def json_attribute(attribute_name, **options, &block)
           attributes_klass_name = "#{attribute_name}_attributes".classify
           attributes_klass = const_set(attributes_klass_name, ::Class.new(::Trax::Model::JsonAttribute))
           attributes_klass.instance_eval(&block)

@@ -17,13 +17,11 @@ module Trax
     extend ::ActiveSupport::Concern
     extend ::ActiveSupport::Autoload
 
+    autoload :Attributes
     autoload :Config
     autoload :Enum
     autoload :Errors
     autoload :Freezable
-    autoload :JsonAttribute
-    autoload :JsonAttributeType
-    autoload :JsonAttributes
     autoload :Registry
     autoload :UUID
     autoload :UUIDPrefix
@@ -50,8 +48,10 @@ module Trax
 
     @mixin_registry = {}
 
-    def self.register_mixin(mixin_klass)
-      mixin_key = mixin_klass.name.demodulize.underscore.to_sym
+    def self.register_mixin(mixin_klass, key = nil)
+      mixin_key = mixin_klass.respond_to?(:mixin_registry_key) ? mixin_klass.mixin_registry_key : (key || mixin_klass.name.demodulize.underscore.to_sym)
+
+      return if mixin_registry.key?(mixin_key)
       mixin_registry[mixin_key] = mixin_klass
     end
 
@@ -60,9 +60,9 @@ module Trax
     end
 
     def self.eager_autoload_mixins!
+      ::Trax::Model::Attributes::Mixin
       ::Trax::Model::Enum
       ::Trax::Model::Freezable
-      ::Trax::Model::JsonAttributes
       ::Trax::Model::Restorable
       ::Trax::Model::UniqueId
     end
@@ -78,7 +78,14 @@ module Trax
       delegate :[], :to => :find
 
       def mixin(key, options = {})
+        raise ::Trax::Model::Errors::MixinNotRegistered.new(
+          model: self.name,
+          mixin: key
+        )  unless ::Trax::Model.mixin_registry.key?(key)
+
         mixin_klass = ::Trax::Model.mixin_registry[key]
+
+        puts mixin_klass
 
         self.class_eval do
           unless self.ancestors.include?(mixin_klass)
