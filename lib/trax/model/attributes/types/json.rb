@@ -27,6 +27,10 @@ module Trax
               @target_klass = target_klass
             end
 
+            def type
+              :json
+            end
+
             def type_cast_from_user(value)
               value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value || {})
             end
@@ -43,7 +47,7 @@ module Trax
           module Mixin
             def self.mixin_registry_key; :json_attributes end;
 
-            include ::Trax::Model::Mixin
+            extend ::Trax::Model::Mixin
             include ::Trax::Model::Attributes::Mixin
 
             included do
