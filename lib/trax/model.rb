@@ -70,6 +70,10 @@ module Trax
     eager_autoload_mixins!
 
     included do
+      class_attribute :registered_mixins
+
+      self.registered_mixins = {}
+
       register_trax_models(self)
     end
 
@@ -83,16 +87,20 @@ module Trax
           mixin: key
         )  unless ::Trax::Model.mixin_registry.key?(key)
 
-        mixin_klass = ::Trax::Model.mixin_registry[key]
-
-        puts mixin_klass
+        mixin_module = ::Trax::Model.mixin_registry[key]
+        self.registered_mixins[key] = mixin_module
 
         self.class_eval do
-          unless self.ancestors.include?(mixin_klass)
-            include(mixin_klass)
+          include(mixin_module) unless self.ancestors.include?(mixin_module)
 
-            options = {} if options.is_a?(TrueClass)
-            mixin_klass.apply_mixin(self, options) if mixin_klass.respond_to?(:apply_mixin)
+          options = {} if options.is_a?(TrueClass)
+          options = { options => true } if options.is_a?(Symbol)
+          mixin_module.apply_mixin(self, options) if mixin_module.respond_to?(:apply_mixin)
+
+          if mixin_module.instance_variable_defined?(:@_after_included_block)
+            block = mixin_module.instance_variable_get(:@_after_included_block)
+
+            instance_exec(options, &block)
           end
         end
       end

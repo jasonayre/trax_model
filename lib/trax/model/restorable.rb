@@ -1,7 +1,7 @@
 module Trax
   module Model
     module Restorable
-      include ::Trax::Model::Mixin
+      extend ::Trax::Model::Mixin
 
       define_configuration_options! do
         option :field, :default => :is_deleted

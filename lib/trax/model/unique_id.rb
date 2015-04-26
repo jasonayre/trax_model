@@ -1,7 +1,7 @@
 module Trax
   module Model
     module UniqueId
-      include ::Trax::Model::Mixin
+      extend ::Trax::Model::Mixin
 
       define_configuration_options! do
         option :uuid_column, :default => :id
@@ -39,6 +39,16 @@ module Trax
         end
       end
 
+      after_included do |options|
+        self.unique_id_config.merge!(options)
+
+        if(self.unique_id_config.uuid_prefix)
+          default_value_for(:"#{self.unique_id_config.uuid_column}") {
+            ::Trax::Model::UUID.generate(self.unique_id_config.uuid_prefix)
+          }
+        end
+      end
+
       def uuid
         uuid_column = self.class.unique_id_config.uuid_column
         uuid_value = (uuid_column == "uuid") ? super : __send__(uuid_column)
@@ -67,15 +77,15 @@ module Trax
         end
       end
 
-      def self.apply_mixin(target, options)
-        target.unique_id_config.merge!(options)
-
-        if(target.unique_id_config.uuid_prefix)
-          target.default_value_for(:"#{target.unique_id_config.uuid_column}") {
-            ::Trax::Model::UUID.generate(target.unique_id_config.uuid_prefix)
-          }
-        end
-      end
+      # def self.apply_mixin(target, options)
+      #   target.unique_id_config.merge!(options)
+      #
+      #   if(target.unique_id_config.uuid_prefix)
+      #     target.default_value_for(:"#{target.unique_id_config.uuid_column}") {
+      #       ::Trax::Model::UUID.generate(target.unique_id_config.uuid_prefix)
+      #     }
+      #   end
+      # end
     end
   end
 end

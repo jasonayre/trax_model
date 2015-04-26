@@ -1,7 +1,7 @@
 module Trax
   module Model
     module Freezable
-      include ::Trax::Model::Mixin
+      extend ::Trax::Model::Mixin
 
       included do
         class_attribute :freezable_fields

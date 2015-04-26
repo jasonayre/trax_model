@@ -2,9 +2,9 @@ module Trax
   module Model
     module Attributes
       module Mixin
-        def self.mixin_registry_key; :attributes_mixin end;
+        def self.mixin_registry_key; :attributes end;
 
-        include ::Trax::Model::Mixin
+        extend ::Trax::Model::Mixin
 
         included do
           class_attribute :trax_attribute_fields
@@ -35,6 +35,7 @@ module Trax
             self.send(attribute_type_definition_method, name, **options, &block)
           end
         end
+
       end
     end
   end
