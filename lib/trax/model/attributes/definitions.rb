@@ -10,8 +10,8 @@ module Trax
           @model
         end
 
-        def attribute(*args, **options, &block)
-          @model.trax_attribute(*args, **options, &block)
+        def attribute(*args, type:, **options, &block)
+          @model.trax_attribute(*args, type: type, **options, &block)
         end
       end
     end

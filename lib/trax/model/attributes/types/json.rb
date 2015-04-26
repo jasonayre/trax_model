@@ -5,7 +5,7 @@ module Trax
     module Attributes
       module Types
         class Json < ::Trax::Model::Attributes::Type
-          class Attribute < ::Hashie::Dash
+          class Value < ::Hashie::Dash
             include Hashie::Extensions::IgnoreUndeclared
             include ActiveModel::Validations
 
@@ -55,11 +55,13 @@ module Trax
             module ClassMethods
               def json_attribute(attribute_name, **options, &block)
                 attributes_klass_name = "#{attribute_name}_attributes".classify
-                attributes_klass = const_set(attributes_klass_name, ::Class.new(::Trax::Model::Attributes[:json]::Attribute))
+                attributes_klass = const_set(attributes_klass_name, ::Class.new(::Trax::Model::Attributes[:json]::Value))
                 attributes_klass.instance_eval(&block)
 
+                trax_attribute_fields[:json] ||= {}
+                trax_attribute_fields[:json][attribute_name] = attributes_klass
+
                 attribute(attribute_name, ::Trax::Model::Attributes[:json]::TypeCaster.new(target_klass: attributes_klass))
-                self.json_attribute_fields[attribute_name] = attributes_klass
 
                 self.default_value_for(attribute_name) { {} }
                 self.validates(attribute_name, :json_attribute => true)

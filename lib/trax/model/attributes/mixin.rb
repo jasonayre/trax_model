@@ -32,7 +32,7 @@ module Trax
             raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type) unless ::Trax::Model::Attributes.key?(type)
             attribute_type_definition_method = ::Trax::Model::Attributes[type]::Mixin::ClassMethods.instance_methods.first
 
-            self.send(attribute_type_definition_method, name, type: type, **options, &block)
+            self.send(attribute_type_definition_method, name, **options, &block)
           end
         end
       end

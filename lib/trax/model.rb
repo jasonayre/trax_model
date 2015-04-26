@@ -119,6 +119,8 @@ module Trax
         name.underscore
       end
     end
+
+    ::ActiveSupport.run_load_hooks(:trax_model, self)
   end
 end
 
