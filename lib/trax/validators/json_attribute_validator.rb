@@ -3,7 +3,7 @@
 # that a hash is not provided
 class JsonAttributeValidator < ActiveModel::EachValidator
   def validate_each(object, attribute, value)
-    json_attribute = object.class.json_attribute_fields[attribute]
+    json_attribute = object.class.trax_attribute_fields[:json][attribute]
 
     unless value.is_a?(json_attribute) && value.valid?
       if value.is_a?(json_attribute)

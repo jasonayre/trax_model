@@ -33,6 +33,7 @@ module Trax
     autoload :Restorable
     autoload :Railtie
     autoload :STI
+    autoload :Struct
     autoload :Validators
 
     include ::Trax::Model::Matchable

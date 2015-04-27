@@ -13,6 +13,11 @@ module Trax
               @permitted_keys ||= properties.map(&:to_sym)
             end
 
+            def self.json_object_property(name, &block)
+              binding.pry
+              # property(name, )
+            end
+
             def inspect
               self.to_hash.inspect
             end

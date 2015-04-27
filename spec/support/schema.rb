@@ -138,3 +138,12 @@ end
 
 class SwinglineStaplerAttributeSet < ::ActiveRecord::Base
 end
+
+class StoreCategory < ::Trax::Model::Struct
+  property "name"
+
+  struct_property "meta_attributes" do
+    property "description"
+    property "keywords"
+  end
+end
