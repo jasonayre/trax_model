@@ -1,10 +1,10 @@
 module Trax
   module Model
     class Struct < ::Hashie::Dash
-      include ::Hashie::Extensions::IgnoreUndeclared
-      include ::Hashie::Extensions::StringifyKeys
-      include ::ActiveModel::Validations
+      include ::Hashie::Extensions::Dash::IndifferentAccess
       include ::Hashie::Extensions::Coercion
+      include ::Hashie::Extensions::IgnoreUndeclared
+      include ::ActiveModel::Validations
 
       def self.struct_property(name, *args, **options, &block)
         struct_klass_name = "#{name}_structs".classify
