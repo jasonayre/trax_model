@@ -5,6 +5,7 @@ module Trax
 
       autoload :BooleanValidator
       autoload :EmailValidator
+      autoload :EnumValidator
       autoload :Frozen
       autoload :FutureDate
       autoload :Subdomain

@@ -10,6 +10,7 @@ module Trax
       autoload :Errors
       autoload :Types
       autoload :Type
+      autoload :Value
 
       define_configuration_options! do
         option :attribute_types, :default => {}

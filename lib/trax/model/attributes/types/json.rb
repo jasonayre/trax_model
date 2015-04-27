@@ -6,8 +6,8 @@ module Trax
       module Types
         class Json < ::Trax::Model::Attributes::Type
           class Value < ::Hashie::Dash
-            include Hashie::Extensions::IgnoreUndeclared
-            include ActiveModel::Validations
+            include ::Hashie::Extensions::IgnoreUndeclared
+            include ::ActiveModel::Validations
 
             def self.permitted_keys
               @permitted_keys ||= properties.map(&:to_sym)
