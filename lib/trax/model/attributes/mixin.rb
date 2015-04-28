@@ -27,12 +27,13 @@ module Trax
 
           def trax_attribute(name, type:, **options, &block)
             trax_attribute_fields[type] ||= {}
-            trax_attribute_fields[type][name] = options
 
             raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type) unless ::Trax::Model::Attributes.key?(type)
             attribute_type_definition_method = ::Trax::Model::Attributes[type]::Mixin::ClassMethods.instance_methods.first
 
             self.send(attribute_type_definition_method, name, **options, &block)
+
+            self.validates(name, options[:validates]) if options.key?(:validates)
           end
         end
 

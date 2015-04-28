@@ -19,6 +19,8 @@ module Trax
               def enum_attribute(attribute_name, values:, **options, &block)
                 attribute(attribute_name, ::Trax::Model::Attributes[:enum]::TypeCaster.new)
 
+                options.delete(:validates) if options.key?(:validates)
+
                 as_enum(attribute_name, values, **options)
               end
             end

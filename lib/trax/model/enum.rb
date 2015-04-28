@@ -48,8 +48,9 @@ module Trax
           default_value = options.extract!(:default)[:default] if options.key?(:default)
 
           validation_options = { :in => enum_values, :message => options.extract!(:message)[:message] }
-          #
-          # self.validates_inclusion_of(enum_name, validation_options) unless options.key?(:validate) && !options[:validate]
+
+          self.validates_inclusion_of(enum_name, validation_options) unless options.key?(:validate) && !options[:validate]
+          
           options.delete(:validate) if options.key?(:validate)
 
           define_scopes_for_trax_enum(enum_name)
