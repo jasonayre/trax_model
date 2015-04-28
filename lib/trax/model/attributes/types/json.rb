@@ -5,17 +5,9 @@ module Trax
     module Attributes
       module Types
         class Json < ::Trax::Model::Attributes::Type
-          class Value < ::Hashie::Dash
-            include ::Hashie::Extensions::IgnoreUndeclared
-            include ::ActiveModel::Validations
-
+          class Value < ::Trax::Model::Struct
             def self.permitted_keys
               @permitted_keys ||= properties.map(&:to_sym)
-            end
-
-            def self.json_object_property(name, &block)
-              binding.pry
-              # property(name, )
             end
 
             def inspect
