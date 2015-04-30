@@ -65,7 +65,7 @@ module Trax
                 attribute(attribute_name, ::Trax::Model::Attributes[:json]::TypeCaster.new(target_klass: attributes_klass))
 
                 self.default_value_for(attribute_name) { {} }
-                self.validates(attribute_name, :json_attribute => true)
+                self.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
               end
             end
           end

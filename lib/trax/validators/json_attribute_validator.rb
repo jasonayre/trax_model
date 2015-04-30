@@ -9,10 +9,15 @@ class JsonAttributeValidator < ActiveModel::EachValidator
       if value.is_a?(json_attribute)
         value.errors.messages.each_pair do |k,v|
           v = v.join(", ") if v.is_a?(Array)
-          object.errors["#{attribute}.#{k}"] = v
+          object.errors[attribute][k] ||= []
+          object.errors[attribute][k] << v
+
+          binding.pry
+          # object.errors["#{attribute}.#{k}"] ||= []
+          # object.errors["#{attribute}.#{k}"] << v
         end
       else
-        object.errors[attribute] = "can not be blank"
+        object.errors[attribute] << "can not be blank"
       end
     end
   end
