@@ -6,7 +6,6 @@ module Trax
       module Types
         class UuidArray < ::Trax::Model::Attributes::Type
           class Value < ::Trax::Model::Attributes::Value
-            # class_attribute :element_class
             def initialize(*args)
               @array = ::Trax::Model::UUIDArray.new(*args)
             end
@@ -18,8 +17,6 @@ module Trax
             def inspect
               @array.to_a.flatten.inspect
             end
-
-            private
           end
 
           class TypeCaster < ActiveRecord::Type::Value
@@ -46,7 +43,6 @@ module Trax
             def type_cast_for_database(value)
               if value.present?
                 value.to_json
-                # value.map{ |val| val.is_a?(Trax::Model::UUID) ? }
               else
                 nil
               end

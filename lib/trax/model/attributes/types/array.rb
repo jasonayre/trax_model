@@ -1,5 +1,5 @@
 require 'hashie/extensions/ignore_undeclared'
-
+#totally not working atm :), dont use me!
 module Trax
   module Model
     module Attributes
