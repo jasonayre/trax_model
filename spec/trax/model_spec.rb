@@ -1,10 +1,8 @@
 require 'spec_helper'
 
 describe ::Trax::Model do
-  subject do
-    ::Product
-  end
+  subject { ::Product }
 
   its(:trax_registry_key) { should eq "product" }
-  its(:trax_defaults) { should be_a(::Trax::Model::Config) }
+  it { subject.unique_id_config.uuid_prefix }
 end

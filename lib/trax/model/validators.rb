@@ -3,7 +3,9 @@ module Trax
     module Validators
       extend ::ActiveSupport::Autoload
 
+      autoload :BooleanValidator
       autoload :EmailValidator
+      autoload :EnumValidator
       autoload :Frozen
       autoload :FutureDate
       autoload :Subdomain

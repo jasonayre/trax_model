@@ -20,7 +20,7 @@
 module Trax
   module Model
     module Enum
-      include ::Trax::Model::Mixin
+      extend ::Trax::Model::Mixin
 
       module ClassMethods
         def define_scopes_for_trax_enum(enum_name)
@@ -50,13 +50,13 @@ module Trax
           validation_options = { :in => enum_values, :message => options.extract!(:message)[:message] }
 
           self.validates_inclusion_of(enum_name, validation_options) unless options.key?(:validate) && !options[:validate]
+          
           options.delete(:validate) if options.key?(:validate)
 
           define_scopes_for_trax_enum(enum_name)
 
-          self.default_value_for(enum_name) { default_value } if default_value
-
           super(enum_name, enum_mapping, options)
+          self.default_value_for(enum_name) { default_value } if default_value
         end
       end
     end
