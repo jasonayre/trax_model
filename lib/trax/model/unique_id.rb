@@ -8,6 +8,10 @@ module Trax
         option :uuid_map, :default => {}
       end
 
+      #this is your brain on javascript. any questions? srsly what was i thinking
+      #this whole getter setter nonsense was a terrible idea and need to be fixed
+      #in a non janky manner before making trax_controller configurable/adding mixins
+
       included do
         define_configuration_options!(:unique_id) do
           option :uuid_prefix,
@@ -76,16 +80,6 @@ module Trax
           self.unique_id_config.uuid_prefix
         end
       end
-
-      # def self.apply_mixin(target, options)
-      #   target.unique_id_config.merge!(options)
-      #
-      #   if(target.unique_id_config.uuid_prefix)
-      #     target.default_value_for(:"#{target.unique_id_config.uuid_column}") {
-      #       ::Trax::Model::UUID.generate(target.unique_id_config.uuid_prefix)
-      #     }
-      #   end
-      # end
     end
   end
 end
