@@ -6,6 +6,7 @@ module Trax
       module Types
         class Enum < ::Trax::Model::Attributes::Type
           class TypeCaster < ActiveRecord::Type::Integer
+            def type; :enum end;
           end
 
           module Mixin
@@ -17,11 +18,17 @@ module Trax
 
             module ClassMethods
               def enum_attribute(attribute_name, values:, **options, &block)
-                attribute(attribute_name, ::Trax::Model::Attributes[:enum]::TypeCaster.new)
-
                 options.delete(:validates) if options.key?(:validates)
 
                 as_enum(attribute_name, values, **options)
+
+                define_method("#{attribute_name}=") do |val|
+                  current_value = read_attribute(attribute_name)
+                  old_value = values[current_value] if current_value
+                  set_attribute_was(attribute_name, old_value) if old_value && old_value != val
+
+                  super(val)
+                end
               end
             end
           end
