@@ -28,7 +28,7 @@ module Trax
       end
 
       def record
-        @record ||= record_type ? record_type.find_by(:"#{record_type.uuid_column}" => self) : nil
+        @record ||= record_type ? record_type.find_by(:"#{record_type.unique_id_config.uuid_column}" => self) : nil
       end
 
       def record_type

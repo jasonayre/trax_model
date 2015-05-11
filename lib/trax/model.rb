@@ -2,6 +2,7 @@ require 'active_record'
 require 'default_value_for'
 require 'hashie/dash'
 require 'hashie/mash'
+require 'hashie/trash'
 require 'simple_enum'
 require_relative './string'
 require_relative './validators/boolean_validator'
@@ -70,6 +71,10 @@ module Trax
     end
 
     eager_autoload_mixins!
+
+    def self.find_by_uuid(uuid)
+      ::Trax::Model::UUID.new(uuid).record
+    end
 
     included do
       class_attribute :registered_mixins

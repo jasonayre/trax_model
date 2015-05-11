@@ -4,6 +4,7 @@ module Trax
       include ::Hashie::Extensions::Dash::IndifferentAccess
       include ::Hashie::Extensions::Coercion
       include ::Hashie::Extensions::IgnoreUndeclared
+      include ::Hashie::Extensions::Dash::PropertyTranslation
       include ::ActiveModel::Validations
 
       class_attribute :property_types
