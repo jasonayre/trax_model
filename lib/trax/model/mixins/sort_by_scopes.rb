@@ -11,7 +11,7 @@ module Trax
           scope :sort_by_least_recent, lambda{|field_name='created_at'|
             order("#{field_name} DESC")
           }
-          
+
           class << self
             alias_method :sort_by_newest, :sort_by_most_recent
             alias_method :sort_by_oldest, :sort_by_least_recent

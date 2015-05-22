@@ -3,8 +3,8 @@ module Trax
     module Mixins
       extend ::ActiveSupport::Autoload
 
-      autoload :SortByScopes
       autoload :IdScopes
+      autoload :SortByScopes
     end
   end
 end
