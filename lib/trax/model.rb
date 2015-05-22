@@ -31,6 +31,7 @@ module Trax
     autoload :UniqueId
     autoload :Matchable
     autoload :Mixin
+    autoload :Mixins
     autoload :MTI
     autoload :Restorable
     autoload :Railtie
@@ -76,6 +77,8 @@ module Trax
       ::Trax::Model::Freezable
       ::Trax::Model::Restorable
       ::Trax::Model::UniqueId
+      ::Trax::Model::Mixins::IdScopes
+      ::Trax::Model::Mixins::SortByScopes
     end
 
     eager_autoload_mixins!
