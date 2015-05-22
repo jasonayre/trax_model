@@ -3,6 +3,7 @@ require 'default_value_for'
 require 'hashie/dash'
 require 'hashie/mash'
 require 'hashie/trash'
+require 'hashie/extensions/dash/indifferent_access'
 require 'simple_enum'
 require_relative './string'
 require_relative './validators/boolean_validator'
@@ -43,6 +44,13 @@ module Trax
     define_configuration_options! do
       option :auto_include, :default => false
       option :auto_include_mixins, :default => []
+    end
+
+    #like reverse merge, only assigns attributes which have not yet been assigned
+    def reverse_assign_attributes(attributes_hash)
+      attributes_to_assign = attributes_hash.keys.reject{|_attribute_name| attribute_present?(_attribute_name) }
+
+      assign_attributes(attributes_hash.slice(attributes_to_assign))
     end
 
     class << self
