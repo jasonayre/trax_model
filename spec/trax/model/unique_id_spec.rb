@@ -2,9 +2,7 @@ require 'spec_helper'
 describe ::Trax::Model::UniqueId do
   subject{ ::Product }
 
-  its(:uuid_prefix) {
-    should be_instance_of(::Trax::Model::UUIDPrefix)
-  }
+  its(:uuid_prefix) { should be_instance_of(::Trax::Model::UUIDPrefix) }
 
   describe "uuid_prefix" do
     context "bad prefixes" do

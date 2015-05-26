@@ -8,21 +8,10 @@ module Trax
         option :uuid_map, :default => {}
       end
 
-      #this is your brain on javascript. any questions? srsly what was i thinking
-      #this whole getter setter nonsense was a terrible idea and need to be fixed
-      #in a non janky manner before making trax_controller configurable/adding mixins
-
-      included do
+      after_included do |options|
         define_configuration_options!(:unique_id) do
-          option :uuid_prefix,
-                 :setter => lambda{ |prefix|
-                   if(::Trax::Model::UniqueId.config.uuid_map.values.include?(prefix) && ::Trax::Model::UniqueId.config.uuid_map[self.source.name] != prefix)
-                     raise ::Trax::Model::Errors::DuplicatePrefixRegistered.new(:prefix => prefix, :model => self.source.name)
-                   end
 
-                   ::Trax::Model::UniqueId.config.uuid_map[self.source.name] = prefix
-                   ::Trax::Model::UUIDPrefix.new(prefix)
-                 },
+          option :uuid_prefix,
                  :validates => {
                    :exclusion => {
                      :in => ::Trax::Model::Registry.uuid_map.values
@@ -35,15 +24,25 @@ module Trax
                  }
 
           option :uuid_column, :default => ::Trax::Model::UniqueId.config.uuid_column
+
+          klass do
+            def uuid_prefix=(prefix)
+              if(::Trax::Model::UniqueId.config.uuid_map.values.include?(prefix) && ::Trax::Model::UniqueId.config.uuid_map[self.source.name] != prefix)
+                raise ::Trax::Model::Errors::DuplicatePrefixRegistered.new(:prefix => prefix, :model => self.source.name)
+              end
+
+              ::Trax::Model::UniqueId.config.uuid_map[self.source.name] = prefix
+              super(::Trax::Model::UUIDPrefix.new(prefix))
+            end
+          end
+
         end
 
         #grab prefix from uuid registry if uuids are defined in an initializer
         if ::Trax::Model.mixin_registry.key?(:unique_id) && ::Trax::Model::UUID.klass_prefix_map.key?(self.name)
           self.unique_id_config.uuid_prefix = ::Trax::Model::UUID.klass_prefix_map[self.name]
         end
-      end
 
-      after_included do |options|
         self.unique_id_config.merge!(options)
 
         if(self.unique_id_config.uuid_prefix)

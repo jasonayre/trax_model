@@ -1,3 +1,7 @@
+require 'hashie/extensions/coercion'
+require 'hashie/extensions/indifferent_access'
+require 'hashie/extensions/dash/indifferent_access'
+
 module Trax
   module Model
     class Struct < ::Hashie::Dash
