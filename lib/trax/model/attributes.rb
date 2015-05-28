@@ -6,8 +6,10 @@ module Trax
       extend ::ActiveSupport::Autoload
 
       autoload :Mixin
+      autoload :Definition
       autoload :Definitions
       autoload :Errors
+      autoload :Fields
       autoload :Types
       autoload :Type
       autoload :Value

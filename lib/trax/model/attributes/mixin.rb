@@ -2,9 +2,11 @@ module Trax
   module Model
     module Attributes
       module Mixin
-        def self.mixin_registry_key; :attributes end;
-
-        extend ::Trax::Model::Mixin
+        # def self.mixin_registry_key; :attributes end;
+        #
+        # extend ::Trax::Model::Mixin
+        # extend ::ActiveSupport::Concern
+        extend ::Trax::Core::Concern
 
         included do
           class_attribute :trax_attribute_fields
@@ -23,6 +25,13 @@ module Trax
           def define_attributes(&block)
             model_klass_proxy = ::Trax::Model::Attributes::Definitions.new(self)
             model_klass_proxy.instance_eval(&block)
+          end
+
+          def fields_module
+            @fields_module ||= begin
+              const_set("Fields", ::Module.new)
+              const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+            end
           end
 
           def trax_attribute(name, type:, **options, &block)

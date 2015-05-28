@@ -16,47 +16,93 @@ module Trax
       def self.inherited(subklass)
         super(subklass)
 
-        subklass.fields = {}.dup
+        # subklass.fields = {}.dup
+        reset_instance_variables(:@fields_module)
+      end
 
-        subklass.property_types = {}.dup.tap do |hash|
-          hash[:structs] = []
-          hash[:enums] = []
-          hash
+      def self.type
+        :struct
+      end
+
+      # def self.set_fields_module!
+      #   const_set("Fields", ::Module.new)
+      #   const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+      # end
+
+      # def self.fields_module?
+      #   const_defined?("Fields")
+      # end
+
+      def self.fields_module
+        @fields_module ||= begin
+          const_set("Fields", ::Module.new)
+          const_get("Fields").extend(::Trax::Model::Attributes::Fields)
         end
+      end
+
+      def self.boolean_property(name, *args, **options, &block)
+        klass = fields_module.const_set(name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Value))
+        klass.instance_eval(&block) if block_given?
+        options[:default] = nil unless options.key?(:default)
+        property(name, *args, **options)
+        coerce_key(name, klass)
+      end
+
+      def self.string_property(name, *args, **options, &block)
+        klass = fields_module.const_set(name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:string]::Value))
+        klass.instance_eval(&block) if block_given?
+        property(name, *args, **options)
+        coerce_key(name, klass)
       end
 
       def self.struct_property(name, *args, **options, &block)
-        struct_klass_name = "#{name}_structs".classify
-        struct_klass = const_set(struct_klass_name, ::Class.new(::Trax::Model::Struct))
-        struct_klass.instance_eval(&block)
+        # set_fields_module! unless fields_module?
+        # struct
+        # struct_klass_name = "#{name}".camelize
+
+        struct_klass = fields_module.const_set(name.to_s.camelize, ::Class.new(::Trax::Model::Struct))
+        struct_klass.instance_eval(&block) if block_given?
+
+        # puts name.inspect
+
         options[:default] = {} unless options.key?(:default)
         property(name, *args, **options)
         coerce_key(name, struct_klass)
-        property_types[:structs].push(name)
+
+        # fields[name] = ::Trax::Model::Attributes::Definition.new({
+        #   name: name,
+        #   type: :struct,
+        #   klass: struct_klass
+        # })
       end
 
       def self.enum_property(name, *args, **options, &block)
-        enum_klass_name = "#{name}_enum".classify
-        enum_klass = const_set(enum_klass_name, ::Class.new(::Enum, &block))
+        # set_fields_module! unless fields_module?
+
+        # enum_klass_name = "fields/#{name}".camelize
+        # enum_klass.fields_module
+        enum_klass = fields_module.const_set(name.to_s.camelize, ::Class.new(::Enum, &block))
+
         options[:default] = {} unless options.key?(:default)
         property(name, *args, **options)
         coerce_key(name, enum_klass)
-        property_types[:enums].push(name)
+
+        # fields[name] = ::Trax::Model::Attributes::Definition.new({
+        #   name: name,
+        #   type: :enum,
+        #   klass: enum_klass
+        # })
       end
 
       class << self
+        alias :boolean :boolean_property
         alias :enum :enum_property
         alias :struct :struct_property
+        alias :string :string_property
       end
 
-      class Definition < Hashie::Mash
-        def schema
-          {
-            :name => name,
-            :type => type,
-            :klass => klass
-          }
-        end
+      def value
+        self
       end
     end
   end

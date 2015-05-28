@@ -41,6 +41,7 @@ module Trax
 
     include ::Trax::Model::Matchable
     include ::ActiveModel::Dirty
+    include ::Trax::Core::InheritanceHooks
 
     define_configuration_options! do
       option :auto_include, :default => false
@@ -67,6 +68,8 @@ module Trax
       mixin_registry[mixin_key] = mixin_klass
     end
 
+    include ::Trax::Model::Attributes::Mixin
+
     def self.root
       ::Pathname.new(::File.path(__FILE__))
     end
@@ -88,12 +91,17 @@ module Trax
     end
 
     included do
+      # const_set("Fields", ::Module.new)
+      # const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+
       class_attribute :registered_mixins
 
       self.registered_mixins = {}
 
       register_trax_models(self)
     end
+
+
 
     module ClassMethods
       delegate :register_trax_model, :to => "::Trax::Model::Registry"
@@ -114,21 +122,21 @@ module Trax
       # - Then in subklass
       # self.messages_class = "MySubtypeSpecifcModel"
 
-      def inherited(subklass)
-        super(subklass)
-
-        if self.instance_variable_defined?(:@_after_inherited_block)
-          trace = ::TracePoint.new(:end) do |tracepoint|
-            if tracepoint.self == subklass
-              trace.disable
-
-              subklass.instance_eval(&self.instance_variable_get(:@_after_inherited_block))
-            end
-          end
-
-          trace.enable
-        end
-      end
+      # def inherited(subklass)
+      #   super(subklass)
+      #
+      #   if self.instance_variable_defined?(:@_after_inherited_block)
+      #     trace = ::TracePoint.new(:end) do |tracepoint|
+      #       if tracepoint.self == subklass
+      #         trace.disable
+      #
+      #         subklass.instance_eval(&self.instance_variable_get(:@_after_inherited_block))
+      #       end
+      #     end
+      #
+      #     trace.enable
+      #   end
+      # end
 
       def mixin(key, options = {})
         raise ::Trax::Model::Errors::MixinNotRegistered.new(
