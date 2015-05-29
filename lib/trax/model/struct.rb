@@ -43,7 +43,8 @@ module Trax
       def self.boolean_property(name, *args, **options, &block)
         klass = fields_module.const_set(name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Value))
         klass.instance_eval(&block) if block_given?
-        options[:default] = nil unless options.key?(:default)
+        # binding.pry
+        options[:default] = options.key?(:default) ? options[:default] : nil
         property(name, *args, **options)
         coerce_key(name, klass)
       end

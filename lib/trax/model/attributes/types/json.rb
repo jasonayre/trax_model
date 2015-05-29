@@ -6,7 +6,6 @@ module Trax
       module Types
         class Json < ::Trax::Model::Attributes::Type
           class Value < ::Trax::Model::Struct
-            def self.symbolic_name; name.demodulize.underscore.to_sym; end
             def self.type; :json end;
 
             def self.permitted_keys
@@ -33,12 +32,10 @@ module Trax
 
             def inspect
               result = self.class.fields_module.values.each_with_object({}) do |field, result|
-
                 case field.type
                 when :enum
                   result[field.name.symbolize] = self.try(field.name.symbolize).to_s
                 when :json
-                  # binding.pry
                   result[field.name.symbolize] = self.try(field.name.symbolize).to_hash
                 when :struct
                   result[field.name.symbolize] = self.try(field.name.symbolize).to_hash
@@ -47,8 +44,6 @@ module Trax
                 else
                   result[field.name.symbolize] = self.try(field.name.symbolize)
                 end
-
-                binding.pry
 
                 result
               end

@@ -33,7 +33,7 @@ module Trax
             module ClassMethods
               def boolean_attribute(attribute_name, **options, &block)
                 attributes_klass = fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Value))
-                attributes_klass.instance_eval(&block)
+                attributes_klass.instance_eval(&block) if block_given?
 
                 attribute(attribute_name, ::Trax::Model::Attributes[:boolean]::TypeCaster.new(target_klass: attributes_klass))
 
