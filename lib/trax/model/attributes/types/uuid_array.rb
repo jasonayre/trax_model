@@ -5,9 +5,11 @@ module Trax
     module Attributes
       module Types
         class UuidArray < ::Trax::Model::Attributes::Type
-          class Value < ::Trax::Model::Attributes::Value
-            def self.type; :uuid_array end;
+          class Attribute < ::Trax::Model::Attributes::Attribute
+            self.type = :uuid_array
+          end
 
+          class Value < ::Trax::Model::Attributes::Value
             def initialize(*args)
               @array = ::Trax::Model::UUIDArray.new(*args)
             end

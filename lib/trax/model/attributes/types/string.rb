@@ -5,9 +5,11 @@ module Trax
     module Attributes
       module Types
         class String < ::Trax::Model::Attributes::Type
-          class Value < ::Trax::Model::Attributes::Value
-            def self.type; :string end;
+          class Attribute < ::Trax::Model::Attributes::Attribute
+            self.type = :string
+          end
 
+          class Value < ::Trax::Model::Attributes::Value
             def initialize(val)
               @val = val
             end
@@ -37,7 +39,7 @@ module Trax
 
                 attribute(attribute_name, ::Trax::Model::Attributes[:string]::TypeCaster.new(target_klass: attributes_klass))
 
-                self.default_value_for(attribute_name) { false }
+                self.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
               end
               alias :string :string_attribute
             end

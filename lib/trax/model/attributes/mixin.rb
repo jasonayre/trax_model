@@ -2,19 +2,11 @@ module Trax
   module Model
     module Attributes
       module Mixin
-        # def self.mixin_registry_key; :attributes end;
-        #
-        # extend ::Trax::Model::Mixin
-        # extend ::ActiveSupport::Concern
         extend ::Trax::Core::Concern
 
         included do
-          class_attribute :trax_attribute_fields
-
-          self.trax_attribute_fields = ::ActiveSupport::HashWithIndifferentAccess.new
-
           ::Trax::Model::Attributes.config.attribute_types.each_pair do |key, mod|
-            include mod::Mixin
+            include mod::Mixin if mod.const_defined?("Mixin")
           end
         end
 
@@ -35,14 +27,17 @@ module Trax
           end
 
           def trax_attribute(name, type:, **options, &block)
-            trax_attribute_fields[type] ||= {}
-
             raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type) unless ::Trax::Model::Attributes.key?(type)
-            attribute_type_definition_method = ::Trax::Model::Attributes[type]::Mixin::ClassMethods.instance_methods.first
 
-            self.send(attribute_type_definition_method, name, **options, &block)
-
-            self.validates(name, options[:validates]) if options.key?(:validates)
+            if ::Trax::Model::Attributes[type].const_defined?("Mixin")
+              attribute_type_definition_method = ::Trax::Model::Attributes[type]::Mixin::ClassMethods.instance_methods.first
+              self.send(attribute_type_definition_method, name, **options, &block)
+              self.validates(name, options[:validates]) if options.key?(:validates)
+            elsif ::Trax::Model::Attributes[type].respond_to?(:define_attribute)
+              ::Trax::Model::Attributes[type].define_attribute(self, name, **options, &block)
+            else
+              raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type)
+            end
           end
         end
 

@@ -5,50 +5,25 @@ module Trax
     module Attributes
       module Types
         class Json < ::Trax::Model::Attributes::Type
-          class Value < ::Trax::Model::Struct
-            def self.type; :json end;
+          def self.define_attribute(klass, attribute_name, **options, &block)
+            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(value_klass))
+            attributes_klass.instance_eval(&block)
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
+            klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
+            klass.default_value_for(attribute_name) { {} }
+          end
 
+          class Attribute < ::Trax::Model::Attributes::Attribute
+            self.type = :json
+          end
+
+          class Value < ::Trax::Model::Struct
             def self.permitted_keys
               @permitted_keys ||= properties.map(&:to_sym)
             end
 
-            def to_hash
-
-              self.class.fields_module.values.each_with_object({}) do |field, result|
-                case field.type
-                when :enum
-                  result[field.name.symbolize] = self.try(field.name.symbolize)
-                when :json
-                  result[field.name.symbolize] = self.try(field.name.symbolize)
-                when :json
-                  result[field.name.symbolize] = self.try(field.name.symbolize)
-                else
-                  result[field.name.symbolize] = self.try(field.name.symbolize)
-                end
-
-                result
-              end
-            end
-
             def inspect
-              result = self.class.fields_module.values.each_with_object({}) do |field, result|
-                case field.type
-                when :enum
-                  result[field.name.symbolize] = self.try(field.name.symbolize).to_s
-                when :json
-                  result[field.name.symbolize] = self.try(field.name.symbolize).to_hash
-                when :struct
-                  result[field.name.symbolize] = self.try(field.name.symbolize).to_hash
-                when :boolean
-                  result[field.name.symbolize] = self[field.name.symbolize] if(::Is.truthy?(self[field.name.symbolize]))
-                else
-                  result[field.name.symbolize] = self.try(field.name.symbolize)
-                end
-
-                result
-              end
-
-              "#{result}"
+              self.to_hash.inspect
             end
           end
 
@@ -78,46 +53,9 @@ module Trax
             end
           end
 
-          module Mixin
-            extend ::ActiveSupport::Concern
-            # def self.mixin_registry_key; :json_attributes end;
-            #
-            # extend ::Trax::Model::Mixin
-            include ::Trax::Model::Attributes::Mixin
-
-            included do
-              class_attribute :json_attribute_fields
-
-              self.json_attribute_fields = ::ActiveSupport::HashWithIndifferentAccess.new
-            end
-
-            module ClassMethods
-              def json_attribute(attribute_name, **options, &block)
-
-                # attributes_klass_name = "#{attribute_name}_attributes".classify
-                # attributes_klass =
-                # attributes_klass.instance_eval(&block)
-
-                attributes_klass = fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:json]::Value))
-                attributes_klass.instance_eval(&block)
-
-                # binding.pry
-                # fields_module.const_set(attribute_name, )
-                # attributes_klass = fields_module.const_set(attribute_name.to_s.camelize,)
-
-
-                # trax_attribute_fields[:json] ||= {}
-                # trax_attribute_fields[:json][attribute_name] = attributes_klass
-
-                attribute(attribute_name, ::Trax::Model::Attributes[:json]::TypeCaster.new(target_klass: attributes_klass))
-
-                self.default_value_for(attribute_name) { {} }
-                self.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
-
-                # return attributes_klass
-              end
-            end
-          end
+          self.value_klass = ::Trax::Model::Attributes::Types::Json::Value
+          self.attribute_klass = ::Trax::Model::Attributes::Types::Json::Attribute
+          self.typecaster_klass = ::Trax::Model::Attributes::Types::Json::TypeCaster
         end
       end
     end

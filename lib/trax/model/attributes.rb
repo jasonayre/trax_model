@@ -5,6 +5,7 @@ module Trax
     module Attributes
       extend ::ActiveSupport::Autoload
 
+      autoload :Attribute
       autoload :Mixin
       autoload :Definition
       autoload :Definitions

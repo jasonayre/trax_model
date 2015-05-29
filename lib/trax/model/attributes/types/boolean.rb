@@ -5,24 +5,11 @@ module Trax
     module Attributes
       module Types
         class Boolean < ::Trax::Model::Attributes::Type
-          class Value < ::Trax::Model::Attributes::Value
-            def self.type; :boolean end;
-
-            def initialize(val)
-              @val = val
-            end
-
-            def __getobj__
-              @val
-            end
+          class Attribute < ::Trax::Model::Attributes::Attribute
+            self.type = :boolean
           end
 
           class TypeCaster < ActiveRecord::Type::Boolean
-            def initialize(*args, target_klass:)
-              super(*args)
-
-              @target_klass = target_klass
-            end
           end
 
           module Mixin
@@ -32,12 +19,12 @@ module Trax
 
             module ClassMethods
               def boolean_attribute(attribute_name, **options, &block)
-                attributes_klass = fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Value))
-                attributes_klass.instance_eval(&block) if block_given?
+                attributes_klass = fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Attribute))
+                # attributes_klass.instance_eval(&block) if block_given?
 
-                attribute(attribute_name, ::Trax::Model::Attributes[:boolean]::TypeCaster.new(target_klass: attributes_klass))
+                attribute(attribute_name, ::Trax::Model::Attributes[:boolean]::TypeCaster.new)
 
-                self.default_value_for(attribute_name) { false }
+                self.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
               end
               alias :boolean :boolean_attribute
             end
