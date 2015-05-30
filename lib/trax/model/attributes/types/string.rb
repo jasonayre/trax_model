@@ -5,18 +5,16 @@ module Trax
     module Attributes
       module Types
         class String < ::Trax::Model::Attributes::Type
-          class Attribute < ::Trax::Model::Attributes::Attribute
-            self.type = :string
+          def self.define_attribute(klass, attribute_name, **options, &block)
+            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(value_klass))
+            attributes_klass.instance_eval(&block) if block_given?
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
+            # klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
+            klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
 
           class Value < ::Trax::Model::Attributes::Value
-            def initialize(val)
-              @val = val
-            end
-
-            def __getobj__
-              @val
-            end
+            def self.type; :string end;
           end
 
           class TypeCaster < ActiveRecord::Type::String
@@ -27,23 +25,8 @@ module Trax
             end
           end
 
-          module Mixin
-            extend ::ActiveSupport::Concern
-
-            include ::Trax::Model::Attributes::Mixin
-
-            module ClassMethods
-              def string_attribute(attribute_name, **options, &block)
-                attributes_klass = fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:string]::Value))
-                attributes_klass.instance_eval(&block) if block_given?
-
-                attribute(attribute_name, ::Trax::Model::Attributes[:string]::TypeCaster.new(target_klass: attributes_klass))
-
-                self.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
-              end
-              alias :string :string_attribute
-            end
-          end
+          self.value_klass = ::Trax::Model::Attributes::Types::String::Value
+          self.typecaster_klass = ::Trax::Model::Attributes::Types::String::TypeCaster
         end
       end
     end

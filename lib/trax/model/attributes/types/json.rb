@@ -13,11 +13,9 @@ module Trax
             klass.default_value_for(attribute_name) { {} }
           end
 
-          class Attribute < ::Trax::Model::Attributes::Attribute
-            self.type = :json
-          end
-
           class Value < ::Trax::Model::Struct
+            def self.type; :json end;
+
             def self.permitted_keys
               @permitted_keys ||= properties.map(&:to_sym)
             end
@@ -54,7 +52,6 @@ module Trax
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::Json::Value
-          self.attribute_klass = ::Trax::Model::Attributes::Types::Json::Attribute
           self.typecaster_klass = ::Trax::Model::Attributes::Types::Json::TypeCaster
         end
       end

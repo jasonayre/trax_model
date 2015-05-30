@@ -11,7 +11,7 @@ module Trax
       include ::Hashie::Extensions::Dash::PropertyTranslation
       include ::ActiveModel::Validations
 
-      class_attribute :property_types, :fields
+      class_attribute :fields
 
       def self.inherited(subklass)
         super(subklass)
@@ -27,16 +27,17 @@ module Trax
       end
 
       def self.boolean_property(name, *args, **options, &block)
-        name_as_string = name.is_a?(Symbol) ? name.to_s : name
-        klass = fields_module.const_set(name_as_string.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Attribute))
+        name = name.is_a?(Symbol) ? name.to_s : name
+        klass = fields_module.const_set(name.camelize, ::Class.new(::Trax::Model::Attributes[:boolean]::Attribute))
         options[:default] = options.key?(:default) ? options[:default] : nil
-        property(name_as_string, *args, **options)
+        property(name, *args, **options)
       end
 
       def self.string_property(name, *args, **options, &block)
         name = name.is_a?(Symbol) ? name.to_s : name
         klass = fields_module.const_set(name.camelize, ::Class.new(::Trax::Model::Attributes[:string]::Value))
         klass.instance_eval(&block) if block_given?
+        options[:default] = options.key?(:default) ? options[:default] : ""
         property(name, *args, **options)
         coerce_key(name, klass)
       end
@@ -55,8 +56,38 @@ module Trax
         enum_klass = fields_module.const_set(name.camelize, ::Class.new(::Enum))
         enum_klass.instance_eval(&block) if block_given?
         options[:default] = nil unless options.key?(:default)
+        define_scopes_for_enum(name, enum_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
         property(name.to_sym, *args, **options)
         coerce_key(name.to_sym, enum_klass)
+      end
+
+      #this only supports properties 1 level deep, but works beautifully
+      #I.E. for this structure
+      # define_attributes do
+      #   struct :custom_fields do
+      #     enum :color, :default => :blue do
+      #       define :blue,     1
+      #       define :red,      2
+      #       define :green,    3
+      #     end
+      #   end
+      # end
+      # ::Product.by_custom_fields_color(:blue, :red)
+      # will return #{Product color=blue}, #{Product color=red}
+
+      def self.define_scopes_for_enum(attribute_name, enum_klass)
+        model_class = parent.parent
+
+        if model_class.ancestors.include?(::ActiveRecord::Base)
+          field_name = name.demodulize.underscore
+          attribute_name = enum_klass.name.demodulize.underscore
+          scope_name = :"by_#{field_name}_#{attribute_name}"
+
+          model_class.scope(scope_name, lambda{ |*_scope_values|
+            _scope_values.flat_compact_uniq!
+            model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_scope_values.to_single_quoted_list})")
+          })
+        end
       end
 
       class << self

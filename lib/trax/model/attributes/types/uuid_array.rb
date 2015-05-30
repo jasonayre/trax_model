@@ -5,6 +5,16 @@ module Trax
     module Attributes
       module Types
         class UuidArray < ::Trax::Model::Attributes::Type
+          def self.define_attribute(klass, attribute_name, **options, &block)
+            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:uuid_array]::Value))
+            attributes_klass.instance_eval(&block) if block_given?
+            attributes_klass.element_class = options[:of] if options.has_key?(:of)
+
+            options.has_key?(:default) ? self.default_value_for(attribute_name, options[:default]) : []
+
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
+          end
+
           class Attribute < ::Trax::Model::Attributes::Attribute
             self.type = :uuid_array
           end
@@ -49,36 +59,6 @@ module Trax
                 value.to_json
               else
                 nil
-              end
-            end
-          end
-
-          module Mixin
-            def self.mixin_registry_key; :uuid_array_attributes end;
-
-            extend ::Trax::Model::Mixin
-            include ::Trax::Model::Attributes::Mixin
-
-            module ClassMethods
-              def uuid_array_attribute(attribute_name, **options, &block)
-                attributes_klass_name = "#{attribute_name}_attributes".classify
-                attributes_klass = const_set(attributes_klass_name, ::Class.new(::Trax::Model::Attributes[:uuid_array]::Value))
-                attributes_klass.instance_eval(&block) if block_given?
-
-                attributes_klass.element_class = options[:of] if options.has_key?(:of)
-
-                trax_attribute_fields[:uuid_array] ||= {}
-                trax_attribute_fields[:uuid_array][attribute_name] = attributes_klass
-
-                if options.has_key?(:default)
-                  self.default_value_for(attribute_name, options[:default])
-                else
-                  []
-                end
-
-                attribute(attribute_name, ::Trax::Model::Attributes[:uuid_array]::TypeCaster.new(target_klass: attributes_klass))
-
-                return attributes_klass
               end
             end
           end
