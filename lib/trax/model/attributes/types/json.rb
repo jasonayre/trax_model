@@ -14,7 +14,7 @@ module Trax
           end
 
           class Value < ::Trax::Model::Struct
-            def self.type; :json end;
+            def self.type; :struct end;
 
             def self.permitted_keys
               @permitted_keys ||= properties.map(&:to_sym)
@@ -47,7 +47,7 @@ module Trax
             end
 
             def type_cast_for_database(value)
-              value.present? ? value.to_hash.to_json : nil
+              value.present? ? value.to_serializable_hash.to_json : nil
             end
           end
 

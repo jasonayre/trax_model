@@ -7,11 +7,6 @@ module Trax
         def self.symbolic_name
           name.demodulize.underscore.to_sym
         end
-
-        after_inherited do
-          # binding.pry if self.type == :string
-
-        end
       end
     end
   end

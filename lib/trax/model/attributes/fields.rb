@@ -3,17 +3,21 @@ module Trax
     module Attributes
       module Fields
         def self.extended(mod)
-          mod.module_attribute(:fields) {
+          mod.module_attribute(:_blank_fields_hash) {
             ::Hashie::Mash.new
           }
         end
 
         def all
           @all ||= begin
-            constants.map{|const_name| const_get(const_name) }.each_with_object(self.fields) do |klass, result|
-              result[klass.symbolic_name] = klass
+            constants.map{|const_name| const_get(const_name) }.each_with_object(self._blank_fields_hash) do |klass, result|
+              result[klass.name.symbolize] = klass
             end
           end
+        end
+
+        def by_type(*type_names)
+          all.select{|k,v| type_names.include?(v.type) }
         end
 
         def each(&block)
@@ -24,9 +28,21 @@ module Trax
           all.each_pair(*args, &block)
         end
 
-        # def fields
-        #   all
-        # end
+        def booleans
+          @booleans ||= by_type(:boolean)
+        end
+
+        def enums
+          @enums ||= by_type(:enum)
+        end
+
+        def structs
+          @structs ||= by_type(:struct)
+        end
+
+        def strings
+          @strings ||= by_type(:string)
+        end
 
         def values
           all.values
@@ -35,12 +51,6 @@ module Trax
         def [](name)
           const_get(name.to_s.camelize)
         end
-
-        # def register(name, klass)
-        #   const_set(name.to_s.camelize, klass)
-        #   fields[name] = const_get(name.to_s.camelize)
-        #   fields[name]
-        # end
       end
     end
   end

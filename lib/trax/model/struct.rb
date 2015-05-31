@@ -61,6 +61,9 @@ module Trax
         coerce_key(name.to_sym, enum_klass)
       end
 
+      # def self.enum_fields
+      #   @enum_fields ||= constants.map(&:superclass)
+
       #this only supports properties 1 level deep, but works beautifully
       #I.E. for this structure
       # define_attributes do
@@ -84,10 +87,20 @@ module Trax
           scope_name = :"by_#{field_name}_#{attribute_name}"
 
           model_class.scope(scope_name, lambda{ |*_scope_values|
-            _scope_values.flat_compact_uniq!
-            model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_scope_values.to_single_quoted_list})")
+            _integer_values = enum_klass.select_values(*_scope_values.flat_compact_uniq!)
+            model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_integer_values.to_single_quoted_list})")
           })
         end
+      end
+
+      def to_serializable_hash
+        _serializable_hash = to_hash
+
+        self.class.fields_module.enums.keys.each do |attribute_name|
+          _serializable_hash[attribute_name] = _serializable_hash[attribute_name].try(:to_i)
+        end
+
+        _serializable_hash
       end
 
       class << self

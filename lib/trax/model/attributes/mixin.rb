@@ -26,6 +26,10 @@ module Trax
             end
           end
 
+          def fields
+            @fields ||= fields_module
+          end
+
           def trax_attribute(name, type:, **options, &block)
             raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type) unless ::Trax::Model::Attributes.key?(type)
 
@@ -35,6 +39,7 @@ module Trax
               self.validates(name, options[:validates]) if options.key?(:validates)
             elsif ::Trax::Model::Attributes[type].respond_to?(:define_attribute)
               ::Trax::Model::Attributes[type].define_attribute(self, name, **options, &block)
+              self.validates(name, options[:validates]) if options.key?(:validates)
             else
               raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type)
             end
