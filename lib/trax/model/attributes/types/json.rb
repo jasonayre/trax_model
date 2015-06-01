@@ -23,6 +23,10 @@ module Trax
             def inspect
               self.to_hash.inspect
             end
+
+            def to_json
+              self.to_hash.to_json
+            end
           end
 
           class TypeCaster < ActiveRecord::Type::Value
