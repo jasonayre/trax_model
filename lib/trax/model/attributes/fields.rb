@@ -44,6 +44,23 @@ module Trax
           @strings ||= by_type(:string)
         end
 
+        def to_schema
+          schema = all.inject(::Hashie::Mash.new) do |result, (k,v)|
+            case v.try(:type)
+
+            when :enum
+              result[k] = v.to_schema
+            when :struct
+              result[k] = v.to_schema
+            else
+              result[k] = v.try(:to_schema)
+            end
+
+            result
+          end
+          schema
+        end
+
         def values
           all.values
         end

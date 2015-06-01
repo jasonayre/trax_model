@@ -16,6 +16,10 @@ module Trax
 
           class Attribute < ::Trax::Model::Attributes::Attribute
             self.type = :boolean
+
+            def self.to_schema
+
+            end
           end
 
           class TypeCaster < ActiveRecord::Type::Boolean

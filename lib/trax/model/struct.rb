@@ -93,6 +93,15 @@ module Trax
         end
       end
 
+      def self.to_schema
+        ::Trax::Core::Definition.new(
+          :source => self.name,
+          :name => self.name.demodulize.underscore,
+          :type => :struct,
+          :fields => self.fields_module.to_schema
+        )
+      end
+
       def to_serializable_hash
         _serializable_hash = to_hash
 

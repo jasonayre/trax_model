@@ -12,7 +12,6 @@ module Trax
             klass.class_eval do
               define_method("#{attribute_name}=") do |val|
                 current_value = read_attribute(attribute_name)
-                # binding.pry
                 old_value = attribute_klass[current_value] if current_value
                 set_attribute_was(attribute_name, old_value) if old_value && old_value != val
 
