@@ -11,12 +11,22 @@ module Trax
         end
 
         module ClassMethods
-          # so we can keep all our definitions in same place, and largely so we
-          # can use attribute method to define methods
-          #probably overkill but..
           def define_attributes(&block)
-            model_klass_proxy = ::Trax::Model::Attributes::Definitions.new(self)
-            model_klass_proxy.instance_eval(&block)
+            self.instance_variable_set("@_attribute_definitions_block", block)
+
+            evaluate_attribute_definitions_blocks if self.ancestors.include?(::ActiveRecord::Base)
+          end
+
+          #recursively search direct parent classes for attribute definitions, so we can fully support
+          #inheritance
+          def fetch_attribute_definitions_in_chain(_attribute_definitions_blocks = [], klass=nil)
+            _attribute_definitions_blocks.push(klass.instance_variable_get("@_attribute_definitions_block")) if klass && klass.instance_variable_defined?("@_attribute_definitions_block")
+
+            if klass && klass.superclass != ::ActiveRecord::Base
+              return fetch_attribute_definitions_in_chain(_attribute_definitions_blocks, klass.superclass)
+            else
+              return _attribute_definitions_blocks.compact
+            end
           end
 
           def fields_module
@@ -42,6 +52,15 @@ module Trax
               self.validates(name, options[:validates]) if options.key?(:validates)
             else
               raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type)
+            end
+          end
+
+          def evaluate_attribute_definitions_blocks
+            model_klass_proxy = ::Trax::Model::Attributes::Definitions.new(self)
+            attribute_definition_blocks = fetch_attribute_definitions_in_chain([], self)
+
+            attribute_definition_blocks.each do |blk|
+              model_klass_proxy.instance_eval(&blk)
             end
           end
         end

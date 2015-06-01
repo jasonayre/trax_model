@@ -6,10 +6,13 @@ module Trax
       module Types
         class Enum < ::Trax::Model::Attributes::Type
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Enum, &block))
+            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Enum))
+            attribute_klass.instance_eval(&block)
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
 
-            klass.class_eval do
+            klass.include(::Module.new do
+              extend ::ActiveSupport::Concern
+
               define_method("#{attribute_name}=") do |val|
                 current_value = read_attribute(attribute_name)
                 old_value = attribute_klass[current_value] if current_value
@@ -24,13 +27,34 @@ module Trax
                 value = read_attribute(attribute_name)
                 value.is_a?(attribute_klass) ? value : attribute_klass[value]
               end
-            end
+            end)
 
-            # validation_options = { :in => enum_values, :message => options.extract!(:message)[:message] }
+            # klass.class_eval(::Module)
             #
-            # self.validates_inclusion_of(enum_name, validation_options) unless options.key?(:validate) && !options[:validate]
+            # klass.class_eval do
+            #   define_method("#{attribute_name}=") do |val|
+            #     current_value = read_attribute(attribute_name)
+            #     old_value = attribute_klass[current_value] if current_value
+            #     set_attribute_was(attribute_name, old_value) if old_value && old_value != val
+            #
+            #     new_value = attribute_klass[val]
+            #
+            #     write_attribute(attribute_name, new_value.nil? ? nil : new_value)
+            #   end
+            #
+            #   define_method(attribute_name) do
+            #     value = read_attribute(attribute_name)
+            #     value.is_a?(attribute_klass) ? value : attribute_klass[value]
+            #   end
+            # end
 
-            klass.validates(attribute_name, :enum => true) unless options.key?(:validates) && (options[:validates] == false)
+            # validation_options = { :in => attribute_klass.choices, :message => options.extract!(:message)[:message] }
+
+            # klass.validates_inclusion_of(attribute_name, validation_options) unless options.key?(:validate) && !options[:validate]
+
+            # binding.pry
+
+            # klass.validates(attribute_name, :enum => true) unless options.key?(:validates) && (options[:validates] == false)
 
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
 
