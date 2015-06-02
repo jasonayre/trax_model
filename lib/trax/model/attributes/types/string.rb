@@ -9,7 +9,8 @@ module Trax
             attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(value_klass))
             attributes_klass.instance_eval(&block) if block_given?
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
-            # klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
+            klass.validates(attribute_name, options[:validates]) if options.key?(:validate)
+
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
 

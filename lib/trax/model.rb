@@ -68,7 +68,7 @@ module Trax
       mixin_registry[mixin_key] = mixin_klass
     end
 
-    include ::Trax::Model::Attributes::Mixin
+    # include ::Trax::Model::Attributes::Mixin
 
     def self.root
       ::Pathname.new(::File.path(__FILE__))

@@ -4,6 +4,7 @@ module Trax
       ::ActiveSupport.on_load(:active_record) do
         def self.inherited(subklass)
           subklass.include(::Trax::Model) if ::Trax::Model.config.auto_include
+          subklass.include(::Trax::Model::Attributes::Mixin) if ::Trax::Model.config.auto_include
 
           super(subklass)
 

@@ -37,9 +37,11 @@ module Trax
         name = name.is_a?(Symbol) ? name.to_s : name
         klass = fields_module.const_set(name.camelize, ::Class.new(::Trax::Model::Attributes[:string]::Value))
         klass.instance_eval(&block) if block_given?
+        validates(name, options[:validates]) if options.key?(:validates)
         options[:default] = options.key?(:default) ? options[:default] : ""
-        property(name, *args, **options)
-        coerce_key(name, klass)
+
+        property(name.to_sym, *args, **options)
+        coerce_key(name.to_sym, klass)
       end
 
       def self.struct_property(name, *args, **options, &block)
@@ -47,8 +49,8 @@ module Trax
         struct_klass = fields_module.const_set(name.camelize, ::Class.new(::Trax::Model::Struct))
         struct_klass.instance_eval(&block) if block_given?
         options[:default] = {} unless options.key?(:default)
-        property(name, *args, **options)
-        coerce_key(name, struct_klass)
+        property(name.to_sym, *args, **options)
+        coerce_key(name.to_sym, struct_klass)
       end
 
       def self.enum_property(name, *args, **options, &block)
@@ -57,6 +59,7 @@ module Trax
         enum_klass.instance_eval(&block) if block_given?
         options[:default] = nil unless options.key?(:default)
         define_scopes_for_enum(name, enum_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
+        validates(name, options[:validates]) if options.key?(:validates)
         property(name.to_sym, *args, **options)
         coerce_key(name.to_sym, enum_klass)
       end
@@ -102,12 +105,14 @@ module Trax
         )
       end
 
+      def self.type; :struct end;
+
       def to_serializable_hash
         _serializable_hash = to_hash
 
         self.class.fields_module.enums.keys.each do |attribute_name|
           _serializable_hash[attribute_name] = _serializable_hash[attribute_name].try(:to_i)
-        end
+        end if self.class.fields_module.enums.keys.any?
 
         _serializable_hash
       end

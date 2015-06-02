@@ -8,13 +8,17 @@ module Trax
           ::Trax::Model::Attributes.config.attribute_types.each_pair do |key, mod|
             include mod::Mixin if mod.const_defined?("Mixin")
           end
+
+
+        end
+
+        after_included do
+          self.evaluate_attribute_definitions_blocks if self.ancestors.include?(::ActiveRecord::Base)
         end
 
         module ClassMethods
           def define_attributes(&block)
             self.instance_variable_set("@_attribute_definitions_block", block)
-
-            evaluate_attribute_definitions_blocks if self.ancestors.include?(::ActiveRecord::Base)
           end
 
           #recursively search direct parent classes for attribute definitions, so we can fully support
