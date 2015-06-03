@@ -5,9 +5,11 @@ module Trax
     module Attributes
       extend ::ActiveSupport::Autoload
 
+      autoload :Attribute
       autoload :Mixin
       autoload :Definitions
       autoload :Errors
+      autoload :Fields
       autoload :Types
       autoload :Type
       autoload :Value

@@ -41,6 +41,7 @@ module Trax
 
     include ::Trax::Model::Matchable
     include ::ActiveModel::Dirty
+    include ::Trax::Core::InheritanceHooks
 
     define_configuration_options! do
       option :auto_include, :default => false
@@ -101,33 +102,6 @@ module Trax
 
       def after_inherited(&block)
         instance_variable_set(:@_after_inherited_block, block)
-      end
-
-      #the tracepoint stuff is to ensure that we call the after_inherited block not
-      #right after the class is defined, but rather, after the class is defined and
-      #evaluated. i.e. this allows us to do stuff like set class attributes
-      # class_attribute :messages_class
-      #
-      # after_inherited do
-      #   has_many :computed_subtype_messages, :class_name => message_class
-      # end
-      # - Then in subklass
-      # self.messages_class = "MySubtypeSpecifcModel"
-
-      def inherited(subklass)
-        super(subklass)
-
-        if self.instance_variable_defined?(:@_after_inherited_block)
-          trace = ::TracePoint.new(:end) do |tracepoint|
-            if tracepoint.self == subklass
-              trace.disable
-
-              subklass.instance_eval(&self.instance_variable_get(:@_after_inherited_block))
-            end
-          end
-
-          trace.enable
-        end
       end
 
       def mixin(key, options = {})

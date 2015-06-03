@@ -5,31 +5,62 @@ module Trax
     module Attributes
       module Types
         class Enum < ::Trax::Model::Attributes::Type
-          class TypeCaster < ActiveRecord::Type::Integer
-            def type; :enum end;
+          def self.define_attribute(klass, attribute_name, **options, &block)
+            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Enum, &block))
+            # attribute_klass.instance_eval(&block)
+
+            klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
+
+            klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
+
+            define_scopes(klass, attribute_name, attribute_klass)
           end
 
-          module Mixin
-            def self.mixin_registry_key; :enum_attributes end;
+          def self.define_scopes(klass, attribute_name, attribute_klass)
+            klass.class_eval do
+              scope_method_name = :"by_#{attribute_name}"
+              scope_not_method_name = :"by_#{attribute_name}_not"
 
-            extend ::Trax::Model::Mixin
-            include ::Trax::Model::Attributes::Mixin
-            include ::Trax::Model::Enum
+              scope scope_method_name, lambda { |*values|
+                values.flat_compact_uniq!
+                where(attribute_name => attribute_klass.select_values(*values))
+              }
+              scope scope_not_method_name, lambda { |*values|
+                values.flat_compact_uniq!
+                where.not(attribute_name => attribute_klass.select_values(*values))
+              }
+            end
+          end
 
-            module ClassMethods
-              def enum_attribute(attribute_name, values:, **options, &block)
-                options.delete(:validates) if options.key?(:validates)
+          class TypeCaster < ActiveRecord::Type::Value
+            include ::ActiveRecord::Type::Mutable
 
-                as_enum(attribute_name, values, **options)
+            def type; :enum end;
 
-                define_method("#{attribute_name}=") do |val|
-                  current_value = read_attribute(attribute_name)
-                  old_value = values[current_value] if current_value
-                  set_attribute_was(attribute_name, old_value) if old_value && old_value != val
+            def initialize(*args, target_klass:)
+              super(*args)
 
-                  super(val)
-                end
-              end
+              @target_klass = target_klass
+            end
+
+            def type_cast_from_user(value)
+              @target_klass === value ? @target_klass.new(value) : nil
+            end
+
+            def type_cast_from_database(value)
+              return if value.nil?
+
+              value.present? ? @target_klass.new(value.to_i) : value
+            end
+
+            def type_cast_for_database(value)
+              return if value.nil?
+
+              value.try(:to_i) { @target_klass.new(value).to_i }
+            end
+
+            def changed_in_place?(raw_old_value, new_value)
+              raw_old_value.try(:to_i) != type_cast_for_database(new_value)
             end
           end
         end
