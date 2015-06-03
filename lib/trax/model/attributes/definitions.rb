@@ -19,7 +19,7 @@ module Trax
         end
 
         def enum(*args, **options, &block)
-          attribute(*args, :type => :enum, **options, &block)
+          attribute(*args, type: :enum, **options, &block)
         end
 
         def string(*args, **options, &block)

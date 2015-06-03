@@ -15,8 +15,6 @@ module Trax
 
       def self.inherited(subklass)
         super(subklass)
-
-        reset_instance_variables(:@fields_module)
       end
 
       def self.fields_module

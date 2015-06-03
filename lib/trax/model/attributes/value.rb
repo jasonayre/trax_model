@@ -2,7 +2,6 @@ module Trax
   module Model
     module Attributes
       class Value < SimpleDelegator
-        include ::Trax::Core::InheritanceHooks
         include ::ActiveModel::Validations
 
         def initialize(val)

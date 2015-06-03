@@ -6,62 +6,12 @@ module Trax
       module Types
         class Enum < ::Trax::Model::Attributes::Type
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Enum))
-            attribute_klass.instance_eval(&block)
+            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Enum, &block))
+            # attribute_klass.instance_eval(&block)
+
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
 
-            # klass.class_eval do
-            #   define_method("#{attribute_name}=") do |val|
-            #     current_value = read_attribute(attribute_name)
-            #     old_value = attribute_klass[current_value] if current_value
-            #     set_attribute_was(attribute_name, old_value) if old_value && old_value != val
-            #
-            #     new_value = attribute_klass[val]
-            #
-            #     write_attribute(attribute_name, new_value.nil? ? nil : new_value)
-            #   end
-            #
-            #   define_method(attribute_name) do
-            #     value = read_attribute(attribute_name)
-            #     value.is_a?(attribute_klass) ? value : attribute_klass[value]
-            #   end
-            # end
-
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
-
-            enum_attribute_methods = ::Module.new do |mod|
-              define_method("#{attribute_name}=") do |val|
-
-                current_value = read_attribute(attribute_name)
-                old_value = attribute_klass[current_value] if current_value
-                set_attribute_was(attribute_name, old_value) if old_value && old_value != val
-
-                new_value = attribute_klass[val]
-
-
-                write_attribute(attribute_name, new_value.nil? ? nil : new_value)
-
-
-
-                # super(val)
-              end
-
-              define_method(attribute_name) do
-                value = read_attribute(attribute_name)
-                value.is_a?(attribute_klass) ? value : attribute_klass[value]
-              end
-
-              binding.pry
-
-              mod.define_instance_method :do_something do
-                puts "DOING SOMETHING FROM PRENED"
-
-              end
-            end
-
-            klass.prepend(enum_attribute_methods)
-
-
 
             define_scopes(klass, attribute_name, attribute_klass)
           end
@@ -85,7 +35,7 @@ module Trax
           class TypeCaster < ActiveRecord::Type::Value
             include ::ActiveRecord::Type::Mutable
 
-            def type; :integer end;
+            def type; :enum end;
 
             def initialize(*args, target_klass:)
               super(*args)
@@ -94,9 +44,7 @@ module Trax
             end
 
             def type_cast_from_user(value)
-              value.is_a?(@target_klass) ? value : @target_klass.new(value)
-              # @target_klass.new(value)
-              # @target_klass.new(value.to_i)
+              @target_klass === value ? @target_klass.new(value) : nil
             end
 
             def type_cast_from_database(value)

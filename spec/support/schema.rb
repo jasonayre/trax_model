@@ -1,14 +1,5 @@
 require 'active_record'
 
-ActiveRecord::Base.establish_connection(
-  :adapter => "sqlite3",
-  :database => "spec/test.db"
-)
-
-ActiveRecord::Base.connection.tables.each do |table|
-  ActiveRecord::Base.connection.drop_table(table)
-end
-
 ActiveRecord::Schema.define(:version => 1) do
   create_table "products", :force => true do |t|
     t.string   "name"
@@ -19,6 +10,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.integer  "on_order_quantity"
     t.boolean  "active"
     t.string   "uuid"
+    t.integer  "status"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -78,11 +70,20 @@ end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
+  include ::Trax::Model::Attributes::Mixin
 
   mixins :unique_id => {
     :uuid_column => "uuid",
     :uuid_prefix => "1a"
   }
+
+  define_attributes do
+    enum :status, :default => :in_stock do
+      define :in_stock,     1
+      define :out_of_stock, 2
+      define :backordered,  3
+    end
+  end
 end
 
 class Widget < ::ActiveRecord::Base
@@ -139,13 +140,13 @@ end
 class SwinglineStaplerAttributeSet < ::ActiveRecord::Base
 end
 
-require 'trax/model/struct'
-
-class StoreCategory < ::Trax::Model::Struct
-  property :name
-
-  struct_property :meta_attributes do
-    property :description
-    property :keywords
-  end
-end
+# require 'trax/model/struct'
+#
+# class StoreCategory < ::Trax::Model::Struct
+#   property :name
+#
+#   struct_property :meta_attributes do
+#     property :description
+#     property :keywords
+#   end
+# end

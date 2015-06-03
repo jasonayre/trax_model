@@ -2,8 +2,8 @@ module Trax
   module Model
     module Attributes
       module Fields
-        def self.extended(mod)
-          mod.module_attribute(:_blank_fields_hash) {
+        def self.extended(base)
+          base.module_attribute(:_blank_fields_hash) {
             ::Hashie::Mash.new
           }
         end
@@ -65,8 +65,8 @@ module Trax
           all.values
         end
 
-        def [](name)
-          const_get(name.to_s.camelize)
+        def [](_name)
+          const_get(_name.to_s.camelize)
         end
       end
     end

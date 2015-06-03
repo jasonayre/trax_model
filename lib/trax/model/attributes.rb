@@ -7,7 +7,6 @@ module Trax
 
       autoload :Attribute
       autoload :Mixin
-      autoload :Definition
       autoload :Definitions
       autoload :Errors
       autoload :Fields

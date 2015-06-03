@@ -8,17 +8,16 @@ module Trax
           ::Trax::Model::Attributes.config.attribute_types.each_pair do |key, mod|
             include mod::Mixin if mod.const_defined?("Mixin")
           end
-
-
         end
 
         after_included do
-          self.evaluate_attribute_definitions_blocks if self.ancestors.include?(::ActiveRecord::Base)
+          evaluate_attribute_definitions_blocks
         end
 
         module ClassMethods
           def define_attributes(&block)
             self.instance_variable_set("@_attribute_definitions_block", block)
+            self
           end
 
           #recursively search direct parent classes for attribute definitions, so we can fully support
@@ -37,6 +36,7 @@ module Trax
             @fields_module ||= begin
               const_set("Fields", ::Module.new)
               const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+              const_get("Fields")
             end
           end
 
@@ -61,11 +61,11 @@ module Trax
 
           def evaluate_attribute_definitions_blocks
             model_klass_proxy = ::Trax::Model::Attributes::Definitions.new(self)
-            attribute_definition_blocks = fetch_attribute_definitions_in_chain([], self)
+            attribute_definition_blocks = self.superclasses_until(::ActiveRecord::Base, self, [ self ]).map{ |klass| klass.instance_variable_get(:@_attribute_definitions_block) }.compact
 
             attribute_definition_blocks.each do |blk|
               model_klass_proxy.instance_eval(&blk)
-            end
+            end if attribute_definition_blocks.any?
           end
         end
 

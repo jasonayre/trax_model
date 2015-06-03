@@ -10,14 +10,6 @@ module Trax
             where(attr_name => _scope_values)
           }
         end
-
-        def field_scope_for_json_attribute(name, nested_field_name:, nested_field_type:)
-          case nested_field_type
-          when :enum
-
-          when :json
-          end
-        end
       end
     end
   end
