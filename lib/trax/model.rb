@@ -78,6 +78,7 @@ module Trax
       ::Trax::Model::Freezable
       ::Trax::Model::Restorable
       ::Trax::Model::UniqueId
+      ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::IdScopes
       ::Trax::Model::Mixins::SortByScopes
     end

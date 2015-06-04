@@ -17,7 +17,6 @@ module Trax
         module ClassMethods
           def define_attributes(&block)
             self.instance_variable_set("@_attribute_definitions_block", block)
-            self
           end
 
           #recursively search direct parent classes for attribute definitions, so we can fully support
@@ -36,7 +35,6 @@ module Trax
             @fields_module ||= begin
               const_set("Fields", ::Module.new)
               const_get("Fields").extend(::Trax::Model::Attributes::Fields)
-              const_get("Fields")
             end
           end
 
