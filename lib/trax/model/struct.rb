@@ -62,9 +62,6 @@ module Trax
         coerce_key(name.to_sym, enum_klass)
       end
 
-      # def self.enum_fields
-      #   @enum_fields ||= constants.map(&:superclass)
-
       #this only supports properties 1 level deep, but works beautifully
       #I.E. for this structure
       # define_attributes do
