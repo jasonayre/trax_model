@@ -1,8 +1,200 @@
 # Trax Model
+A higher level, even more opinionated active record model. Some of the features are postgres specific, but library itself should work with anything. Just include ::Trax::Model module and you're off to the races. The library currently contains two major components, a declarative, explicit attribute definitions dsl, and mixins. It also has additional STI support, but don't use the MTI stuff that's getting ripped out.
 
-A composeable companion to active record models. Just include ::Trax::Model and you're off to the races.
+## Attributes
 
-### UUIDS
+An declarative, more explicit attributes dsl for your models. Biggest feature at the moment is
+support for struct (json), fields, as well as enum (integer) fields.
+
+``` ruby
+class Post
+  define_attributes do
+    enum :category, :default => :tutorials do
+      define :tutorials, 1
+      define :rants, 2
+      define :news, 3
+    end
+
+    struct :custom_fields do
+      boolean :is_published
+
+      enum :subtype do
+        define :video, 1
+        define :text, 2
+        define :audio, 3
+      end
+    end
+  end
+end
+```
+
+### Struct Field (json/jsonb) ###
+
+Finally, JSON fields that are usable. Usable as in, if you wanted to use a json field
+for anything before, you probably soon after trying to use it, ran into at least one of the following problems:
+
+1. Cant validate it's structure. You almost always want to define the structure of the thing you are allowing into your database. Otherwise its useless
+2. Cant validate the components within it's structure. (even more difficult)
+3. Setting from user input/how the database casts it is messy to implement and prone to error
+
+So you realize, hey what a waste of time, Ill just create a new model because thats by far a better solution than doing all the above. However,
+there are alot of cases where this will end up making your application messier via unnecessary relations.
+
+**The solution**
+``` ruby
+struct :custom_fields do
+  string :title
+  boolean :is_published
+
+  enum :subtype, :define_scopes => true do
+    define :video, 1
+    define :text, 2
+    define :audio, 3
+  end
+
+  validates :title, :presence => true
+end
+```
+
+Getting/setting values works via hash, or via method calls, both work the same.
+
+``` ruby
+#access should be indifferent so you can handle user input
+::Post.new(:custom_fields => { :subtype => :video, :is_published => false })
+
+#or
+post = ::Post.first
+post.custom_fields.subtype = :audio
+post.save
+```
+
+Since struct is an actual value object, it has its own validation state. So you could call:
+``` ruby
+post.custom_fields.valid?
+post.custom_field.errors
+```
+
+However, validation errors get pushed up to the root object as well, to make it easy to deal with.
+
+``` ruby
+Post.by_custom_fields_subtype(:video, :audio)
+```
+
+Yes thats right, you can search by the nested enum field via a search scope. It's a pretty dumb search scope (only supports enums ATM, no greater than or less than or anything that requires casting at the moment, and I really encourage structured i.e. enums to use when using struct to search).
+
+**Warning** Use sparingly if you are doing heavy/many searches in json fields. I have no idea what performance impact to expect from lack of actual benchmarking atm and not a ton of information on pg json field search benchmarks in general, but common sense would say that if you are doing alot of searching on a ton of different values within the json data, particularly if the structures are huge, its probably going to be an expensive query.
+
+Basically what Im saying is, if you allow a single json field to have say a 30mb json object in your db, filled with any number of possible keys and values, whenever you search that table (indexing aside), you're going to have a problem since postgres needs to look through all the col/rows in that table, + that giant field to look for matches to your query. We can reason without much knowledge of PG internals, that this is probably going to be slow.
+
+Remember, just because you can do something, doesn't mean you should.
+
+**With that said, giving your json fields structure, will give you better control over what you allow in the field, thereby making the search more usable. You can ensure that only the keys specified are allowed on that json field (much like a database table), and in the case of enums/boolean even limit the possible values of those keys, while providing meaning since it acts like a normal enum field.**
+
+**Requirements to use struct field**
+Fairly postgres specific, and intended to be used with the json field type. It may work with other implementations, but
+this library is built to be opinionated and not handle every circumstance. -- Also use a jsonb field (pg 9.4 +)
+if you want the search scope magic.
+
+##Enum Field (integer) ##
+
+You may be thiking, whats wrong with rails's built in enum? Answer: Everything. Ill detail somewhere else later, for now,
+just know that the enum field type wont pollute your model with a million methods like rails enum.
+It also supports setting the enum value by the name of the key, or by its integer value.
+
+Syntax:
+
+``` ruby
+define_attributes do
+  enum :category, :default => :tutorials do
+    define :tutorials, 1
+    define :rants, 2
+    define :news, 3
+  end
+end
+```
+
+Only one scope method will be defined (unlike rails which defines a scope for every value
+within your enum, as well as a thousand instance methods. And if you use the same value
+in a different enum field on the same model, you're not going to have a good time.
+
+Assuming a subtype enum as above, you will have the following method which accepts
+multiple enum args as input.
+
+``` ruby
+Post.by_subtype(:video, :text)
+=> Post.where(:subtype => [1, 2])
+```
+
+## Mixins
+
+Mixins are one of the core features of Trax model. A mixin is like a concern,
+(in fact, mixins extend concern, so they have that behavior as well), but
+with a more rigid pattern, with configurability built in. You can pass in options
+to your mixin, which will allow you to use those options to define methods and what not
+based on the options passed to the mixed_in method. Example:
+
+``` ruby
+module Slugify
+  extend ::Trax::Model::Mixin
+
+  mixed_in do |*field_names|
+    field_names.each do |field_name|
+      define_slug_method_for_field(field_name)
+    end
+  end
+
+  def some_instance_method
+    puts "Because I extend ActiveSupport::Concern"
+    puts "I am included into post instance methods"
+  end
+
+  module ClassMethods
+    def find_by_slug(field, *args)
+      where(:field => args.map(&:paramaterize))
+    end
+
+    private
+    def define_slug_method_for_field(field_name)
+      define_method("#{field_name}=") do |value|
+        super(value.paramaterize)
+      end
+    end
+  end
+end
+```
+
+You would call the mixin via:
+
+``` ruby
+class Post
+  mixins :slugify => [ :title, :category ]
+end
+```
+
+or
+``` ruby
+class Post
+  mixin :slugify, :title, :category
+end
+```
+
+``` ruby
+Post.find_by_slug(:title, "Some Title")
+Post.find_by_slug(:category, "Some ")
+```
+
+The mixins dsl should look familiar to you since it acts much like "validates". However,
+unlike validators, there is one registry with one list of keys. So the first paramater of
+the mixin call dictate what mixin gets invoked, and if you overwrite a mixin with same name,
+it will call the last one defined.
+
+# Packaged Trax Model Mixins
+
+### UniqueId
+
+``` ruby
+mixins :unique_id => { :uuid_prefix => "0a" }
+```
 
 Supports uuid prefixes, and recommends next uuid prefix based on all uuid prefixes defined
 in system -- Makes your uuids more discoverable and allows you to identify the model
@@ -35,12 +227,15 @@ the first 2 generated characters of the uuid function with a fixed character str
 may affect the stats slightly, however Im not even sure if thats in a negative manner,
 based on the fact that it splits the likeleyhood of a collision per record type
 
-I.E.
+Usage
 
 ``` ruby
 class Product < ActiveRecord::Base
   include ::Trax::Model
-  defaults :uuid_prefix => "0a"
+
+  mixins :unique_id => {
+    :uuid_prefix => "0a"
+  }
 end
 ```
 
@@ -48,14 +243,6 @@ end
 Product.new
 
 => #<Product id: nil, name: nil, category_id: nil, user_id: nil, price: nil, in_stock_quantity: nil, on_order_quantity: nil, active: nil, uuid: "0a97ad3e-1673-41f3-b356-d62dd53629d8", created_at: nil, updated_at: nil>
-```
-
-### Get next available prefix, useful when setting models up
-
-``` ruby
-bx rails c
-::Trax::Model::Registry.next_prefix
-=> "1a"
 ```
 
 ### Or, register prefixes using dsl rather than in each individual class
@@ -68,8 +255,6 @@ Trax::Model::UUID.register do
 end
 ```
 
-But wait theires more!
-
 ### UUID utility methods
 
 ``` ruby
@@ -80,88 +265,44 @@ product_uuid.record_type
 => Product
 product_uuid.record
 ```
+Will return the product instance, Which opens up quite a few possibilites via the newfound discoverability of your uuids...
 
-will return the product instance
-
-Which opens up quite a few possibilites via the newfound discoverability of your uuids...
-
-# MTI (Multiple Table Inheritance)
-
-### Note: you must use Trax UUIDS w/ prefixes to use this feature (as we map each entity to its specific table, via the prefixed uuid.
-
-Going to be a very brief documentation but:
-
-### Set up MTI structure like this:
-```
-models/post.rb (your entity model)
-models/post_types/abstract.rb (abstract, inherit from this)
-models/post_types/entity.rb
-models/post_types/video.rb
-models/post_types/text.rb
-models/post_types/audio.rb
+## Field Scopes ##
+``` ruby
+mixins :field_scopes => {
+  :by_id => true,
+  :by_id_not => { :field => :id, :type => :not },
+  :by_name_matches => { :field => :name, :type => :matches }
+}
 ```
 
-Post is your entity class, entity is essentially a flat table which contains a list of
-any common attributes, as well as the ids for each of your MTI data models. The beauty
-of this, is that since Trax model uuids tell us what type the record is, we don't
-need to use STI, or have a type column to determine the type of the record.
+Here's a quick protip to writing better rails code. Treat the where method as private at all times. Use scopes to define the fields that can be searched, and keep them composable and chainable. Most search scopes should simply equate to "where field contains any number of these values". It's (generalizing) roughly the same performance hit to search one field for 100 values as it is to search one field for one value provided that value is at the bottom of the table.
 
-Basically, the entity model when loaded, will eager load the real model. If the real model is created, updated, or destroyed, a callback will ensure that the corresponding entity record is kept in sync.
+Based on those rules, 3 primary scope types right now.
+
+1. where
+2. where_not
+3. matching (contains | fuzzy)
+
+I like having the by_ affix attached to search scopes in most cases, so if your field contains a by_ it will try and guess the field name based on the fact.
+
+The preceeding example will do the folllowing:
 
 ``` ruby
-module Blog
-  class Post < ActiveRecord::Base
-    include ::Trax::Model::MTI::Entity
-
-    mti_namespace ::Blog::Posts
-  end
-end
-
-#no database table to this class as its abstract.
-module Blog
-  module Posts
-    class Abstract < ::ActiveRecord::Base
-      # following line sets abstract_class = true when including module
-      include ::Trax::Model::MTI::Abstract
-
-      entity_model :class_name => "Blog::Post"
-
-      ### Define your base inherited logic / methods here ###
-
-      belongs_to :user_id
-      belongs_to :category_id
-
-      validates :user_id
-      validates :category_id
-    end
-  end
-end
-
-module Blog
-  module Posts
-    class Video < ::Blog::Posts::Abstract
-
-    end
-  end
-end
+scope :by_id, lambda{|*_values|
+  _values.flat_compact_uniq!
+  where(:id => _values)
+}
+scope :by_id_not, lambda{|*_values|
+  _values.flat_compact_uniq!
+  where.not(:id => _values)
+}
+scope :by_name_matches, lambda{|*_values|
+  _values.flat_compact_uniq!
+  matching(:name => _values)
+}
 ```
 
-### MTI VS STI
-
-The main advantages of Multiple Table Inheritance versus Single Table inheritance I see are:
-
-1. Table size. As databases grow, vertically adding more length to traverse the table will continue to get slower. One way to mitigate this issue would be to split up your table into multiple horizontal tables, if it makes sense for your data structure to do so (i.e. like above)
-
-2. STI will get out of proportion likely. I.e. if 90% of your posts are text posts, then when you are looking for a video post, you are to some degree being slowed down by the video posts in your table. (or at least at some point when you reach past xxxxxx number of records)
-
-3. Further on that note, only storing what you need for each individual subset of your data, on that particular subset. I.e. if video post has a video_url attribute, but none of the other post types have that, it will keep holes out of your data tables since video_url is only on the video_posts table.
-
-4. Real separation at the data level of non common attributes, so you dont have to write safeguards in child classes to make sure that a value didnt slip into a field or whatever, because each child class has its own individual interpretation of the schema.
-
-The main disadvantages are:
-
-1. No shared view between child types. I.E. thats what the MTI entity is for. (want to find all blog posts? You cant unless you select a type first, or are using this gem, or a postgres view or something else)
-2. More difficult to setup since each child table needs its own table.
 
 # STI
 

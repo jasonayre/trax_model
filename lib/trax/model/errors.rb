@@ -38,7 +38,7 @@ module Trax
         argument :field, :required => true
         argument :model, :required => true
 
-        message { "Field #{field_name} does not exist for #{model}" }
+        message { "Field #{field} does not exist for #{model}" }
       end
 
       class STIAttributeNotFound < ::Trax::Core::Errors::Base
