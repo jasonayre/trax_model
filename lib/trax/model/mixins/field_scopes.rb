@@ -11,11 +11,6 @@ module Trax
             field_scope_options[:field] ||= field_scope_name.to_s.include?("by_") ? field_scope_name.to_s.split("by_").pop.to_sym : field_scope_name
             field_scope_options[:type] ||= :where
 
-            raise ::Trax::Model::Errors::FieldDoesNotExist.new(
-              :field => field_scope_options[:field],
-              :model => self
-            ) unless column_names.include?(field_scope_options[:field].to_s)
-
             case field_scope_options[:type]
             when :where
               define_where_scope_for_field(field_scope_name, **field_scope_options)
