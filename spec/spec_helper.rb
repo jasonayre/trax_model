@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler'
 require 'simplecov'
-require 'pry'
+# require 'pry'
 require 'trax_model'
 require 'active_record'
 

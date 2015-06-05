@@ -28,13 +28,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rspec-pride"
-  spec.add_development_dependency "pry-nav"
+  # spec.add_development_dependency "pry-nav"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency 'rspec-its', '~> 1'
   spec.add_development_dependency 'rspec-collection_matchers', '~> 1'
-  spec.add_development_dependency 'guard', '~> 2'
-  spec.add_development_dependency 'guard-rspec', '~> 4'
-  spec.add_development_dependency 'guard-bundler', '~> 2'
-  spec.add_development_dependency 'rb-fsevent'
-  spec.add_development_dependency 'terminal-notifier-guard'
+  # spec.add_development_dependency 'guard', '~> 2'
+  # spec.add_development_dependency 'guard-rspec', '~> 4'
+  # spec.add_development_dependency 'guard-bundler', '~> 2'
+  # spec.add_development_dependency 'rb-fsevent'
+  # spec.add_development_dependency 'terminal-notifier-guard'
 end
