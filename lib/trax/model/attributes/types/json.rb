@@ -5,20 +5,8 @@ module Trax
     module Attributes
       module Types
         class Json < ::Trax::Model::Attributes::Type
-          def self.define_attribute(klass, attribute_name, **options, &block)
-            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(value_klass))
-            attributes_klass.instance_eval(&block)
-            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
-            klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
-            klass.default_value_for(attribute_name) { {} }
-          end
-
-          class Value < ::Trax::Model::Struct
-            def self.type; :struct end;
-
-            def self.permitted_keys
-              @permitted_keys ||= properties.map(&:to_sym)
-            end
+          module ValueMethods
+            extend ::ActiveSupport::Concern
 
             def inspect
               self.to_hash.inspect
@@ -27,6 +15,27 @@ module Trax
             def to_json
               self.to_hash.to_json
             end
+
+            module ClassMethods
+              def type; :struct end;
+
+              def permitted_keys
+                @permitted_keys ||= properties.map(&:to_sym)
+              end
+            end
+          end
+
+          def self.define_attribute(klass, attribute_name, **options, &block)
+            attribute_klass_definition = (options.key?(:class_name) ? options[:class_name].constantize : ::Class.new(value_klass, &block))
+            attribute_klass_definition.include(ValueMethods)
+            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, attribute_klass_definition)
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
+            klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
+            klass.default_value_for(attribute_name) { {} }
+          end
+
+          class Value < ::Trax::Model::Struct
+            include ValueMethods
           end
 
           class TypeCaster < ActiveRecord::Type::Value

@@ -6,8 +6,8 @@ module Trax
       module Types
         class Enum < ::Trax::Model::Attributes::Type
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Enum, &block))
-            # attribute_klass.instance_eval(&block)
+            attribute_klass_definition = (options.key?(:class_name) ? options[:class_name].constantize : ::Class.new(::Enum, &block))
+            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, attribute_klass_definition)
 
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
 
