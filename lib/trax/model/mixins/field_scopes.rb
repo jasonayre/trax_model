@@ -35,6 +35,9 @@ module Trax
               _values.flat_compact_uniq!
               where(options[:field] => _values)
             }
+
+            # Alias scope names with pluralized versions, i.e. by_id also => by_ids
+            singleton_class.__send__(:alias_method, :"#{field_scope_name.to_s.pluralize}", field_scope_name)
           end
 
           def define_where_not_scope_for_field(field_scope_name, **options)
