@@ -11,18 +11,23 @@ module Trax
       include ::Hashie::Extensions::Dash::PropertyTranslation
       include ::ActiveModel::Validations
 
-      class_attribute :fields
+      class_attribute :fields, :fields_module
 
       def self.inherited(subklass)
         super(subklass)
+
+        subklass.fields = ::Module.new
+        subklass.fields.extend(::Trax::Model::Attributes::Fields)
+        subklass.fields_module = subklass.fields
       end
 
-      def self.fields_module
-        @fields_module ||= begin
-          const_set("Fields", ::Module.new)
-          const_get("Fields").extend(::Trax::Model::Attributes::Fields)
-        end
-      end
+      # def self.fields_module
+      #   @fields_module ||= begin
+      #
+      #     const_set("Fields", ::Module.new) unless const_defined?("Fields")
+      #     const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+      #   end
+      # end
 
       def self.boolean_property(name, *args, **options, &block)
         name = name.is_a?(Symbol) ? name.to_s : name
@@ -77,7 +82,9 @@ module Trax
       # will return #{Product color=blue}, #{Product color=red}
 
       def self.define_scopes_for_enum(attribute_name, enum_klass)
-        model_class = parent.parent
+        model_class = parent
+
+        # binding.pry
 
         if model_class.ancestors.include?(::ActiveRecord::Base)
           field_name = name.demodulize.underscore

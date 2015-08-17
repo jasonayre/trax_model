@@ -16,7 +16,17 @@ module Trax
 
         module ClassMethods
           def define_attributes(&block)
+            # self.const_set("AttributeDefinitions", ::Class.new(::Trax::Model::Attributes::Definitions))
+            # definitions = self.const_get("AttributeDefinitions")
+            attribute_definitions.model = self
             self.instance_variable_set("@_attribute_definitions_block", block)
+          end
+
+          def attribute_definitions
+            @attribute_definitions ||= begin
+              const_set("AttributeDefinitions", ::Class.new(::Trax::Model::Attributes::Definitions)) unless const_defined?("AttributeDefinitions")
+              const_get("AttributeDefinitions")
+            end
           end
 
           #recursively search direct parent classes for attribute definitions, so we can fully support
@@ -33,8 +43,11 @@ module Trax
 
           def fields_module
             @fields_module ||= begin
-              const_set("Fields", ::Module.new)
-              const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+              attribute_definitions.const_set("Fields", Module.new) unless attribute_definitions.const_defined?("AttributeDefinitions")
+              attribute_definitions.const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+
+              # const_set("AttributeDefinitions", ::Class.new(::Trax::Model::Attributes::Definitions))
+              # const_get("AttributeDefinitions::Fields")
             end
           end
 
@@ -58,12 +71,16 @@ module Trax
           end
 
           def evaluate_attribute_definitions_blocks
-            model_klass_proxy = ::Trax::Model::Attributes::Definitions.new(self)
             attribute_definition_blocks = self.superclasses_until(::ActiveRecord::Base, self, [ self ]).map{ |klass| klass.instance_variable_get(:@_attribute_definitions_block) }.compact
 
-            attribute_definition_blocks.each do |blk|
-              model_klass_proxy.instance_eval(&blk)
-            end if attribute_definition_blocks.any?
+            # binding.pry
+            attribute_definitions.instance_eval(&attribute_definition_blocks.last) if attribute_definition_blocks.any?
+
+            # attribute_definition_blocks.each do |blk|
+            #   attribute_definitions.instance_eval(&blk)
+            #   # const_get("AttributeDefinitions").instance_eval(&blk)
+            #   # model_klass_proxy.class_eval(&blk)
+            # end if attribute_definition_blocks.any?
           end
         end
 
