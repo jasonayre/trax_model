@@ -2,7 +2,7 @@ module Trax
   module Model
     module Attributes
       module Mixin
-        extend ::Trax::Core::Concern
+        extend ::ActiveSupport::Concern
 
         included do
           ::Trax::Model::Attributes.config.attribute_types.each_pair do |key, mod|
@@ -10,13 +10,11 @@ module Trax
           end
         end
 
-        after_included do
-          evaluate_attribute_definitions_blocks
-        end
-
         module ClassMethods
           def define_attributes(&block)
             self.instance_variable_set("@_attribute_definitions_block", block)
+
+            evaluate_attribute_definitions_blocks
           end
 
           #recursively search direct parent classes for attribute definitions, so we can fully support
@@ -33,8 +31,8 @@ module Trax
 
           def fields_module
             @fields_module ||= begin
-              const_set("Fields", ::Module.new)
-              const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+              module_name = "#{self.name}::Fields"
+              ::Trax::NamedModule.new(::Trax::Model::Attributes::Fields, :name => module_name)
             end
           end
 
