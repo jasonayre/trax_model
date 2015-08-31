@@ -32,7 +32,7 @@ module Trax
           def fields_module
             @fields_module ||= begin
               module_name = "#{self.name}::Fields"
-              ::Trax::NamedModule.new(::Trax::Model::Attributes::Fields, :name => module_name)
+              ::Trax::Core::NamedModule.new(module_name, ::Trax::Model::Attributes::Fields)
             end
           end
 
