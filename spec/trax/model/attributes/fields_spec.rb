@@ -7,9 +7,7 @@ describe ::Trax::Model::Attributes::Fields do
     it { expect(subject.all).to have_key(:size) }
 
     context "inherited properties" do
-      it {
-        expect(subject.all).to have_key(:active)
-      }
+      it { expect(subject.all).to have_key(:active) }
     end
   end
 
@@ -60,6 +58,15 @@ describe ::Trax::Model::Attributes::Fields do
       it { expect(subject.to_schema["active"]["name"]).to eq "active" }
       it { expect(subject.to_schema["active"]["type"]).to eq "boolean" }
       it { expect(subject.to_schema["active"]["source"]).to eq "Products::MensShoes::Fields::Active" }
+    end
+  end
+
+  context "base product class" do
+    subject { ::Product.fields }
+
+    describe "#all" do
+      it { expect(subject.all).to_not have_key(:size) }
+      it { expect(subject.all).to have_key(:active) }
     end
   end
 end
