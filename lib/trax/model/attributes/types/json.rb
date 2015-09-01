@@ -28,7 +28,6 @@ module Trax
           def self.define_attribute(klass, attribute_name, **options, &block)
             klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name.to_s}".camelize
             attribute_klass = ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
-
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
             klass.default_value_for(attribute_name) { {} }

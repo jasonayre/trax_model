@@ -64,7 +64,6 @@ module Trax
             end if attribute_definition_blocks.any?
           end
         end
-
       end
     end
   end
