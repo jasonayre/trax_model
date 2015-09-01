@@ -11,6 +11,7 @@ ActiveRecord::Schema.define(:version => 1) do
     t.boolean  "active"
     t.string   "uuid"
     t.integer  "status"
+    t.integer  "size"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -82,6 +83,27 @@ class Product < ::ActiveRecord::Base
       define :in_stock,     1
       define :out_of_stock, 2
       define :backordered,  3
+    end
+
+    boolean :active, :default => false
+  end
+end
+
+module Products
+  class Shoes < Product
+  end
+
+  class MensShoes < Shoes
+    define_attributes do
+      enum :size, :default => :mens_9 do
+        define :mens_6,  1
+        define :mens_7,  2
+        define :mens_8,  3
+        define :mens_9,  4
+        define :mens_10, 5
+        define :mens_11, 6
+        define :mens_12, 7
+      end
     end
   end
 end
