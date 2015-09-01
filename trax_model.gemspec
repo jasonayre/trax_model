@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "rspec"
   spec.add_development_dependency "rspec-pride"
-  # spec.add_development_dependency "pry-nav"
+  spec.add_development_dependency "pry-nav"
   spec.add_development_dependency "simplecov"
   spec.add_development_dependency 'rspec-its', '~> 1'
   spec.add_development_dependency 'rspec-collection_matchers', '~> 1'
