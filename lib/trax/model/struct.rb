@@ -81,13 +81,12 @@ module Trax
       # will return #{Product color=blue}, #{Product color=red}
 
       def self.define_scopes_for_enum(attribute_name, enum_klass)
-        return unless enum_klass.parent_definition.parent_definition.ancestors.include?(::ActiveRecord::Base)
+        return unless has_active_record_ancestry?(enum_klass)
 
-        model_class = enum_klass.parent_definition.parent_definition
+        model_class = model_class_for_property(enum_klass)
         field_name = enum_klass.parent_definition.name.demodulize.underscore
         attribute_name = enum_klass.name.demodulize.underscore
         scope_name = :"by_#{field_name}_#{attribute_name}"
-
         model_class.scope(scope_name, lambda{ |*_scope_values|
           _integer_values = enum_klass.select_values(*_scope_values.flat_compact_uniq!)
           model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_integer_values.to_single_quoted_list})")
@@ -95,13 +94,12 @@ module Trax
       end
 
       def self.define_where_scopes_for_boolean_property(attribute_name, property_klass)
-        return unless property_klass.parent_definition.parent_definition.ancestors.include?(::ActiveRecord::Base)
+        return unless has_active_record_ancestry?(property_klass)
 
-        model_class = property_klass.parent_definition.parent_definition
+        model_class = model_class_for_property(property_klass)
         field_name = property_klass.parent_definition.name.demodulize.underscore
         attribute_name = property_klass.name.demodulize.underscore
         scope_name = :"by_#{field_name}_#{attribute_name}"
-
         model_class.scope(scope_name, lambda{ |*_scope_values|
           _scope_values.flat_compact_uniq!
           model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_scope_values.to_single_quoted_list})")
@@ -109,7 +107,7 @@ module Trax
       end
 
       def self.define_where_scopes_for_property(attribute_name, property_klass)
-        return unless property_klass.parent_definition.parent_definition.ancestors.include?(::ActiveRecord::Base)
+        return unless has_active_record_ancestry?(property_klass)
 
         model_class = property_klass.parent_definition.parent_definition
         field_name = property_klass.parent_definition.name.demodulize.underscore
@@ -152,6 +150,29 @@ module Trax
 
       def value
         self
+      end
+
+      private
+      def self.has_active_record_ancestry?(property_klass)
+        return false unless property_klass.respond_to?(:parent_definition)
+
+        result = if property_klass.parent_definition.ancestors.include?(::ActiveRecord::Base)
+          true
+        else
+          has_active_record_ancestry?(property_klass.parent_definition)
+        end
+
+        result
+      end
+
+      def self.model_class_for_property(property_klass)
+        result = if property_klass.parent_definition.ancestors.include?(::ActiveRecord::Base)
+          property_klass.parent_definition
+        else
+          model_class_for_property(property_klass.parent_definition)
+        end
+
+        result
       end
     end
   end
