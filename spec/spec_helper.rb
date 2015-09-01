@@ -9,20 +9,20 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
-ENV["DATABASE"] ||= "sqllite"
-ENV["DATABASE"] = "postgres" if ENV["DATABASE"] == "pg" || ENV["PG"]
-ENV["DB"] = ENV["DATABASE"]
+binding.pry
+ENV["DB"] ||= "sqllite"
+ENV["DB"] = "postgres" if ENV["DB"] == "pg" || ENV["pg"] == "true"
 
 RSpec.configure do |config|
 
-  config.filter_run_excluding :postgres => true unless ENV["DATABASE"] == "postgres"
+  config.filter_run_excluding :postgres => true unless ENV["DB"] == "postgres"
 
   config.before(:suite) do
     db_config = YAML::load(
       ::File.open("#{File.dirname(__FILE__)}/db/database.yml")
     )
 
-    ::ActiveRecord::Base.establish_connection(db_config[ENV["DATABASE"]])
+    ::ActiveRecord::Base.establish_connection(db_config[ENV["DB"]])
 
     # ::ActiveRecord::Base.establish_connection(pg_config["test"])
 
