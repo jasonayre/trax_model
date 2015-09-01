@@ -9,13 +9,29 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
+# ENV["PG"] ||= false
+ENV["DATABASE"] ||= "sqllite"
+
 RSpec.configure do |config|
 
   config.before(:suite) do
-    ActiveRecord::Base.establish_connection(
-      :adapter => "sqlite3",
-      :database => "spec/test.db"
+    db_config = YAML::load(
+      ::File.open("#{File.dirname(__FILE__)}/db/database.yml")
     )
+
+    ::ActiveRecord::Base.establish_connection(db_config[ENV["DATABASE"]])
+
+    # ::ActiveRecord::Base.establish_connection(pg_config["test"])
+
+    # ::ActiveRecord::Base.establish_connection(
+    #   :adapter => "sqlite3",
+    #   :database => "spec/test.db"
+    # )
+
+    # connection = ::ActiveRecord::Base.connection
+    # # drop_db = "DROP DATABASE trax_model_test"
+    # create_db = "CREATE DATABASE trax_model_test"
+    # connection.execute(create_db)
 
     ActiveRecord::Base.connection.tables.each do |table|
       ActiveRecord::Base.connection.drop_table(table)
