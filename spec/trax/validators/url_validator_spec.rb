@@ -5,7 +5,7 @@ describe ::UrlValidator do
 
   its(:valid?) { should eq true }
 
-  ["www.initech.com", "http://www.initech.com!"].each do |bad_url|
+  ["www.initech.com"].each do |bad_url|
     it "should fail validation for #{bad_url}" do
       widget = ::Widget.create(:website => bad_url)
       widget.errors.messages.should have_key(:website)
