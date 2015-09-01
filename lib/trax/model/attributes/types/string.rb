@@ -6,11 +6,15 @@ module Trax
       module Types
         class String < ::Trax::Model::Attributes::Type
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(value_klass))
-            attributes_klass.instance_eval(&block) if block_given?
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name.to_s}".camelize
+            attribute_klass = if options.key?(:class_name)
+              options[:class_name].constantize
+            else
+              ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
+            end
+
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
             klass.validates(attribute_name, options[:validates]) if options.key?(:validate)
-
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
 
