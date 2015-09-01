@@ -59,7 +59,6 @@ module Trax
         name = name.is_a?(Symbol) ? name.to_s : name
         klass_name = "#{fields_module.name.underscore}/#{name}".camelize
         enum_klass = ::Trax::Core::NamedClass.new(klass_name, ::Enum, :parent_definition => self, &block)
-        # enum_klass = ::Trax::ClassWithAttributes.new(::Enum, :name => klass_name, :parent_definition => self, &block)
         options[:default] = nil unless options.key?(:default)
         define_scopes_for_enum(name, enum_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
         validates(name, options[:validates]) if options.key?(:validates)
@@ -94,8 +93,6 @@ module Trax
           model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_integer_values.to_single_quoted_list})")
         })
       end
-
-      #todo:fix this
 
       def self.define_where_scopes_for_boolean_property(attribute_name, property_klass)
         return unless property_klass.parent_definition.parent_definition.ancestors.include?(::ActiveRecord::Base)
