@@ -6,8 +6,19 @@ module Trax
       module Types
         class Enum < ::Trax::Model::Attributes::Type
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attribute_klass_definition = (options.key?(:class_name) ? options[:class_name].constantize : ::Class.new(::Enum, &block))
-            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, attribute_klass_definition)
+
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name.to_s}".camelize
+
+            attribute_klass = (options.key?(:class_name) ? options[:class_name].constantize : ::Trax::ClassWithAttributes.new(
+              ::Enum,
+              :name => klass_name,
+              :model_class => klass,
+              &block
+            ))
+
+            # binding.pry
+            # attribute_klass_definition = (options.key?(:class_name) ? options[:class_name].constantize : ::Class.new(::Enum, &block))
+            # attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, attribute_klass_definition)
 
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
 
@@ -20,6 +31,8 @@ module Trax
             klass.class_eval do
               scope_method_name = :"by_#{attribute_name}"
               scope_not_method_name = :"by_#{attribute_name}_not"
+
+              # binding.pry
 
               scope scope_method_name, lambda { |*values|
                 values.flat_compact_uniq!
