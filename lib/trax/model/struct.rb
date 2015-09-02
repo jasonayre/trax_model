@@ -127,7 +127,8 @@ module Trax
         scope_name = :"by_#{field_name}_#{attribute_name}"
         model_class.scope(scope_name, lambda{ |*_scope_values|
           _integer_values = enum_klass.select_values(*_scope_values.flat_compact_uniq!)
-          model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_integer_values.to_single_quoted_list})")
+          _integer_values.map!(&:to_s)
+          model_class.where("#{field_name} -> '#{attribute_name}' IN(?)", _integer_values)
         })
       end
 
@@ -139,8 +140,8 @@ module Trax
         attribute_name = property_klass.name.demodulize.underscore
         scope_name = :"by_#{field_name}_#{attribute_name}"
         model_class.scope(scope_name, lambda{ |*_scope_values|
-          _scope_values.flat_compact_uniq!
-          model_class.where("#{field_name} -> '#{attribute_name}' IN(#{_scope_values.to_single_quoted_list})")
+          _scope_values.map!(&:to_s).flat_compact_uniq!
+          model_class.where("#{field_name} -> '#{attribute_name}' IN(?)", _scope_values)
         })
       end
 
@@ -153,8 +154,8 @@ module Trax
         scope_name = :"by_#{field_name}_#{attribute_name}"
 
         model_class.scope(scope_name, lambda{ |*_scope_values|
-          _scope_values.flat_compact_uniq!
-          model_class.where("#{field_name} ->> '#{attribute_name}' IN(#{_scope_values.to_single_quoted_list})")
+          _scope_values.map!(&:to_s).flat_compact_uniq!
+          model_class.where("#{field_name} ->> '#{attribute_name}' IN(?)", _scope_values)
         })
       end
 
