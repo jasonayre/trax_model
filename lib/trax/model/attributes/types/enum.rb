@@ -7,7 +7,7 @@ module Trax
         class Enum < ::Trax::Model::Attributes::Type
           #note: we dont validate enum attribute value because typecaster will turn it into nil which we allow
           def self.define_attribute(klass, attribute_name, **options, &block)
-            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name.to_s}".camelize
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
             attribute_klass = if options.key?(:class_name)
               options[:class_name].constantize
             else

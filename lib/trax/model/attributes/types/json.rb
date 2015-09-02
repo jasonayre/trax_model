@@ -26,7 +26,7 @@ module Trax
           end
 
           def self.define_attribute(klass, attribute_name, **options, &block)
-            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name.to_s}".camelize
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
             attribute_klass = if options.key?(:class_name)
               _klass = options[:class_name].constantize
               _klass.include(ValueExtensions)
