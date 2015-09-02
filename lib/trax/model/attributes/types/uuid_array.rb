@@ -6,13 +6,16 @@ module Trax
       module Types
         class UuidArray < ::Trax::Model::Attributes::Type
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, ::Class.new(::Trax::Model::Attributes[:uuid_array]::Value))
-            attributes_klass.instance_eval(&block) if block_given?
-            attributes_klass.element_class = options[:of] if options.has_key?(:of)
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
+            attribute_klass = if options.key?(:class_name)
+              options[:class_name].constantize
+            else
+              ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
+            end
 
+            attribute_klass.element_class = options[:of] if options.has_key?(:of)
             options.has_key?(:default) ? self.default_value_for(attribute_name, options[:default]) : []
-
-            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
           end
 
           class Attribute < ::Trax::Model::Attributes::Attribute

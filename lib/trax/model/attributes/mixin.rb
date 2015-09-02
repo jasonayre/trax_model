@@ -33,8 +33,8 @@ module Trax
 
           def fields_module
             @fields_module ||= begin
-              const_set("Fields", ::Module.new)
-              const_get("Fields").extend(::Trax::Model::Attributes::Fields)
+              module_name = "#{self.name}::Fields"
+              ::Trax::Core::NamedModule.new(module_name, ::Trax::Model::Attributes::Fields, :definition_context => self)
             end
           end
 
@@ -66,7 +66,6 @@ module Trax
             end if attribute_definition_blocks.any?
           end
         end
-
       end
     end
   end

@@ -7,9 +7,14 @@ module Trax
         class Boolean < ::Trax::Model::Attributes::Type
           #this will by default validate boolean values
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attributes_klass = klass.fields_module.const_set(attribute_name.to_s.camelize,  ::Class.new(::Trax::Model::Attributes[:boolean]::Attribute))
-            attributes_klass.instance_eval(&block) if block_given?
-            klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Boolean.new(target_klass: attributes_klass))
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
+            attribute_klass = if options.key?(:class_name)
+              options[:class_name].constantize
+            else
+              ::Trax::Core::NamedClass.new(klass_name, ::Trax::Model::Attributes[:boolean]::Attribute, :parent_definition => klass, &block)
+            end
+
+            klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Boolean::TypeCaster.new)
             klass.validates(attribute_name, :boolean => true) unless options.key?(:validate) && !options[:validate]
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
@@ -18,7 +23,22 @@ module Trax
             self.type = :boolean
 
             def self.to_schema
+              ::Trax::Core::Definition.new({
+                :name => attribute_name,
+                :type => type.to_s,
+                :source => name,
+                :values => values
+              })
+            end
 
+            private
+
+            def self.attribute_name
+              name.demodulize.underscore
+            end
+
+            def self.values
+              [ true, false ]
             end
           end
 

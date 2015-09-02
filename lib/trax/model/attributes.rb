@@ -19,7 +19,7 @@ module Trax
       end
 
       def self.register_attribute_type(mod)
-        key = mod.name.demodulize.underscore.split('_')[0].to_sym
+        key = mod.name.demodulize.underscore.to_sym
 
         config.attribute_types[key] = mod
       end

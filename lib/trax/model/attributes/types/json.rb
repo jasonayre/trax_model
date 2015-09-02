@@ -5,7 +5,7 @@ module Trax
     module Attributes
       module Types
         class Json < ::Trax::Model::Attributes::Type
-          module ValueMethods
+          module ValueExtensions
             extend ::ActiveSupport::Concern
 
             def inspect
@@ -26,16 +26,22 @@ module Trax
           end
 
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attribute_klass_definition = (options.key?(:class_name) ? options[:class_name].constantize : ::Class.new(value_klass, &block))
-            attribute_klass_definition.include(ValueMethods)
-            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, attribute_klass_definition)
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
+            attribute_klass = if options.key?(:class_name)
+              _klass = options[:class_name].constantize
+              _klass.include(ValueExtensions)
+              _klass
+            else
+              ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
+            end
+
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
             klass.default_value_for(attribute_name) { {} }
           end
 
           class Value < ::Trax::Model::Struct
-            include ValueMethods
+            include ValueExtensions
           end
 
           class TypeCaster < ActiveRecord::Type::Value

@@ -1,0 +1,16 @@
+default: &default
+  adapter: sqlite3
+  database: spec/test.db
+
+sqllite:
+  <<: *default
+
+postgres:
+  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  database: trax_model_tests
+  pool: 5
+  host: localhost
+  username: postgres
+  password:

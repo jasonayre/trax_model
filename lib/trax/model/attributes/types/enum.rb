@@ -5,15 +5,18 @@ module Trax
     module Attributes
       module Types
         class Enum < ::Trax::Model::Attributes::Type
+          #note: we dont validate enum attribute value because typecaster will turn it into nil which we allow
           def self.define_attribute(klass, attribute_name, **options, &block)
-            attribute_klass_definition = (options.key?(:class_name) ? options[:class_name].constantize : ::Class.new(::Enum, &block))
-            attribute_klass = klass.fields_module.const_set(attribute_name.to_s.camelize, attribute_klass_definition)
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
+            attribute_klass = if options.key?(:class_name)
+              options[:class_name].constantize
+            else
+              ::Trax::Core::NamedClass.new(klass_name, ::Enum, :parent_definition => klass, &block)
+            end
 
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
-
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
-
-            define_scopes(klass, attribute_name, attribute_klass)
+            define_scopes(klass, attribute_name, attribute_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
           end
 
           def self.define_scopes(klass, attribute_name, attribute_klass)
