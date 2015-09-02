@@ -70,7 +70,37 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
       context "valid struct attribute" do
         let(:subject_attributes) { { :specifics => { :cost => "asdasdasdasdasd", :dimensions => {}}} }
 
-        it { expect(subject.valid?).to eq true}
+        it { expect(subject.valid?).to eq true }
+      end
+
+      context "enum_property coercing" do
+        context "valid enum value" do
+          context "value is symbol" do
+            let(:subject_attributes) { { :specifics => { :service => :usps } } }
+
+            it { expect(subject.specifics.service.to_i).to eq 1 }
+          end
+
+          context "value is symbol" do
+            let(:subject_attributes) { { :specifics => { :service => "usps" } } }
+
+            it { expect(subject.specifics.service.to_i).to eq 1 }
+          end
+        end
+
+        context "invalid enum attributes" do
+          context "out of range integer" do
+            let(:subject_attributes) { { :specifics => { :service => 20 } } }
+
+            it { expect(subject.specifics.service).to eq nil }
+          end
+
+          context "non existent string" do
+            let(:subject_attributes) { { :specifics => { :service => "sasdasd" } } }
+
+            it { expect(subject.specifics.service).to eq nil }
+          end
+        end
       end
     end
   end

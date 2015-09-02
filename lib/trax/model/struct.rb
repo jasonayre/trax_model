@@ -21,10 +21,6 @@ module Trax
         :enum_property    => nil,
       }.with_indifferent_access.freeze
 
-      def self.inherited(subklass)
-        super(subklass)
-      end
-
       def self.fields_module
         @fields_module ||= begin
           module_name = "#{self.name}::Fields"
@@ -49,7 +45,6 @@ module Trax
         name = name.is_a?(Symbol) ? name.to_s : name
         klass_name = "#{fields_module.name.underscore}/#{name}".camelize
         string_klass = ::Trax::Core::NamedClass.new(klass_name, Trax::Model::Attributes[:string]::Value, :parent_definition => self, &block)
-        validates(name, options[:validates]) if options.key?(:validates)
         options[:default] = options.key?(:default) ? options[:default] : DEFAULT_VALUES_FOR_PROPERTY_TYPES[__method__]
         define_where_scopes_for_property(name, string_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
         property(name.to_sym, *args, **options)
@@ -66,13 +61,13 @@ module Trax
         coerce_key(name.to_sym, struct_klass)
       end
 
+      #note: cant validate because we are coercing which will turn it into nil
       def self.enum_property(name, *args, **options, &block)
         name = name.is_a?(Symbol) ? name.to_s : name
         klass_name = "#{fields_module.name.underscore}/#{name}".camelize
         enum_klass = ::Trax::Core::NamedClass.new(klass_name, ::Enum, :parent_definition => self, &block)
         options[:default] = options.key?(:default) ? options[:default] : DEFAULT_VALUES_FOR_PROPERTY_TYPES[__method__]
         define_scopes_for_enum(name, enum_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
-        validates(name, :enum_attribute => true) unless options[:validate] && !options[:validate]
         property(name.to_sym, *args, **options)
         coerce_key(name.to_sym, enum_klass)
       end
@@ -123,7 +118,6 @@ module Trax
       # end
       # ::Product.by_custom_fields_color(:blue, :red)
       # will return #{Product color=blue}, #{Product color=red}
-
       def self.define_scopes_for_enum(attribute_name, enum_klass)
         return unless has_active_record_ancestry?(enum_klass)
 

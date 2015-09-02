@@ -21,6 +21,11 @@ module Ecommerce
 
         validates(:cost, :length => {:minimum => 10})
 
+        enum :service do
+          define :usps,  1
+          define :fedex, 2
+        end
+
         struct :dimensions, :validate => true do
           string :length
           string :width

@@ -23,12 +23,12 @@ module Trax
             self.type = :boolean
 
             def self.to_schema
-              {
+              ::Trax::Core::Definition.new({
                 :name => attribute_name,
                 :type => type.to_s,
                 :source => name,
                 :values => values
-              }
+              })
             end
 
             private
