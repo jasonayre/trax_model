@@ -36,7 +36,7 @@ module Trax
             end
 
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
-            klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
+            klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validates) && !options[:validates]
             klass.default_value_for(attribute_name) { {} }
           end
 
