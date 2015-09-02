@@ -8,12 +8,15 @@ require 'simple_enum'
 require_relative './string'
 require_relative './validators/boolean_validator'
 require_relative './validators/email_validator'
-require_relative './validators/enum_validator'
 require_relative './validators/frozen_validator'
 require_relative './validators/future_validator'
-require_relative './validators/json_attribute_validator'
 require_relative './validators/subdomain_validator'
 require_relative './validators/url_validator'
+
+#trax attribute specific validators
+require_relative './validators/enum_attribute_validator'
+require_relative './validators/json_attribute_validator'
+require_relative './validators/string_attribute_validator'
 
 module Trax
   module Model
