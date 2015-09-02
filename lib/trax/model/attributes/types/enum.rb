@@ -15,8 +15,7 @@ module Trax
 
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
-
-            define_scopes(klass, attribute_name, attribute_klass)
+            define_scopes(klass, attribute_name, attribute_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
           end
 
           def self.define_scopes(klass, attribute_name, attribute_klass)

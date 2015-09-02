@@ -28,7 +28,6 @@ describe ::Trax::Model::Attributes::Fields do
 
     context "enums" do
       it {
-        pp subject.to_schema
         expect(subject.to_schema["status"]["source"]).to eq "Products::MensShoes::Fields::Status"
       }
 
@@ -67,6 +66,23 @@ describe ::Trax::Model::Attributes::Fields do
     describe "#all" do
       it { expect(subject.all).to_not have_key(:size) }
       it { expect(subject.all).to have_key(:active) }
+    end
+  end
+
+  context "struct fields", :postgres => true do
+    subject { ::Ecommerce::Products::MensShoes.fields }
+
+    it { expect(subject.all).to have_key(:custom_fields) }
+    it { expect(subject[:custom_fields].fields.all).to have_key(:size) }
+
+    describe "#to_schema" do
+      let(:expectation) do
+        subject::CustomFields::Fields::Size.names.map(&:to_sym)
+      end
+
+      it {
+        expect(subject[:custom_fields].fields[:size].to_schema["values"]).to eq expectation
+      }
     end
   end
 end

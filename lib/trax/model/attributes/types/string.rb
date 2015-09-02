@@ -13,8 +13,8 @@ module Trax
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
             end
 
-            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attributes_klass))
-            klass.validates(attribute_name, options[:validates]) if options.key?(:validate)
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
+            klass.validates(attribute_name, options[:validates]) if options.key?(:validates)
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
 
