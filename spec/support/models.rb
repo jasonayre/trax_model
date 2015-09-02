@@ -36,9 +36,14 @@ end
 
 module Products
   class Shoes < Product
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Mixin
   end
 
   class MensShoes < Shoes
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Mixin
+
     define_attributes do
       enum :size, :default => :mens_9 do
         define :mens_6,  1

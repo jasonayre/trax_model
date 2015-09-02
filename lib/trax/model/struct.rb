@@ -60,7 +60,7 @@ module Trax
         name = name.is_a?(Symbol) ? name.to_s : name
         klass_name = "#{fields_module.name.underscore}/#{name}".camelize
         struct_klass = ::Trax::Core::NamedClass.new(klass_name, Trax::Model::Struct, :parent_definition => self, &block)
-        # validates(name, :json_attribute => true) if options.key?(:validates)
+        validates(name, :json_attribute => true) unless options[:validate] && !options[:validate]
         options[:default] = options.key?(:default) ? options[:default] : DEFAULT_VALUES_FOR_PROPERTY_TYPES[__method__]
         property(name.to_sym, *args, **options)
         coerce_key(name.to_sym, struct_klass)
@@ -72,7 +72,7 @@ module Trax
         enum_klass = ::Trax::Core::NamedClass.new(klass_name, ::Enum, :parent_definition => self, &block)
         options[:default] = options.key?(:default) ? options[:default] : DEFAULT_VALUES_FOR_PROPERTY_TYPES[__method__]
         define_scopes_for_enum(name, enum_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
-        validates(name, options[:validates]) if options.key?(:validates)
+        validates(name, :enum_attribute => true) unless options[:validate] && !options[:validate]
         property(name.to_sym, *args, **options)
         coerce_key(name.to_sym, enum_klass)
       end

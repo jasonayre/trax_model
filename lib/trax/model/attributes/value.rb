@@ -15,6 +15,10 @@ module Trax
         def self.symbolic_name
           name.demodulize.underscore.to_sym
         end
+
+        def self.to_sym
+          :value
+        end
       end
     end
   end

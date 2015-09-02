@@ -12,18 +12,21 @@ module Ecommerce
   end
 
   class ShippingAttributes < ::Ecommerce::ProductAttributeSet
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Mixin
+
     define_attributes do
       struct :specifics, :validate => true do
-        string :cost, :default => 0 do
-          validates_numericality_of(:value)
-        end
+        string :cost, :default => 0
 
-        struct :dimensions do
+        validates(:cost, :length => {:minimum => 10})
+
+        struct :dimensions, :validate => true do
           string :length
           string :width
           string :height
 
-          validates_presence_of(:length, :width, :height)
+          validates(:length, :length => {:maximum => 10})
         end
       end
     end
@@ -40,7 +43,9 @@ module Ecommerce
     belongs_to :store, :class_name => "Ecommerce::Store"
 
     define_attributes do
-      string :name, :default => "Whatever", :validates => { :length => 5 }
+      string :name, :default => "Whatever" do
+        validates(self, :length => { :minimum => 20 })
+      end
       boolean :active, :default => true
 
       enum :status, :default => :in_stock do
@@ -53,9 +58,14 @@ module Ecommerce
 
   module Products
     class Shoes < ::Ecommerce::Product
+      include ::Trax::Model
+      include ::Trax::Model::Attributes::Mixin
     end
 
     class MensShoes < ::Ecommerce::Products::Shoes
+      include ::Trax::Model
+      include ::Trax::Model::Attributes::Mixin
+
       define_attributes do
         string :name, :default => "Some Shoe Name", :define_scopes => true
         boolean :active, :default => true, :define_scopes => true

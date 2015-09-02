@@ -14,7 +14,6 @@ module Trax
             end
 
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
-            klass.validates(attribute_name, options[:validates]) if options.key?(:validates)
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
 
@@ -27,6 +26,18 @@ module Trax
               super(*args)
 
               @target_klass = target_klass
+            end
+
+            def type_cast_from_user(value)
+              value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value || {})
+            end
+
+            def type_cast_from_database(value)
+              value.present? ? @target_klass.new(value) : value
+            end
+
+            def type_cast_for_database(value)
+              value.try(:to_s)
             end
           end
 

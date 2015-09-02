@@ -47,5 +47,37 @@ describe ::Trax::Model::Attributes::Types::Enum do
         it { expect(subject.size_was).to eq :mens_6 }
       end
     end
+
+    context "validation" do
+      let(:subject_attributes) { {} }
+      subject { ::Products::MensShoes.create(subject_attributes) }
+
+      context "invalid struct attribute" do
+        let(:subject_attributes) { {:size => "blah"} }
+
+        it { expect(subject.valid?).to eq false }
+        it { expect(subject.errors.messages).to have_key(:"size") }
+      end
+
+      context "valid struct attributes" do
+        context "set as symbol" do
+          let(:subject_attributes) { { :size => :mens_7 } }
+
+          it { expect(subject.valid?).to eq true }
+        end
+
+        context "set as integer" do
+          let(:subject_attributes) { { :size => 1 } }
+
+          it { expect(subject.valid?).to eq true }
+        end
+
+        context "set as string" do
+          let(:subject_attributes) { {:size => 1} }
+
+          it { expect(subject.valid?).to eq true }
+        end
+      end
+    end
   end
 end

@@ -51,9 +51,26 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
         it { expect(subject.changes["custom_fields"][0]["size"]).to eq :mens_6 }
         it { expect(subject["custom_fields"]["size"]).to eq :mens_7 }
         it { expect(subject.changed_attributes["custom_fields"]["size"]).to eq :mens_6 }
-        it {
-          binding.pry
-        }
+      end
+    end
+
+    context "validation" do
+      let(:subject_attributes) { {} }
+      subject { ::Ecommerce::ShippingAttributes.create(subject_attributes) }
+
+      context "invalid struct attribute" do
+        subject { ::Ecommerce::ShippingAttributes.create(subject_attributes) }
+
+        let(:subject_attributes) { { :specifics => {:cost => "asdasd", :dimensions => {}}} }
+
+        it { expect(subject.valid?).to eq false }
+        it { expect(subject.errors.messages).to have_key(:"specifics.cost") }
+      end
+
+      context "valid struct attribute" do
+        let(:subject_attributes) { { :specifics => { :cost => "asdasdasdasdasd", :dimensions => {}}} }
+
+        it { expect(subject.valid?).to eq true}
       end
     end
   end

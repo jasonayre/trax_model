@@ -15,6 +15,7 @@ module Trax
 
             klass.attribute(attribute_name, ::Trax::Model::Attributes::Types::Enum::TypeCaster.new(target_klass: attribute_klass))
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
+            klass.validates(attribute_name, :enum_attribute => true) unless options.key?(:validate) && !options[:validate]
             define_scopes(klass, attribute_name, attribute_klass) unless options.key?(:define_scopes) && !options[:define_scopes]
           end
 
