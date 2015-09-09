@@ -5,6 +5,8 @@ class JsonAttributeValidator < ActiveModel::EachValidator
   def validate_each(object, attribute, value)
     json_attribute = object.class.fields_module[attribute]
 
+    value.instance_variable_set("@record", object)
+
     unless value.is_a?(json_attribute) && value.valid?
       if value.is_a?(json_attribute)
         value.errors.messages.each_pair do |k,v|
