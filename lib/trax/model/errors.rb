@@ -3,6 +3,15 @@ require 'trax/core/errors'
 module Trax
   module Model
     module Errors
+      class InvalidOption < ::Trax::Core::Errors::Base
+        argument :option
+        argument :valid_options
+
+        message {
+          "Invalid option #{option}: must instead be one of #{valid_options.join(", ")}"
+        }
+      end
+
       class MixinNotRegistered < ::Trax::Core::Errors::Base
         argument :mixin
         argument :model

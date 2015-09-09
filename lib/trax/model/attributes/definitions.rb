@@ -22,6 +22,10 @@ module Trax
           attribute(*args, type: :enum, **options, &block)
         end
 
+        def integer(*args, **options, &block)
+          attribute(*args, type: :integer, **options, &block)
+        end
+
         def string(*args, **options, &block)
           attribute(*args, :type => :string, **options, &block)
         end

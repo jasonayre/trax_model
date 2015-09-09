@@ -6,11 +6,30 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
   it { expect(subject.new.primary_utility).to eq "Skateboarding" }
   it { expect(subject.new.sole_material).to eq "" }
 
+  context "attribute definition" do
+    subject { ::Ecommerce::ShippingAttributes.new }
+
+    context "model_accessors (delegators)" do
+      it {
+        ::Ecommerce::ShippingAttributes.fields[:specifics].properties.each do |_property|
+          expect(subject.__send__(_property)).to eq subject.specifics.__send__(_property)
+        end
+      }
+    end
+  end
+
   context "model" do
     subject { ::Ecommerce::Products::MensShoes.new }
 
     context "default values" do
       it { subject.custom_fields.size.should eq :mens_9 }
+    end
+
+    context "instance method defined within struct" do
+      subject { ::Ecommerce::Products::MensShoes.new(:custom_fields => {:cost => 10, :price => 20, :number_of_sales => 5}) }
+      it {
+        expect(subject.custom_fields.total_profit).to eq 50
+      }
     end
 
     context "search scopes" do
@@ -68,7 +87,7 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
       end
 
       context "valid struct attribute" do
-        let(:subject_attributes) { { :specifics => { :cost => "asdasdasdasdasd", :dimensions => {}}} }
+        let(:subject_attributes) { { :specifics => { :cost => "asdasdasdasdasd", :dimensions => { :length => 10 }}} }
 
         it { expect(subject.valid?).to eq true }
       end

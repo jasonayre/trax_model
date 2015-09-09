@@ -11,6 +11,8 @@ module Trax
       include ::Hashie::Extensions::Dash::PropertyTranslation
       include ::ActiveModel::Validations
 
+      attr_reader :record
+
       # note that we must explicitly set default or blank values for all properties.
       # It defeats the whole purpose of being a 'struct'
       # if we fail to do so, and it makes our data far more error prone
@@ -19,6 +21,7 @@ module Trax
         :string_property  => "",
         :struct_property  => {},
         :enum_property    => nil,
+        :integer_property => nil
       }.with_indifferent_access.freeze
 
       def self.fields_module
@@ -72,6 +75,16 @@ module Trax
         coerce_key(name.to_sym, enum_klass)
       end
 
+      def self.integer_property(name, *args, **options, &block)
+        name = name.is_a?(Symbol) ? name.to_s : name
+        klass_name = "#{fields_module.name.underscore}/#{name}".camelize
+        integer_klass = ::Trax::Core::NamedClass.new(klass_name, ::Trax::Model::Attributes::Types::Integer::Value, :parent_definition => self, &block)
+        options[:default] = options.key?(:default) ? options[:default] : DEFAULT_VALUES_FOR_PROPERTY_TYPES[__method__]
+        define_where_scopes_for_property(name, integer_klass) if options.key?(:define_scopes) && options[:define_scopes]
+        property(name.to_sym, *args, **options)
+        coerce_key(name.to_sym, Integer)
+      end
+
       def self.to_schema
         ::Trax::Core::Definition.new(
           :source => self.name,
@@ -98,6 +111,7 @@ module Trax
         alias :enum :enum_property
         alias :struct :struct_property
         alias :string :string_property
+        alias :integer :integer_property
       end
 
       def value

@@ -54,6 +54,8 @@ module Products
         define :mens_11, 6
         define :mens_12, 7
       end
+
+      integer :in_stock_quantity, :default => 0
     end
   end
 end
