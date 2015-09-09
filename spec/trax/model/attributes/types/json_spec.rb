@@ -15,6 +15,18 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
           expect(subject.__send__(_property)).to eq subject.specifics.__send__(_property)
         end
       }
+
+      context "initializing model and setting delegated attributes directly", :delegated_attributes =>  { :cost => 5, :tax => 5, :delivery_time => "5 days" } do
+        self::DELEGATED_ATTRIBUTES = { :cost => 5, :tax => 5, :delivery_time => "5 days" }
+
+        subject{ |example| ::Ecommerce::ShippingAttributes.new(example.example_group::DELEGATED_ATTRIBUTES) }
+
+        self::DELEGATED_ATTRIBUTES.each_pair do |k,v|
+          it "#{k} should be set" do
+            expect(subject.specifics.__send__(k)).to eq v
+          end
+        end
+      end
     end
   end
 
@@ -87,7 +99,7 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
       end
 
       context "valid struct attribute" do
-        let(:subject_attributes) { { :specifics => { :cost => "asdasdasdasdasd", :dimensions => { :length => 10 }}} }
+        let(:subject_attributes) { { :specifics => { :cost => 1, :dimensions => { :length => 10 }}} }
 
         it { expect(subject.valid?).to eq true }
       end

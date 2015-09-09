@@ -7,7 +7,7 @@ describe ::SubdomainValidator do
   ["bad!", "-asdasd", "www", "ac"].each do |bad_subdomain|
     it "should fail validation for #{bad_subdomain}" do
       widget = ::Widget.create(:subdomain => bad_subdomain)
-      widget.valid?.should eq false
+      expect(widget.valid?).to eq false
     end
   end
 end

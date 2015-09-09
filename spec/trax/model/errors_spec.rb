@@ -4,6 +4,6 @@ describe ::Trax::Model::Errors do
   subject{ Trax::Model::Errors::InvalidPrefix }
 
   it do
-    expect{subject.new(:blah => "blah")}.to raise_error
+    expect{subject.new(:blah => "blah")}.to raise_error(NoMethodError)
   end
 end
