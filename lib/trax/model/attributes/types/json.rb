@@ -38,6 +38,7 @@ module Trax
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
             klass.default_value_for(attribute_name) { {} }
+            define_model_accessors(klass, attribute_name, attribute_klass, options[:model_accessors]) if options.key?(:model_accessors) && options[:model_accessors]
           end
 
           class Value < ::Trax::Model::Struct
@@ -72,6 +73,30 @@ module Trax
 
           self.value_klass = ::Trax::Model::Attributes::Types::Json::Value
           self.typecaster_klass = ::Trax::Model::Attributes::Types::Json::TypeCaster
+
+          private
+
+          def self.define_model_accessors(model, attribute_name, struct_attribute, option_value)
+            properties_to_define = if [ true ].include?(option_value)
+                                     struct_attribute.properties.to_a
+                                   elsif option_value.is_a(Hash) && option_value.has_key?(:only)
+                                     struct_attribute.properties.to_a.only(*option_value[:only])
+                                   elsif option_value.is_a(Hash) && option_value.has_key?(:except)
+                                     struct_attribute.properties.to_a.except(*option_value[:except])
+                                   elsif option_value.is_a(Array)
+                                     struct_attribute.properties.to_a.only(*option_value[:only])
+                                   else
+                                     raise Trax::Model::Errors::InvalidOption.new(
+                                       :option => :model_accessors,
+                                       :valid_choices => ["true", "array of properties", "hash with :only or :except keys"]
+                                     )
+                                   end
+
+            properties_to_define.each do |_property|
+              getter_method, setter_method = _property.to_sym, :"#{_property}="
+              model.delegate(getter_method, setter_method, :to => attribute_name)
+            end
+          end
         end
       end
     end

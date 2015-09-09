@@ -13,7 +13,6 @@ module Trax
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
             end
 
-            # typecaster.attribute_klass = attribute_klass
             klass.attribute(attribute_name, typecaster_klass.new)
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
