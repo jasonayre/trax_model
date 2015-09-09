@@ -8,13 +8,13 @@ describe ::Trax::Model::Restorable do
   context "when destroyed" do
     it "should soft delete" do
       subject.destroy
-      subject.deleted.should be true
+      expect(subject.deleted).to be true
     end
 
     it "should be restorable" do
       subject.destroy
       subject.restore
-      subject.deleted.should be false
+      expect(subject.deleted).to be false
     end
   end
 
@@ -26,18 +26,18 @@ describe ::Trax::Model::Restorable do
 
       it do
         subject
-        Message.all.pluck(:id).should include(subject.id)
+        expect(Message.all.pluck(:id)).to include(subject.id)
       end
 
       it do
         subject.destroy
-        Message.all.pluck(:id).should_not include(subject.id)
+        expect(Message.all.pluck(:id)).to_not include(subject.id)
       end
     end
 
     it ".by_is_deleted" do
       subject.destroy
-      Message.by_is_deleted.pluck(:id).should include(subject.id)
+      expect(Message.by_is_deleted.pluck(:id)).to include(subject.id)
     end
   end
 end

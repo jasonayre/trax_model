@@ -12,7 +12,7 @@ describe ::Trax::Model::Freezable do
       subject.title = "somethingelse"
       subject.save
 
-      subject.errors.messages[:title].should include("Cannot be modified")
+      expect(subject.errors.messages[:title]).to include("Cannot be modified")
     end
   end
 end
