@@ -19,9 +19,7 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
       context "initializing model and setting delegated attributes directly", :delegated_attributes =>  { :cost => 5, :tax => 5, :delivery_time => "5 days" } do
         self::DELEGATED_ATTRIBUTES = { :cost => 5, :tax => 5, :delivery_time => "5 days" }
 
-        subject{ |example|
-          # binding.pry
-           ::Ecommerce::ShippingAttributes.new(example.example_group::DELEGATED_ATTRIBUTES) }
+        subject{ |example| ::Ecommerce::ShippingAttributes.new(example.example_group::DELEGATED_ATTRIBUTES) }
 
         self::DELEGATED_ATTRIBUTES.each_pair do |k,v|
           it "#{k} should be set" do
