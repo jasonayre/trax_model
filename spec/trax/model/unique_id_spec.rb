@@ -7,8 +7,10 @@ describe ::Trax::Model::UniqueId do
   describe "uuid_prefix" do
     context "bad prefixes" do
       ["a", "1p", "a1a", "bl", "1", "111"].each do |prefix|
+        let(:test_subject) { ::Trax::Core::NamedClass.new("Product::Asdfg#{prefix}", subject)}
+
         it "raises error when passed hex incompatible prefix #{prefix}" do
-          expect{ subject.trax_defaults.uuid_prefix=(prefix) }.to raise_error
+          expect{ test_subject.mixins(:unique_id => {:uuid_prefix => prefix})}.to raise_error(::Trax::Core::Errors::ConfigurationError)
         end
       end
     end

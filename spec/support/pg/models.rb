@@ -7,8 +7,8 @@ module Ecommerce
 
     mixins :unique_id => { :uuid_prefix => "c2" }
 
-    belongs_to :user, :class_name => "Ecommerce::User"
-    belongs_to :product, :class_name => "Ecommerce::Product"
+    # belongs_to :user, :class_name => "Ecommerce::User"
+    # belongs_to :product, :class_name => "Ecommerce::Product"
   end
 
   class ShippingAttributes < ::Ecommerce::ProductAttributeSet
@@ -16,7 +16,7 @@ module Ecommerce
     include ::Trax::Model::Attributes::Mixin
 
     define_attributes do
-      struct :specifics, :validate => true do
+      struct :specifics, :model_accessors => true, :validate => true do
         string :cost, :default => 0
 
         validates(:cost, :length => {:minimum => 10})
@@ -27,11 +27,12 @@ module Ecommerce
         end
 
         struct :dimensions, :validate => true do
-          string :length
-          string :width
-          string :height
+          integer :length
+          integer :width
+          integer :height
+          string :packaging_box
 
-          validates(:length, :length => {:maximum => 10})
+          validates(:length, :numericality => {:greater_than => 0})
         end
       end
     end
@@ -79,6 +80,10 @@ module Ecommerce
           string :primary_utility, :default => "Skateboarding", :define_scopes => true
           string :sole_material
           boolean :has_shoelaces, :define_scopes => true
+          integer :in_stock_quantity, :default => 0
+          integer :number_of_sales, :default => 0
+          integer :cost
+          integer :price
 
           enum :color, :default => :blue, :define_scopes => false do
             define :red,   1
@@ -95,6 +100,10 @@ module Ecommerce
             define :mens_10, 5
             define :mens_11, 6
             define :mens_12, 7
+          end
+
+          def total_profit
+            number_of_sales * (price - cost)
           end
         end
       end
