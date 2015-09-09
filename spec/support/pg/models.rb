@@ -17,9 +17,10 @@ module Ecommerce
 
     define_attributes do
       struct :specifics, :model_accessors => true, :validate => true do
-        string :cost, :default => 0
-
-        validates(:cost, :length => {:minimum => 10})
+        integer :cost, :default => 0
+        validates(:cost, :numericality => {:greater_than => 0})
+        integer :tax
+        string :delivery_time
 
         enum :service do
           define :usps,  1

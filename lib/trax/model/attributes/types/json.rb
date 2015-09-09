@@ -94,7 +94,13 @@ module Trax
 
             properties_to_define.each do |_property|
               getter_method, setter_method = _property.to_sym, :"#{_property}="
-              model.delegate(getter_method, setter_method, :to => attribute_name)
+
+              model.__send__(:define_method, setter_method) do |val|
+                self[attribute_name] = {} unless self[attribute_name]
+                self.__send__(attribute_name).__send__(setter_method, val)
+              end
+
+              model.delegate(getter_method, :to => attribute_name)
             end
           end
         end

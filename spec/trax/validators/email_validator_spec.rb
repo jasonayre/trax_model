@@ -6,7 +6,7 @@ describe ::EmailValidator do
   ["bill@somewhere", "bill", "@initech.com", "!!!@!!!.com"].each do |bad_email|
     it "should fail validation for #{bad_email}" do
       widget = ::Widget.create(:email_address => bad_email)
-      widget.valid?.should eq false
+      expect(widget.valid?).to eq false
     end
   end
 end
