@@ -10,7 +10,8 @@ class JsonAttributeValidator < ActiveModel::EachValidator
     unless value.is_a?(json_attribute) && value.valid?
       if value.is_a?(json_attribute)
         value.errors.messages.each_pair do |k,v|
-          v.flatten.join(", ") if v.is_a?(Array)
+          v = v.flatten.join(", ") if v.is_a?(Array)
+          # binding.pry
           object.errors.add("#{attribute}.#{k}", v)
         end
       else
