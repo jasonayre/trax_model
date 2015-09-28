@@ -28,8 +28,9 @@ module Trax
           def self.define_attribute(klass, attribute_name, **options, &block)
             klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
             attribute_klass = if options.key?(:class_name)
-              _klass = options[:class_name].constantize
-              _klass.include(ValueExtensions)
+              _klass_prototype = options[:class_name].constantize.clone
+              _klass = ::Trax::Core::NamedClass.new(klass_name, _klass_prototype, :parent_definition => klass, &block)
+              _klass.include(ValueExtensions) unless klass.const_defined?("ValueExtensions")
               _klass
             else
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)

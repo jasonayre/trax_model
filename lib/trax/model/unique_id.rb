@@ -10,7 +10,6 @@ module Trax
 
       after_included do |options|
         define_configuration_options!(:unique_id) do
-
           option :uuid_prefix,
                  :validates => {
                    :exclusion => {
