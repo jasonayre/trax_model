@@ -108,10 +108,7 @@ module Trax
             klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
             attribute_klass = if options.key?(:extend)
               _klass_prototype = options[:extend].constantize.clone
-              # binding.pry
               _klass = ::Trax::Core::NamedClass.new(klass_name, _klass_prototype, :parent_definition => klass, &block)
-              binding.pry if attribute_name == :translations
-
               _klass.include(ValueExtensions) unless klass.const_defined?("ValueExtensions")
               _klass
             else
