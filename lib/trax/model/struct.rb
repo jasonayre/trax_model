@@ -96,16 +96,6 @@ module Trax
 
       def self.type; :struct end;
 
-      def to_serializable_hash
-        _serializable_hash = to_hash
-
-        self.class.fields_module.enums.keys.each do |attribute_name|
-          _serializable_hash[attribute_name] = _serializable_hash[attribute_name].try(:to_i)
-        end if self.class.fields_module.enums.keys.any?
-
-        _serializable_hash
-      end
-
       class << self
         alias :boolean :boolean_property
         alias :enum :enum_property

@@ -18,6 +18,16 @@ module Trax
               self.to_hash.to_json
             end
 
+            def to_serializable_hash
+              _serializable_hash = to_hash
+
+              self.class.fields_module.enums.keys.each do |attribute_name|
+                _serializable_hash[attribute_name] = _serializable_hash[attribute_name].try(:to_i)
+              end if self.class.fields_module.enums.keys.any?
+
+              _serializable_hash
+            end
+
             module ClassMethods
               def type; :struct end;
 
@@ -107,7 +117,7 @@ module Trax
           def self.define_attribute(klass, attribute_name, **options, &block)
             klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
             attribute_klass = if options.key?(:extend)
-              _klass_prototype = options[:extend].constantize.clone
+              _klass_prototype = options[:extend].constantize
               _klass = ::Trax::Core::NamedClass.new(klass_name, _klass_prototype, :parent_definition => klass, &block)
               _klass.include(ValueExtensions) unless klass.const_defined?("ValueExtensions")
               _klass
@@ -140,11 +150,11 @@ module Trax
             end
 
             def type_cast_from_user(value)
-              value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value || {})
+              value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
             end
 
             def type_cast_from_database(value)
-              value.present? ? @target_klass.new(JSON.parse(value)) : value
+              value.present? ? @target_klass.new(::JSON.parse(value)) : value
             end
 
             def type_cast_for_database(value)
