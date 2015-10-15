@@ -17,6 +17,8 @@ module Ecommerce
 
     define_attributes do
       struct :specifics, :model_accessors => true, :validate => true do
+        include ::ActiveModel::Validations
+
         integer :cost, :default => 0
         validates(:cost, :numericality => {:greater_than => 0})
         integer :tax
@@ -27,7 +29,9 @@ module Ecommerce
           define :fedex, 2
         end
 
-        struct :dimensions, :validate => true do
+        struct :dimensions do
+          include ::ActiveModel::Validations
+
           integer :length
           integer :width
           integer :height
@@ -74,26 +78,26 @@ module Ecommerce
       include ::Trax::Model::Attributes::Mixin
 
       define_attributes do
-        string :name, :default => "Some Shoe Name", :define_scopes => true
-        boolean :active, :default => true, :define_scopes => true
+        string :name, :default => "Some Shoe Name"
+        boolean :active, :default => true
 
         struct :custom_fields do
-          string :primary_utility, :default => "Skateboarding", :define_scopes => true
+          string :primary_utility, :default => "Skateboarding"
           string :sole_material
-          boolean :has_shoelaces, :define_scopes => true
+          boolean :has_shoelaces
           integer :in_stock_quantity, :default => 0
           integer :number_of_sales, :default => 0
           integer :cost
           integer :price
 
-          enum :color, :default => :blue, :define_scopes => false do
+          enum :color, :default => :blue do
             define :red,   1
             define :blue,  2
             define :green, 3
             define :black, 4
           end
 
-          enum :size, :default => :mens_9, :define_scopes => true do
+          enum :size, :default => :mens_9 do
             define :mens_6,  1
             define :mens_7,  2
             define :mens_8,  3
@@ -106,6 +110,8 @@ module Ecommerce
           def total_profit
             number_of_sales * (price - cost)
           end
+
+          define_model_scopes_for(:primary_utility, :has_shoelaces, :size)
         end
       end
     end
