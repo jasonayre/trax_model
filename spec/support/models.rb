@@ -114,9 +114,11 @@ end
 class SwinglineStaplerAttributeSet < ::ActiveRecord::Base
 end
 
-require 'trax/model/struct'
 
-class StoreCategory < ::Trax::Model::Struct
+
+class StoreCategory < ::Trax::Core::Types::Struct
+  include ::Trax::Model::StructExtensions
+
   string :name
   struct :meta_attributes do
     string :description
