@@ -40,6 +40,7 @@ module Trax
     autoload :Railtie
     autoload :STI
     autoload :Struct
+    autoload :StructExtensions
     autoload :Validators
 
     include ::Trax::Model::Matchable
@@ -159,4 +160,4 @@ module Trax
   end
 end
 
-::Trax::Model::Railtie if defined?(Rails)
+::Trax::Model::Railtie if defined?(::Rails)
