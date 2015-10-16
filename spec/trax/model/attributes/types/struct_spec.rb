@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
+describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
   subject{ ::Ecommerce::Products::MensShoes::Fields::CustomFields }
 
   it { expect(subject.new.primary_utility).to eq "Skateboarding" }
