@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe ::Trax::Model::Struct do
+describe ::Trax::Model::StructExtensions do
   subject {
     ::StoreCategory.new(
       "name" => "watches",

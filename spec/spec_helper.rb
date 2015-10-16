@@ -3,6 +3,7 @@ require 'bundler'
 require 'simplecov'
 # require 'pry'
 require 'trax_model'
+require 'rails'
 require 'active_record'
 
 SimpleCov.start do
