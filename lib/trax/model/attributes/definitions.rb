@@ -31,7 +31,7 @@ module Trax
         end
 
         def struct(*args, **options, &block)
-          attribute(*args, :type => :json, **options, &block)
+          attribute(*args, :type => :struct, **options, &block)
         end
       end
     end

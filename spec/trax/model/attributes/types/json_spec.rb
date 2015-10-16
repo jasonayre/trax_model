@@ -4,7 +4,7 @@ describe ::Trax::Model::Attributes::Types::Json, :postgres => true do
   subject{ ::Ecommerce::Products::MensShoes::Fields::CustomFields }
 
   it { expect(subject.new.primary_utility).to eq "Skateboarding" }
-  it { expect(subject.new.sole_material).to eq "" }
+  it { expect(subject.new.sole_material).to eq nil }
 
   context "attribute definition" do
     subject { ::Ecommerce::ShippingAttributes.new }
