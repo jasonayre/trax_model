@@ -8,7 +8,7 @@ module Trax
           def self.define_attribute(klass, attribute_name, **options, &block)
             klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
             attribute_klass = if options.key?(:extend)
-              _klass_prototype = options[:extend].constantize
+              _klass_prototype = options[:extend].is_a?(::String) ? options[:extend].safe_constantize : options[:extend]
               _klass = ::Trax::Core::NamedClass.new(klass_name, _klass_prototype, :parent_definition => klass, &block)
               _klass.include(::Trax::Model::StructExtensions)
               _klass
