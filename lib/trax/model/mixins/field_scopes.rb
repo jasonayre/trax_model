@@ -32,8 +32,14 @@ module Trax
           private
           def define_where_scope_for_field(field_scope_name, **options)
             scope field_scope_name, lambda{ |*_values|
-              _values.flat_compact_uniq!
-              where(options[:field] => _values)
+              _relation = if _values.first.is_a?(::ActiveRecord::Relation)
+                where(options[:field] => _values.first)
+              else
+                _values.flat_compact_uniq!
+                where(options[:field] => _values)
+              end
+
+              _relation
             }
 
             # Alias scope names with pluralized versions, i.e. by_id also => by_ids
@@ -42,15 +48,27 @@ module Trax
 
           def define_where_not_scope_for_field(field_scope_name, **options)
             scope field_scope_name, lambda{ |*_values|
-              _values.flat_compact_uniq!
-              where.not(options[:field] => _values)
+              _relation = if _values.first.is_a?(::ActiveRecord::Relation)
+                where.not(options[:field] => _values.first)
+              else
+                _values.flat_compact_uniq!
+                where.not(options[:field] => _values)
+              end
+
+              _relation
             }
           end
 
           def define_matching_scope_for_field(field_scope_name, **options)
             scope field_scope_name, lambda{ |*_values|
-              _values.flat_compact_uniq!
-              matching(options[:field] => _values)
+              _relation = if _values.first.is_a?(::ActiveRecord::Relation)
+                matching(options[:field] => _values.first)
+              else
+                _values.flat_compact_uniq!
+                matching(options[:field] => _values)
+              end
+
+              _relation
             }
           end
         end
