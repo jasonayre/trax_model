@@ -1,4 +1,5 @@
 require 'active_record'
+require 'trax_core'
 
 ::ActiveRecord::Schema.define(:version => 1) do
   require_relative '../db/schema/default_tables'
@@ -13,6 +14,15 @@ end
 if ENV["DB"] == "postgres"
   require_relative 'pg/models'
 end
+#
+# class Blueprint < ::Trax::Core::Blueprint
+#   class Vehicle < ::Trax::Core::Blueprint
+#     enum :kind do
+#       define :car, 1, :type => "Vehicle::Car"
+#       define :truck, 2, :type => "Vehicle::Truck"
+#     end
+#   end
+# end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
@@ -57,6 +67,27 @@ module Products
 
       integer :in_stock_quantity, :default => 0
     end
+  end
+end
+
+class Vehicle < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Mixin
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9a" },
+         :sti_enum  => true
+
+  define_attributes do
+    enum :kind do
+      define :car, 1, :type => "Vehicle::Car"
+      define :truck, 2, :type => "Vehicle::Truck"
+    end
+  end
+
+  class Car < ::Vehicle
+  end
+
+  class Truck < ::Vehicle
   end
 end
 

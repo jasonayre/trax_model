@@ -6,6 +6,7 @@ module Trax
       autoload :FieldScopes
       autoload :IdScopes
       autoload :SortByScopes
+      autoload :StiEnum
     end
   end
 end
