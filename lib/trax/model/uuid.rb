@@ -2,8 +2,19 @@ module Trax
   module Model
     class UUID < String
       class_attribute :prefix_map
-
       self.prefix_map = ::Hashie::Mash.new
+
+      def self.===(val)
+        return false unless (val.is_a?(::Trax::Model::UUID) || val.is_a?(::String)) && val.length == 36
+        return true if val.is_a?(::Trax::Model::UUID)
+
+        #i.e. if we have 2 and 3 digit lengths, for value 'ABCDE' return ['AB', 'ABC']
+        value_samples = prefix_lengths.map do |limit|
+          val[0..(limit-1)]
+        end
+
+        return value_samples.any?{|sample| prefixes.include?(sample) }
+      end
 
       def self.klass_prefix_map
         prefix_map.invert
@@ -11,7 +22,7 @@ module Trax
 
       def self.generate(prefix = nil)
         uuid = ::SecureRandom.uuid
-        uuid[0..1] = prefix if prefix
+        uuid[0..(prefix.length-1)] = prefix if prefix
         uuid
       end
 
@@ -21,6 +32,14 @@ module Trax
         end
 
         prefix_map[:"#{prefix_value}"] = klass
+      end
+
+      def self.prefixes
+        @prefixes ||= ::Trax::Model::Registry.uuid_map.keys
+      end
+
+      def self.prefix_lengths
+        @prefix_lengths ||= prefixes.map(&:length).uniq
       end
 
       def self.register(&block)
