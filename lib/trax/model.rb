@@ -5,7 +5,7 @@ require 'hashie/mash'
 require 'hashie/trash'
 require 'hashie/extensions/dash/indifferent_access'
 require 'simple_enum'
-require_relative './string'
+# require_relative './string'
 require_relative './validators/boolean_validator'
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
@@ -39,6 +39,7 @@ module Trax
     autoload :Restorable
     autoload :Railtie
     autoload :STI
+    autoload :StringExtensions
     autoload :Struct
     autoload :StructExtensions
     autoload :Validators
@@ -155,6 +156,8 @@ module Trax
         name.underscore
       end
     end
+
+    ::String.include(::Trax::Model::StringExtensions)
 
     ::ActiveSupport.run_load_hooks(:trax_model, self)
   end
