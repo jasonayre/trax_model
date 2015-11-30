@@ -85,6 +85,7 @@ module Trax
       ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::IdScopes
       ::Trax::Model::Mixins::SortByScopes
+      ::Trax::Model::Mixins::StiEnum
     end
 
     eager_autoload_mixins!
