@@ -71,17 +71,60 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
       end
 
       context "array property" do
-        let!(:item_1) {
-          ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['skateboarding'] })
-        }
-        let!(:item_2) { ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['skateboarding', 'walking']}) }
-        let!(:item_3) { ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['running']}) }
+        before(:all) do
+          @item_1 = ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['skateboarding'] })
+          @item_2 = ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['skateboarding', 'walking']})
+          @item_3 = ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['running']})
+        end
+
         subject { ::Ecommerce::Products::MensShoes.all }
 
-        it { expect(subject.by_tags('skateboarding')).to include(item_1, item_2) }
-        it { expect(subject.by_tags('skateboarding')).to_not include(item_3) }
-        it { expect(subject.by_tags('running')).to include(item_3) }
-        it { expect(subject.by_tags('running')).to_not include(item_1, item_2) }
+        it { expect(subject.by_tags('skateboarding')).to include(@item_1, @item_2) }
+        it { expect(subject.by_tags('skateboarding')).to_not include(@item_3) }
+        it { expect(subject.by_tags('running')).to include(@item_3) }
+        it { expect(subject.by_tags('running')).to_not include(@item_1, @item_2) }
+      end
+
+      context "numeric property" do
+        before(:all) do
+          @item_1 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :in_stock_quantity => 1 })
+          @item_2 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :in_stock_quantity => 2 })
+          @item_3 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :in_stock_quantity => 3 })
+        end
+
+        subject { ::Ecommerce::Products::MensShoes.all }
+
+
+        context "less than" do
+          it { expect(subject.by_quantity_in_stock_lt(2)).to include(@item_1) }
+          it { expect(subject.by_quantity_in_stock_lt(2)).to_not include(@item_2, @item_3) }
+
+          context "or equal" do
+            it { expect(subject.by_quantity_in_stock_lte(2)).to include(@item_1, @item_2) }
+            it { expect(subject.by_quantity_in_stock_lt(2)).to_not include(@item_3) }
+          end
+        end
+
+        context "greater than" do
+          it { expect(subject.by_quantity_in_stock_gt(2)).to include(@item_3) }
+          it { expect(subject.by_quantity_in_stock_gt(2)).to_not include(@item_2, @item_1) }
+
+          context "or equal" do
+            it { expect(subject.by_quantity_in_stock_gte(2)).to include(@item_3, @item_2) }
+            it { expect(subject.by_quantity_in_stock_gte(2)).to_not include(@item_1) }
+          end
+        end
+
+        context "equal" do
+          it {
+            values = subject.by_quantity_in_stock_eq(2).map(&:custom_fields).map(&:in_stock_quantity)
+            expect(values).to include(2)
+          }
+          it {
+            values = subject.by_quantity_in_stock_eq(2).map(&:custom_fields).map(&:in_stock_quantity)
+            expect(values).to_not include(1, 3)
+          }
+        end
       end
     end
 

@@ -39,6 +39,8 @@ module Ecommerce
 
           validates(:length, :numericality => {:greater_than => 0})
         end
+
+        define_model_scope_for :cost, :as => :by_cost
       end
     end
   end
@@ -64,6 +66,15 @@ module Ecommerce
         define :out_of_stock, 2
         define :backordered,  3
       end
+
+      struct :custom_fields do
+        integer :cost
+        integer :price
+        integer :in_stock_quantity, :default => 0
+        integer :number_of_sales, :default => 0
+
+        define_model_scope_for :in_stock_quantity, :as => :by_quantity_in_stock
+      end
     end
   end
 
@@ -71,6 +82,9 @@ module Ecommerce
     class Shoes < ::Ecommerce::Product
       include ::Trax::Model
       include ::Trax::Model::Attributes::Mixin
+
+      define_attributes do
+      end
     end
 
     class MensShoes < ::Ecommerce::Products::Shoes
@@ -81,14 +95,10 @@ module Ecommerce
         string :name, :default => "Some Shoe Name"
         boolean :active, :default => true
 
-        struct :custom_fields do
+        struct :custom_fields, :extend => ::Ecommerce::Product::Fields::CustomFields do
           string :primary_utility, :default => "Skateboarding"
           string :sole_material
           boolean :has_shoelaces
-          integer :in_stock_quantity, :default => 0
-          integer :number_of_sales, :default => 0
-          integer :cost
-          integer :price
 
           array :tags
 
