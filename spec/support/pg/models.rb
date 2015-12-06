@@ -90,6 +90,8 @@ module Ecommerce
           integer :cost
           integer :price
 
+          array :tags
+
           enum :color, :default => :blue do
             define :red,   1
             define :blue,  2
@@ -112,6 +114,7 @@ module Ecommerce
           end
 
           define_model_scopes_for(:primary_utility, :has_shoelaces, :size)
+          define_model_scope_for :tags, :as => :by_tags
         end
       end
     end

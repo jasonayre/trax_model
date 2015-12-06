@@ -40,9 +40,29 @@ module Trax
             define_where_scopes_for_boolean_property(attribute_name, attribute_klass, **options)
           when :enum
             define_scopes_for_enum(attribute_name, attribute_klass, **options)
+          when :array
+            define_scopes_for_array(attribute_name, attribute_klass, **options)
           else
             define_where_scopes_for_property(attribute_name, attribute_klass, **options)
           end
+        end
+
+        def define_scopes_for_array(attribute_name, property_klass, as:nil)
+          return unless has_active_record_ancestry?(property_klass)
+
+          model_class = model_class_for_property(property_klass)
+          field_name = property_klass.parent_definition.name.demodulize.underscore
+          attribute_name = property_klass.name.demodulize.underscore
+          scope_name = as || :"by_#{field_name}_#{attribute_name}"
+          model_class.scope(scope_name, lambda{ |*_scope_values|
+            _scope_values.flat_compact_uniq!
+            #todo: HACK, due to AR. Correct way of doing it would be this:
+            # model_class.where("#{field_name} -> '#{attribute_name}' ?| array[?]", *_scope_values)
+            # but we can't, because it treats the first ? as a bind variable as well
+
+            sanitized_prepared_scope_values = ::ActiveRecord::Base.__send__(:sanitize_sql, _scope_values.to_single_quoted_list, '')
+            model_class.where("#{field_name} -> '#{attribute_name}' ?| array[#{sanitized_prepared_scope_values}]")
+          })
         end
 
         #this only supports properties 1 level deep, but works beautifully
