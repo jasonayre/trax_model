@@ -85,6 +85,29 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
         it { expect(subject.by_tags('running')).to_not include(@item_1, @item_2) }
       end
 
+      context "time property" do
+        before(:all) do
+          @timestamp_1 = "2013-01-01 07:00:00"
+          @timestamp_2 = "2014-01-01 07:00:00"
+          @timestamp_3 = "2015-01-01 07:00:00"
+          @item_1 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :last_received_at => @timestamp_1 })
+          @item_2 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :last_received_at => @timestamp_2 })
+          @item_3 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :last_received_at => @timestamp_3 })
+        end
+
+        subject { ::Ecommerce::Products::MensShoes.all }
+
+        context "greater than" do
+          it { expect(subject.by_last_received_at_gt(@timestamp_2)).to include(@item_3) }
+          it { expect(subject.by_last_received_at_gt(@timestamp_2)).to_not include(@item_2, @item1) }
+        end
+
+        context "less than" do
+          it { expect(subject.by_last_received_at_lt(@timestamp_2)).to include(@item_1) }
+          it { expect(subject.by_last_received_at_lt(@timestamp_2)).to_not include(@item_3, @item_2) }
+        end
+      end
+
       context "numeric property" do
         before(:all) do
           @item_1 =  ::Ecommerce::Products::MensShoes.create(:custom_fields => { :in_stock_quantity => 1 })

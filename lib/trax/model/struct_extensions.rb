@@ -44,6 +44,8 @@ module Trax
             define_scopes_for_array(attribute_name, attribute_klass, **options)
           when :integer
             define_scopes_for_numeric(attribute_name, attribute_klass, **options)
+          when :time
+            define_scopes_for_time(attribute_name, attribute_klass, **options)
           else
             define_where_scopes_for_property(attribute_name, attribute_klass, **options)
           end
@@ -83,6 +85,27 @@ module Trax
               _scope_values.flat_compact_uniq!
               model_class.where("(#{field_name} ->> '#{attribute_name}')::#{cast_type} #{operator} ?", _scope_values)
             })
+          end
+        end
+
+        def define_scopes_for_time(attribute_name, property_klass, as:nil)
+          return unless has_active_record_ancestry?(property_klass)
+
+          model_class = model_class_for_property(property_klass)
+          field_name = property_klass.parent_definition.name.demodulize.underscore
+          attribute_name = property_klass.name.demodulize.underscore
+          cast_type = 'timestamp'
+
+          { :gt => '>', :lt => '<'}.each_pair do |k, operator|
+            scope_prefix = as ? as : :"by_#{field_name}_#{attribute_name}"
+            scope_name = "#{scope_prefix}_#{k}"
+            scope_alias = "#{scope_prefix}_#{{:gt => 'after', :lt => 'before' }[k]}"
+
+            model_class.scope(scope_name, lambda{ |*_scope_values|
+              _scope_values.flat_compact_uniq!
+              model_class.where("(#{field_name} ->> '#{attribute_name}')::#{cast_type} #{operator} ?", _scope_values)
+            })
+            model_class.singleton_class.__send__("alias_method", scope_alias.to_sym, scope_name)
           end
         end
 
