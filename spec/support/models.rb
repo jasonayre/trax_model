@@ -74,7 +74,7 @@ class Vehicle < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Attributes::Mixin
 
-  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9a" },
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9c" },
          :sti_enum  => true
 
   define_attributes do

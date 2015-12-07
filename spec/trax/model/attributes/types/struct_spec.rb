@@ -4,7 +4,7 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
   subject{ ::Ecommerce::Products::MensShoes::Fields::CustomFields }
 
   it { expect(subject.new.primary_utility).to eq "Skateboarding" }
-  it { expect(subject.new.sole_material).to eq nil }
+  it { expect(subject.new.sole_material).to eq "" }
 
   context "attribute definition" do
     subject { ::Ecommerce::ShippingAttributes.new }
@@ -68,6 +68,20 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
 
         it { expect(subject.by_custom_fields_size(:mens_6, :mens_7)).to include(mens_6, mens_7) }
         it { expect(subject.by_custom_fields_size(:mens_6, :mens_7)).to_not include(mens_10) }
+      end
+
+      context "array property" do
+        let!(:item_1) {
+          ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['skateboarding'] })
+        }
+        let!(:item_2) { ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['skateboarding', 'walking']}) }
+        let!(:item_3) { ::Ecommerce::Products::MensShoes.create(:custom_fields => { :tags => ['running']}) }
+        subject { ::Ecommerce::Products::MensShoes.all }
+
+        it { expect(subject.by_tags('skateboarding')).to include(item_1, item_2) }
+        it { expect(subject.by_tags('skateboarding')).to_not include(item_3) }
+        it { expect(subject.by_tags('running')).to include(item_3) }
+        it { expect(subject.by_tags('running')).to_not include(item_1, item_2) }
       end
     end
 
