@@ -6,9 +6,6 @@ module Ecommerce
     include ::Trax::Model::Attributes::Mixin
 
     mixins :unique_id => { :uuid_prefix => "c2" }
-
-    # belongs_to :user, :class_name => "Ecommerce::User"
-    # belongs_to :product, :class_name => "Ecommerce::Product"
   end
 
   class ShippingAttributes < ::Ecommerce::ProductAttributeSet
@@ -72,8 +69,10 @@ module Ecommerce
         integer :price
         integer :in_stock_quantity, :default => 0
         integer :number_of_sales, :default => 0
+        time :last_received_at
 
         define_model_scope_for :in_stock_quantity, :as => :by_quantity_in_stock
+        define_model_scope_for :last_received_at, :as => :by_last_received_at
       end
     end
   end
