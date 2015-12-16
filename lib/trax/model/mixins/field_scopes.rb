@@ -14,13 +14,11 @@ module Trax
             case field_scope_options[:type]
             when :where
               define_where_scope_for_field(field_scope_name, **field_scope_options)
-            when :match
+            when :where_lower
+              define_where_lower_scope_for_field(field_scope_name, **field_scope_options)
+            when :match, :matching
               define_matching_scope_for_field(field_scope_name, **field_scope_options)
-            when :matching
-              define_matching_scope_for_field(field_scope_name, **field_scope_options)
-            when :not
-              define_where_not_scope_for_field(field_scope_name, **field_scope_options)
-            when :where_not
+            when :where_not, :not
               define_where_not_scope_for_field(field_scope_name, **field_scope_options)
             else
               define_where_scope_for_field(field_scope_name, **field_scope_options)
@@ -37,6 +35,24 @@ module Trax
               else
                 _values.flat_compact_uniq!
                 where(options[:field] => _values)
+              end
+
+              _relation
+            }
+
+            # Alias scope names with pluralized versions, i.e. by_id also => by_ids
+            singleton_class.__send__(:alias_method, :"#{field_scope_name.to_s.pluralize}", field_scope_name)
+          end
+
+          def define_where_lower_scope_for_field(field_scope_name, **options)
+            scope field_scope_name, lambda{ |*_values|
+              _query = "lower(#{options[:field]}) in (?)"
+
+              _relation = if _values.first.is_a?(::ActiveRecord::Relation)
+                where(_query, _values.first)
+              else
+                _values.map!(&:downcase)
+                where(_query, _values)
               end
 
               _relation

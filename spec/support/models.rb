@@ -109,7 +109,11 @@ class Message < ::ActiveRecord::Base
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3a" },
          :freezable => true,
-         :restorable => { :field => :deleted }
+         :restorable => { :field => :deleted },
+         :field_scopes => {
+           :by_title => true,
+           :by_title_case_insensitive => { :field => :title, :type => :where_lower}
+         }
 
   enum :status => [ :queued, :scheduled, :delivered, :failed_delivery ]
 
@@ -144,8 +148,6 @@ end
 
 class SwinglineStaplerAttributeSet < ::ActiveRecord::Base
 end
-
-
 
 class StoreCategory < ::Trax::Core::Types::Struct
   include ::Trax::Model::StructExtensions
