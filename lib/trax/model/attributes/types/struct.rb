@@ -48,7 +48,7 @@ module Trax
             end
 
             def type_cast_for_database(value)
-              value.present? ? value.to_serializable_hash.to_json : nil
+              value.present? ? value.to_serializable_hash.to_json : {}.to_json
             end
           end
 
