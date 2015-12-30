@@ -82,6 +82,8 @@ module Trax
               end
 
               model.delegate(getter_method, :to => attribute_name)
+
+              model.attribute_names << _property.to_s unless model.attribute_names.include?(_property.to_s)
             end
           end
         end
