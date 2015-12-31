@@ -6,8 +6,8 @@ module Trax
       extend ::ActiveSupport::Autoload
 
       autoload :Attribute
-      autoload :Mixin
       autoload :Definitions
+      autoload :Dsl
       autoload :Errors
       autoload :Fields
       autoload :Types

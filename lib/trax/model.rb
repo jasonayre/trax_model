@@ -68,7 +68,6 @@ module Trax
     end
 
     def self.eager_autoload_mixins!
-      ::Trax::Model::Attributes::Mixin
       ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes

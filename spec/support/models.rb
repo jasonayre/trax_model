@@ -26,7 +26,7 @@ end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
-  include ::Trax::Model::Attributes::Mixin
+  include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => {
     :uuid_column => "uuid",
@@ -47,12 +47,12 @@ end
 module Products
   class Shoes < Product
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
   end
 
   class MensShoes < Shoes
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
 
     define_attributes do
       enum :size, :default => :mens_9 do
@@ -72,7 +72,7 @@ end
 
 class Vehicle < ::ActiveRecord::Base
   include ::Trax::Model
-  include ::Trax::Model::Attributes::Mixin
+  include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9c" },
          :sti_enum  => true

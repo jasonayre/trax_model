@@ -3,14 +3,14 @@ module Ecommerce
     self.table_name = "ecommerce_product_attribute_sets"
 
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
 
     mixins :unique_id => { :uuid_prefix => "c2" }
   end
 
   class ShippingAttributes < ::Ecommerce::ProductAttributeSet
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
 
     define_attributes do
       struct :specifics, :model_accessors => true, :validate => true do
@@ -46,7 +46,7 @@ module Ecommerce
     self.table_name = "ecommerce_users"
 
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
 
     mixins :unique_id => { :uuid_prefix => "9b" }
   end
@@ -55,7 +55,7 @@ module Ecommerce
     self.table_name = "ecommerce_votes"
 
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
 
     mixins :unique_id => { :uuid_prefix => "9d" }
 
@@ -69,7 +69,7 @@ module Ecommerce
     self.table_name = "ecommerce_products"
 
     include ::Trax::Model
-    include ::Trax::Model::Attributes::Mixin
+    include ::Trax::Model::Attributes::Dsl
 
     mixins :unique_id => { :uuid_prefix => "9a" }
 
@@ -103,7 +103,7 @@ module Ecommerce
   module Products
     class Shoes < ::Ecommerce::Product
       include ::Trax::Model
-      include ::Trax::Model::Attributes::Mixin
+      include ::Trax::Model::Attributes::Dsl
 
       define_attributes do
       end
@@ -111,7 +111,7 @@ module Ecommerce
 
     class MensShoes < ::Ecommerce::Products::Shoes
       include ::Trax::Model
-      include ::Trax::Model::Attributes::Mixin
+      include ::Trax::Model::Attributes::Dsl
 
       define_attributes do
         string :name, :default => "Some Shoe Name"
