@@ -45,11 +45,7 @@ module Trax
           def trax_attribute(name, type:, **options, &block)
             raise ::Trax::Model::Attributes::Errors::UnknownAttributeType.new(type: type) unless ::Trax::Model::Attributes.key?(type)
 
-            if ::Trax::Model::Attributes[type].const_defined?("Mixin")
-              attribute_type_definition_method = ::Trax::Model::Attributes[type]::Mixin::ClassMethods.instance_methods.first
-              self.send(attribute_type_definition_method, name, **options, &block)
-              self.validates(name, options[:validates]) if options.key?(:validates)
-            elsif ::Trax::Model::Attributes[type].respond_to?(:define_attribute)
+            if ::Trax::Model::Attributes[type].respond_to?(:define_attribute)
               ::Trax::Model::Attributes[type].define_attribute(self, name, **options, &block)
               self.validates(name, options[:validates]) if options.key?(:validates)
             else
