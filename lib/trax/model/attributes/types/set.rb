@@ -1,5 +1,3 @@
-require 'hashie/extensions/ignore_undeclared'
-
 module Trax
   module Model
     module Attributes
@@ -16,7 +14,7 @@ module Trax
             end
 
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
-            klass.default_value_for(attribute_name) { [] }
+            klass.default_value_for(attribute_name) { attribute_klass.new }
           end
 
           class Value < ::Trax::Model::Attributes::Value
@@ -42,7 +40,7 @@ module Trax
 
             def type_cast_from_user(value)
               case value.class.name
-              when "Array"
+              when "Array", "Set"
                 @target_klass.new(value)
               when @target_klass.name
                 @target_klass
