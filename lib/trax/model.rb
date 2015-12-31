@@ -25,6 +25,7 @@ module Trax
     autoload :Attributes
     autoload :Config
     autoload :Enum
+    autoload :EnumerableExtensions
     autoload :Errors
     autoload :Freezable
     autoload :Registry
