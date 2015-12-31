@@ -25,19 +25,13 @@ module Trax
     autoload :Config
     autoload :ExtensionsFor
     autoload :Errors
-    autoload :Freezable
     autoload :Registry
     autoload :UUID
     autoload :UUIDPrefix
-    autoload :UniqueId
     autoload :Matchable
     autoload :Mixin
     autoload :Mixins
-    autoload :Restorable
     autoload :Railtie
-    autoload :StringExtensions
-    autoload :Struct
-    autoload :StructExtensions
     autoload :Validators
 
     include ::Trax::Model::Matchable
@@ -75,13 +69,13 @@ module Trax
 
     def self.eager_autoload_mixins!
       ::Trax::Model::Attributes::Mixin
-      ::Trax::Model::Freezable
-      ::Trax::Model::Restorable
-      ::Trax::Model::UniqueId
       ::Trax::Model::Mixins::FieldScopes
+      ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes
+      ::Trax::Model::Mixins::Restorable
       ::Trax::Model::Mixins::SortByScopes
       ::Trax::Model::Mixins::StiEnum
+      ::Trax::Model::Mixins::UniqueId
     end
 
     eager_autoload_mixins!

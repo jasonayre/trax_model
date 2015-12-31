@@ -139,7 +139,7 @@ class Person < ::ActiveRecord::Base
 end
 
 class StoreCategory < ::Trax::Core::Types::Struct
-  include ::Trax::Model::StructExtensions
+  include ::Trax::Model::ExtensionsFor::Struct
 
   string :name
   struct :meta_attributes do

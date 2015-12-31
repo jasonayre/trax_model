@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ::Trax::Model::Restorable do
+describe ::Trax::Model::Mixins::Restorable do
   subject{ ::Message.create(:title => "Whatever") }
 
   its(:deleted) { should be false }
