@@ -4,7 +4,6 @@ require 'hashie/dash'
 require 'hashie/mash'
 require 'hashie/trash'
 require 'hashie/extensions/dash/indifferent_access'
-require 'simple_enum'
 require_relative './validators/boolean_validator'
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
@@ -24,7 +23,6 @@ module Trax
 
     autoload :Attributes
     autoload :Config
-    autoload :Enum
     autoload :ExtensionsFor
     autoload :Errors
     autoload :Freezable
@@ -35,10 +33,8 @@ module Trax
     autoload :Matchable
     autoload :Mixin
     autoload :Mixins
-    autoload :MTI
     autoload :Restorable
     autoload :Railtie
-    autoload :STI
     autoload :StringExtensions
     autoload :Struct
     autoload :StructExtensions
@@ -79,7 +75,6 @@ module Trax
 
     def self.eager_autoload_mixins!
       ::Trax::Model::Attributes::Mixin
-      ::Trax::Model::Enum
       ::Trax::Model::Freezable
       ::Trax::Model::Restorable
       ::Trax::Model::UniqueId
