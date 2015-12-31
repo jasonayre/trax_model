@@ -16,6 +16,21 @@ PG_TABLES = Proc.new do
     t.datetime "updated_at",        :null => false
   end
 
+  create_table "ecommerce_votes", :id => :uuid, :force => true do |t|
+    t.uuid "voteable_id"
+    t.jsonb "upvoter_ids"
+    t.jsonb "downvoter_ids"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "ecommerce_users", :id => :uuid, :force => true do |t|
+    t.string "name"
+    t.text "watched_product_ids", :array => true
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
   create_table "ecommerce_product_attribute_sets", :id => :uuid, :force => true do |t|
     t.uuid     "user_id"
     t.uuid     "product_id"

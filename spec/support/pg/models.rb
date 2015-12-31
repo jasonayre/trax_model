@@ -42,6 +42,29 @@ module Ecommerce
     end
   end
 
+  class User < ::ActiveRecord::Base
+    self.table_name = "ecommerce_users"
+
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Mixin
+
+    mixins :unique_id => { :uuid_prefix => "9b" }
+  end
+
+  class Vote < ::ActiveRecord::Base
+    self.table_name = "ecommerce_votes"
+
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Mixin
+
+    mixins :unique_id => { :uuid_prefix => "9d" }
+
+    define_attributes do
+      set :upvoter_ids
+      set :downvoter_ids
+    end
+  end
+
   class Product < ::ActiveRecord::Base
     self.table_name = "ecommerce_products"
 
