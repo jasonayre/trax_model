@@ -153,7 +153,7 @@ module Trax
       end
     end
 
-    ::String.include(::Trax::Model::StringExtensions)
+    ::String.include(::Trax::Model::ExtensionsFor::String)
 
     ::ActiveSupport.run_load_hooks(:trax_model, self)
   end
