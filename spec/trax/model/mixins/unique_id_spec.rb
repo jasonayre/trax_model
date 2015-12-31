@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe ::Trax::Model::UniqueId do
+describe ::Trax::Model::Mixins::UniqueId do
   subject{ ::Product }
 
   its(:uuid_prefix) { should be_instance_of(::Trax::Model::UUIDPrefix) }

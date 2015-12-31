@@ -138,19 +138,8 @@ class Person < ::ActiveRecord::Base
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "5a" }
 end
 
-class Stapler < ::ActiveRecord::Base
-  include ::Trax::Model
-end
-
-class SwinglineStapler < ::Stapler
-  include ::Trax::Model::STI::Attributes
-end
-
-class SwinglineStaplerAttributeSet < ::ActiveRecord::Base
-end
-
 class StoreCategory < ::Trax::Core::Types::Struct
-  include ::Trax::Model::StructExtensions
+  include ::Trax::Model::ExtensionsFor::Struct
 
   string :name
   struct :meta_attributes do

@@ -10,7 +10,7 @@ module Trax
             attribute_klass = if options.key?(:extend)
               _klass_prototype = options[:extend].is_a?(::String) ? options[:extend].safe_constantize : options[:extend]
               _klass = ::Trax::Core::NamedClass.new(klass_name, _klass_prototype, :parent_definition => klass, &block)
-              _klass.include(::Trax::Model::StructExtensions)
+              _klass.include(::Trax::Model::ExtensionsFor::Struct)
               _klass
             else
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
@@ -23,7 +23,7 @@ module Trax
           end
 
           class Value < ::Trax::Core::Types::Struct
-            include ::Trax::Model::StructExtensions
+            include ::Trax::Model::ExtensionsFor::Struct
           end
 
           class TypeCaster < ActiveRecord::Type::Value

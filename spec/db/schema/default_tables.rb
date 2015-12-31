@@ -4,7 +4,7 @@ DEFAULT_TABLES = Proc.new do
     t.integer  "kind"
     t.integer  "make"
     t.integer  "model"
-    t.string   "uuid"    
+    t.string   "uuid"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -55,22 +55,6 @@ DEFAULT_TABLES = Proc.new do
   create_table "people", :force => true do |t|
     t.string "name"
     t.string "uuid"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
-  end
-
-  create_table "staplers", :force => true do |t|
-    t.string "name"
-    t.string "type"
-    t.integer "attribute_set_id"
-    t.datetime "created_at",        :null => false
-    t.datetime "updated_at",        :null => false
-  end
-
-  create_table "swingline_stapler_attribute_sets", :force => true do |t|
-    t.float "speed"
-    t.string "owner"
-
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

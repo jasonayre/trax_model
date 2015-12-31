@@ -1,4 +1,3 @@
-
 module Trax
   module Model
     module Mixins
@@ -12,16 +11,16 @@ module Trax
         end
 
         included do
-          after_initialize :set_type_from_kind, :unless => :type?, :if => :kind?
-          after_initialize :set_kind_from_type, :unless => :kind?, :if => :type?
+          after_initialize :set_kind_from_type
+          after_initialize :set_type_from_kind
         end
 
         def set_type_from_kind
-          self[:type] = self.class.kind_to_type_mapping[self[:kind]] if !self[:type]
+          self[:type] = self.class.kind_to_type_mapping[self[:kind]] if self.has_attribute?(:kind) && self.has_attribute?(:type) && !self[:type]
         end
 
         def set_kind_from_type
-          self[:kind] = self.class.type_to_kind_mapping[self[:type]] if !self[:kind]
+          self[:kind] = self.class.type_to_kind_mapping[self[:type]] if self.has_attribute?(:kind) && self.has_attribute?(:type) && self.has_attribute?(:type) && !self[:kind]
         end
 
         module ClassMethods

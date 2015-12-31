@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe ::Trax::Model::Freezable do
+describe ::Trax::Model::Mixins::Freezable do
   subject{ ::Message.create(:title => "Whatever") }
 
   its(:status) { should eq "queued" }

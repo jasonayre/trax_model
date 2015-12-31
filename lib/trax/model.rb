@@ -4,7 +4,6 @@ require 'hashie/dash'
 require 'hashie/mash'
 require 'hashie/trash'
 require 'hashie/extensions/dash/indifferent_access'
-require 'simple_enum'
 require_relative './validators/boolean_validator'
 require_relative './validators/email_validator'
 require_relative './validators/frozen_validator'
@@ -24,24 +23,15 @@ module Trax
 
     autoload :Attributes
     autoload :Config
-    autoload :Enum
     autoload :ExtensionsFor
     autoload :Errors
-    autoload :Freezable
     autoload :Registry
     autoload :UUID
     autoload :UUIDPrefix
-    autoload :UniqueId
     autoload :Matchable
     autoload :Mixin
     autoload :Mixins
-    autoload :MTI
-    autoload :Restorable
     autoload :Railtie
-    autoload :STI
-    autoload :StringExtensions
-    autoload :Struct
-    autoload :StructExtensions
     autoload :Validators
 
     include ::Trax::Model::Matchable
@@ -79,14 +69,13 @@ module Trax
 
     def self.eager_autoload_mixins!
       ::Trax::Model::Attributes::Mixin
-      ::Trax::Model::Enum
-      ::Trax::Model::Freezable
-      ::Trax::Model::Restorable
-      ::Trax::Model::UniqueId
       ::Trax::Model::Mixins::FieldScopes
+      ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes
+      ::Trax::Model::Mixins::Restorable
       ::Trax::Model::Mixins::SortByScopes
       ::Trax::Model::Mixins::StiEnum
+      ::Trax::Model::Mixins::UniqueId
     end
 
     eager_autoload_mixins!
@@ -158,7 +147,7 @@ module Trax
       end
     end
 
-    ::String.include(::Trax::Model::StringExtensions)
+    ::String.include(::Trax::Model::ExtensionsFor::String)
 
     ::ActiveSupport.run_load_hooks(:trax_model, self)
   end

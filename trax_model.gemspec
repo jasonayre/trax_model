@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = TraxModel::VERSION
   spec.authors       = ["Jason Ayre"]
   spec.email         = ["jasonayre@gmail.com"]
-  spec.summary       = %q{Higher level ActiveRecord models for rails}
-  spec.description   = %q{Supports uuid defaults and mapping, default attributes, and various other utilities via composition}
+  spec.summary       = %q{Better ActiveRecord attributes, conventions, utilities}
+  spec.description   = %q{ActiveRecord attributes DDL, struct/array attribute types, an enum implementation that doesn't suck, etc..}
   spec.homepage      = "http://github.com/jasonayre/trax_model"
   spec.license       = "MIT"
 
@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "trax_core", "~> 0.0.83"
   spec.add_dependency "default_value_for", "~> 3.0.0"
-  spec.add_dependency "simple_enum"
   spec.add_development_dependency "hashie", ">= 3.4.2"
   spec.add_development_dependency "rails", "~> 4.2.0"
   spec.add_development_dependency "activerecord", "~> 4.2.0"
