@@ -17,25 +17,10 @@ module Trax
 
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.default_value_for(attribute_name) { [] }
-            # define_model_scopes(klass, attribute_klass)
           end
 
-          # def self.define_scopes_for_array(model, attribute_klass)
-          #   return unless has_active_record_ancestry?(property_klass)
-          #
-          #   model_class = model_class_for_property(property_klass)
-          #   field_name = property_klass.parent_definition.name.demodulize.underscore
-          #   attribute_name = property_klass.name.demodulize.underscore
-          #   scope_name = as || :"by_#{field_name}_#{attribute_name}"
-          #
-          #   model_class.scope(scope_name, lambda{ |*_scope_values|
-          #     _scope_values.flat_compact_uniq!
-          #     model_class.where("#{field_name} -> '#{attribute_name}' ?| array[:values]", :values => _scope_values)
-          #   })
-          # end
-
           class Value < ::Trax::Model::Attributes::Value
-            include ::Trax::Model::EnumerableExtensions
+            include ::Trax::Model::ExtensionsFor::Enumerable
 
             def initialize(*args)
               @value = ::Set.new(*args)
