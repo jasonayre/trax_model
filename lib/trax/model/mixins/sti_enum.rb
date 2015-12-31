@@ -1,4 +1,3 @@
-
 module Trax
   module Model
     module Mixins
