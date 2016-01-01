@@ -19,7 +19,7 @@ describe ::Trax::Model::ExtensionsFor::String do
     it { expect(subject.fields[:name].eq_lower("dc Villan Size 6")).to include(product_one) }
   end
 
-  context ".matches" do
+  context ".matches", :postgres => true do
     it { expect(subject.fields[:name].matches("dc")).to include(product_one, product_two) }
   end
 end

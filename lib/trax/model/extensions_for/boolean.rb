@@ -8,8 +8,7 @@ module Trax
         module ClassMethods
           def eq(*_scope_values)
             _scope_values.flat_compact_uniq!
-            cast_type = type
-            model_class.where("(#{field_name})::#{cast_type} IN(?)", _scope_values)
+            model_class.where({field_name => _scope_values})
           end
 
           def is_nil
