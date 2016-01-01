@@ -14,6 +14,7 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
       "custom_fields" => {
         "size" => product_one_size,
         "slug" => "dc-villan-size-6",
+        "has_shoelaces" => true,
         "display_name" => "DC Villan Mens Shoes Size 6",
         "last_received_at" => product_one_last_received_at,
         "cost" => 15,
@@ -28,6 +29,7 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
       "custom_fields" => {
         "size" => product_two_size,
         "slug" => "dc-villan-size-7",
+        "has_shoelaces" => false,
         "display_name" => "DC Villan Mens Shoes Size 7",
         "last_received_at" => product_two_last_received_at,
         "cost" => 20,
@@ -35,6 +37,38 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
       }
     )
   }
+
+  context "boolean" do
+    context "eq" do
+      it {
+        expect(subject.fields[:custom_fields][:has_shoelaces].eq(true, false)).to include(product_one, product_two)
+      }
+    end
+
+    context "is_true" do
+      it {
+        expect(subject.fields[:custom_fields][:has_shoelaces].is_true).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields][:has_shoelaces].is_true).to_not include(product_two)
+      }
+    end
+
+    context "is_false" do
+      it {
+        expect(subject.fields[:custom_fields][:has_shoelaces].is_false).to include(product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields][:has_shoelaces].is_false).to_not include(product_one)
+      }
+    end
+
+    context "is_nil" do
+      it {
+        expect(subject.fields[:custom_fields][:has_shoelaces].is_nil).to_not include(product_one, product_two)
+      }
+    end
+  end
 
   context "enum" do
     context "eq" do
