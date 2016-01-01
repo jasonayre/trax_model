@@ -18,6 +18,7 @@ module Trax
           end
 
           class Attribute < ::Trax::Model::Attributes::Attribute
+            # binding.pry
             include ::Trax::Model::ExtensionsFor::Boolean
             self.type = :boolean
 
