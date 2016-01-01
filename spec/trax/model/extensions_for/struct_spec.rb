@@ -170,5 +170,20 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
         expect(subject.fields[:custom_fields].fields[:price].lte(29.99)).to_not include(product_two)
       }
     end
+
+    context "between" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].between(28.99, 30.00)).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].between(29.99, 30.00)).to_not include(product_one)
+      }
+    end
+
+    context "in_range" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].in_range(29.99, 30.00)).to include(product_one)
+      }
+    end
   end
 end

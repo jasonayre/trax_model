@@ -7,6 +7,14 @@ module Trax
           include ::Trax::Model::ExtensionsFor::Base
 
           module ClassMethods
+            def between(lower_value, upper_value)
+              gt(lower_value).merge(lt(upper_value))
+            end
+
+            def in_range(lower_value, upper_value)
+              gte(lower_value).merge(lte(upper_value))
+            end
+
             def eq(*_scope_values)
               _scope_values.flat_compact_uniq!
               cast_type = type
