@@ -4,22 +4,19 @@ module Trax
       module StructFields
         module Time
           extend ::ActiveSupport::Concern
-
           include ::Trax::Model::ExtensionsFor::Base
 
           module ClassMethods
-            def after(*_scope_values)
-              _scope_values.flat_compact_uniq!
+            def after(value)
               cast_type = 'timestamp'
               operator = '>'
-              model_class.where("(#{parent_definition.field_name} ->> '#{field_name}')::#{cast_type} #{operator} ?", _scope_values)
+              model_class.where("(#{parent_definition.field_name} ->> '#{field_name}')::#{cast_type} #{operator} ?", value)
             end
 
-            def before(*_scope_values)
-              _scope_values.flat_compact_uniq!
+            def before(value)
               cast_type = 'timestamp'
               operator = '<'
-              model_class.where("(#{parent_definition.field_name} ->> '#{field_name}')::#{cast_type} #{operator} ?", _scope_values)
+              model_class.where("(#{parent_definition.field_name} ->> '#{field_name}')::#{cast_type} #{operator} ?", value)
             end
 
             def between(first_time, second_time)

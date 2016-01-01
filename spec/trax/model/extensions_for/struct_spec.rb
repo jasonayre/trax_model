@@ -64,15 +64,55 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
   end
 
   context "float" do
+    context "eq" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].eq(29.99)).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].eq(29.99)).to_not include(product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].eq(29.99, 39.99)).to include(product_two)
+      }
+    end
+
     context "gt" do
       it {
-        expect(subject.fields[:custom_fields].fields[:price].gt(30.00)).to include(product_two)
+        expect(subject.fields[:custom_fields].fields[:price].gt(29.99)).to include(product_two)
       }
-
       it {
-        expect(subject.fields[:custom_fields].fields[:price].gt(30.00)).to_not include(product_one)
+        expect(subject.fields[:custom_fields].fields[:price].gt(29.99)).to_not include(product_one)
       }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].gt(29.99)).to_not include(product_one)
+      }
+    end
 
+    context "gte" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].gte(39.99)).to include(product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].gte(39.99)).to_not include(product_one)
+      }
+    end
+
+    context "lt" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].lt(39.99)).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].gt(39.99)).to_not include(product_two)
+      }
+    end
+
+    context "lte" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].lte(29.99)).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:price].lte(29.99)).to_not include(product_two)
+      }
     end
   end
 end
