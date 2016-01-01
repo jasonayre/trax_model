@@ -4,6 +4,7 @@ module Trax
       module StructFields
         extend ::ActiveSupport::Autoload
 
+        autoload :Enum
         autoload :Float
         autoload :Numeric
         autoload :String

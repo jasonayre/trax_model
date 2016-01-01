@@ -36,6 +36,23 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
     )
   }
 
+  context "enum" do
+    context "eq" do
+      it {
+        expect(subject.fields[:custom_fields][:size].eq(product_two_size)).to include(product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields][:size].eq(product_two_size)).to_not include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields][:size].eq(product_two_size, product_one_size)).to include(product_one, product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields][:size].eq(1,2)).to include(product_one, product_two)
+      }
+    end
+  end
+
   context "string" do
     context "eq" do
       it {
@@ -69,8 +86,6 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
         expect(subject.fields[:custom_fields].fields[:slug].matches("blah")).to_not include(product_one, product_two)
       }
     end
-
-
   end
 
   context "time" do
