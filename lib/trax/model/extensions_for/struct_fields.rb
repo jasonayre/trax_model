@@ -4,6 +4,8 @@ module Trax
       module StructFields
         extend ::ActiveSupport::Autoload
 
+        autoload :Float
+        autoload :Numeric
         autoload :Time
 
         def self.[](val)
