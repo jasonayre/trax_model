@@ -16,6 +16,8 @@ module Trax
           end
 
           class Value < ::Trax::Model::Attributes::Value
+            include ::Trax::Model::ExtensionsFor::Numeric
+            
             def self.type; :integer end;
           end
 
