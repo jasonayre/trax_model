@@ -7,7 +7,9 @@ module Trax
       autoload :Base
       autoload :Boolean
       autoload :Enumerable
+      autoload :Integer
       autoload :Numeric
+      autoload :Set
       autoload :Struct
       autoload :StructFields
       autoload :String

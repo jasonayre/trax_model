@@ -14,8 +14,6 @@ describe ::Trax::Model::ExtensionsFor::Numeric do
     context ".between" do
       it { expect(subject.fields[:in_stock_quantity].between(5, 10)).to include(product_two) }
       it { expect(subject.fields[:in_stock_quantity].between(5, 10)).to_not include(product_one) }
-      # it { expect(subject.fields[:in_stock_quantity].eq(5)).to_not include(product_two) }
-      # it { expect(subject.fields[:in_stock_quantity].eq(5,9)).to include(product_two, product_one) }
     end
 
     context ".eq" do
