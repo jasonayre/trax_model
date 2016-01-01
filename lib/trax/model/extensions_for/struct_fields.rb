@@ -6,6 +6,7 @@ module Trax
 
         autoload :Float
         autoload :Numeric
+        autoload :String
         autoload :Time
 
         def self.[](val)

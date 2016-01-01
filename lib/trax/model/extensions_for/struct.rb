@@ -23,9 +23,9 @@ module Trax
         end
 
         module ClassMethods
-          # def [](val)
-          #   fields[val]
-          # end
+          def [](val)
+            fields[val]
+          end
           #bit of a hack for the sake of strong params for now
           def permitted_keys
             @permitted_keys ||= properties.map(&:to_sym)

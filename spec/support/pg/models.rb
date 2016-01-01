@@ -93,6 +93,8 @@ module Ecommerce
         integer :number_of_sales, :default => 0
         float :price
         time :last_received_at
+        string :slug
+        string :display_name
 
         define_model_scope_for :in_stock_quantity, :as => :by_quantity_in_stock
         define_model_scope_for :last_received_at, :as => :by_last_received_at

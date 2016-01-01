@@ -13,6 +13,8 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
       "name" => "DC Villan Size 6",
       "custom_fields" => {
         "size" => product_one_size,
+        "slug" => "dc-villan-size-6",
+        "display_name" => "DC Villan Mens Shoes Size 6",
         "last_received_at" => product_one_last_received_at,
         "cost" => 15,
         "price" => 29.99
@@ -25,12 +27,51 @@ describe ::Trax::Model::ExtensionsFor::Struct, :postgres => true do
       "name" => "DC Villan Size 7",
       "custom_fields" => {
         "size" => product_two_size,
+        "slug" => "dc-villan-size-7",
+        "display_name" => "DC Villan Mens Shoes Size 7",
         "last_received_at" => product_two_last_received_at,
         "cost" => 20,
         "price" => 39.99
       }
     )
   }
+
+  context "string" do
+    context "eq" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:slug].eq("dc-villan-size-6")).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:slug].eq("dc-villan-size-6")).to_not include(product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:slug].eq("dc-villan-size-6", "dc-villan-size-7")).to include(product_two, product_one)
+      }
+    end
+
+    context "eq_lower" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:display_name].eq_lower("dc villan mens shoes size 6")).to include(product_one)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:display_name].eq_lower("DC Villan Mens Shoes Size 6", "DC Villan Mens Shoes Size 7")).to include(product_one, product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:display_name].eq_lower("DC Villan Mens Shoes Size 7")).to_not include(product_one)
+      }
+    end
+
+    context "matches" do
+      it {
+        expect(subject.fields[:custom_fields].fields[:slug].matches("dc-villan-size")).to include(product_one, product_two)
+      }
+      it {
+        expect(subject.fields[:custom_fields].fields[:slug].matches("blah")).to_not include(product_one, product_two)
+      }
+    end
+
+
+  end
 
   context "time" do
     context "after" do
