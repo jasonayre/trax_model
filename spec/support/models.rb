@@ -35,6 +35,10 @@ class Product < ::ActiveRecord::Base
 
   define_attributes do
     string :name
+    # float :price
+
+    integer :in_stock_quantity
+    integer :out_of_stock_quantity
 
     enum :status, :default => :in_stock do
       define :in_stock,     1
