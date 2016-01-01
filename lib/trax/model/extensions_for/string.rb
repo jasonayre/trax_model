@@ -4,8 +4,13 @@ module Trax
       module String
         extend ::ActiveSupport::Concern
 
-        def uuid
-          ::Trax::Model::UUID === self ? ::Trax::Model::UUID.new(self) : nil
+        include ::Trax::Model::ExtensionsFor::Base
+
+        module ClassMethods
+          def eq(*_values)
+            _values.flat_compact_uniq!
+            model_class.where({field_name => _values})
+          end
         end
       end
     end

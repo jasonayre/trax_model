@@ -34,6 +34,8 @@ class Product < ::ActiveRecord::Base
   }
 
   define_attributes do
+    string :name
+
     enum :status, :default => :in_stock do
       define :in_stock,     1
       define :out_of_stock, 2
