@@ -7,6 +7,7 @@ module Trax
       autoload :Base
       autoload :Enumerable
       autoload :Struct
+      autoload :StructFields
       autoload :String
     end
   end
