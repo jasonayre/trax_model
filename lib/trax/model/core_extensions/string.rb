@@ -1,6 +1,6 @@
 module Trax
   module Model
-    module ExtensionsForPrimitive
+    module CoreExtensions
       module String
         extend ::ActiveSupport::Concern
 

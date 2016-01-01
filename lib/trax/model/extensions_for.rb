@@ -1,4 +1,4 @@
-#primitive/trax core type extensions
+#trax model attribute dsl/trax core type extensions
 module Trax
   module Model
     module ExtensionsFor
