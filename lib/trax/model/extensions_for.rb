@@ -5,6 +5,7 @@ module Trax
       extend ::ActiveSupport::Autoload
 
       autoload :Base
+      autoload :Boolean
       autoload :Enumerable
       autoload :Struct
       autoload :StructFields
