@@ -7,7 +7,7 @@ module Trax
         include ::Trax::Model::ExtensionsFor::Base
 
         module ClassMethods
-          def where_contains(*_values)
+          def contains(*_values)
             _values.flat_compact_uniq!
             model_class.where("#{field_name} ?| array[:values]", :values => _values)
           end

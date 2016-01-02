@@ -46,22 +46,22 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
     }
     it {
       expect(
-        ::Ecommerce::Vote::Fields::UpvoterIds.where_contains("1")
+        ::Ecommerce::Vote::Fields::UpvoterIds.contains("1")
       ).to include record_one
     }
     it {
       expect(
-        ::Ecommerce::Vote::Fields::UpvoterIds.where_contains("1")
+        ::Ecommerce::Vote::Fields::UpvoterIds.contains("1")
       ).to_not include record_two
     }
     it {
       expect(
-        ::Ecommerce::Vote::Fields::UpvoterIds.where_contains("4")
+        ::Ecommerce::Vote::Fields::UpvoterIds.contains("4")
       ).to include record_two
     }
     it {
       expect(
-        ::Ecommerce::Vote::Fields::UpvoterIds.where_contains("4")
+        ::Ecommerce::Vote::Fields::UpvoterIds.contains("4")
       ).to_not include record_one
     }
   end
