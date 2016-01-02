@@ -18,7 +18,7 @@ module Trax
           end
 
           class Value < ::Trax::Model::Attributes::Value
-            include ::Trax::Model::ExtensionsFor::Enumerable
+            include ::Trax::Model::ExtensionsFor::Set
 
             def initialize(*args)
               @value = ::Set.new(*args)

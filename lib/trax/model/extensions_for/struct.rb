@@ -23,9 +23,22 @@ module Trax
         end
 
         module ClassMethods
+          def [](val)
+            fields[val]
+          end
           #bit of a hack for the sake of strong params for now
           def permitted_keys
             @permitted_keys ||= properties.map(&:to_sym)
+          end
+
+          def property(property_name, *args, **options)
+            super(property_name, *args, **options)
+
+            extensions_for_property_type = ::Trax::Model::ExtensionsFor::StructFields[self.fields[property_name].type]
+
+            if extensions_for_property_type
+              self.fields[property_name].include(extensions_for_property_type)
+            end
           end
 
           def define_model_scopes_for(*attribute_names)

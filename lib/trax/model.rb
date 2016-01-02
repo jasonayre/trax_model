@@ -23,6 +23,7 @@ module Trax
 
     autoload :Attributes
     autoload :Config
+    autoload :CoreExtensions
     autoload :ExtensionsFor
     autoload :Errors
     autoload :Registry
@@ -146,7 +147,7 @@ module Trax
       end
     end
 
-    ::String.include(::Trax::Model::ExtensionsFor::String)
+    ::String.include(::Trax::Model::CoreExtensions::String)
 
     ::ActiveSupport.run_load_hooks(:trax_model, self)
   end
