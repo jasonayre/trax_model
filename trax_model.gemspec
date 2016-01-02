@@ -18,9 +18,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "trax_core", "~> 0.0.83"
+  spec.add_dependency "trax_core", "~> 0.0.84"
   spec.add_dependency "default_value_for", "~> 3.0.0"
-  spec.add_development_dependency "hashie", ">= 3.4.4"
+  # spec.add_development_dependency "hashie", ">= 3.4.4"
   spec.add_development_dependency "rails", "~> 4.2.0"
   spec.add_development_dependency "activerecord", "~> 4.2.0"
   spec.add_development_dependency "bundler", "~> 1.6"
