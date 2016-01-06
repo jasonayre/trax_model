@@ -97,7 +97,8 @@ class Vehicle < ::ActiveRecord::Base
   include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9c" },
-         :sti_enum  => true
+         :sti_enum  => true,
+         :cached_methods => true
 
   define_attributes do
     enum :kind do

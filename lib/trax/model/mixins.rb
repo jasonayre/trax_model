@@ -3,6 +3,7 @@ module Trax
     module Mixins
       extend ::ActiveSupport::Autoload
 
+      autoload :CachedMethods
       autoload :FieldScopes
       autoload :Freezable
       autoload :IdScopes
