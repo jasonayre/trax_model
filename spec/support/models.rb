@@ -76,6 +76,22 @@ module Products
   end
 end
 
+class Manufacturer < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3d" },
+         :cached_methods => true
+
+  has_many :vehicles
+  cached_method :vehicles
+
+  def self.total_cost_of_vehicles_for_all_manufacturers
+    _costs = all.map { |record| record.vehicles.pluck(:cost) }.flatten.compact.reduce(:+)
+  end
+  cached_class_method :total_cost_of_vehicles_for_all_manufacturers
+end
+
 class Vehicle < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Attributes::Dsl
@@ -88,7 +104,11 @@ class Vehicle < ::ActiveRecord::Base
       define :car, 1, :type => "Vehicle::Car"
       define :truck, 2, :type => "Vehicle::Truck"
     end
+
+    integer :cost
   end
+
+  belongs_to :manufacturer
 
   class Car < ::Vehicle
   end

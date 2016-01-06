@@ -1,10 +1,20 @@
 DEFAULT_TABLES = Proc.new do
+  create_table "manufacturers", :force => true do |t|
+    t.string   "name"
+    t.string   "url"
+    t.string   "uuid"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
   create_table "vehicles", :force => true do |t|
     t.string   "type"
     t.integer  "kind"
     t.integer  "make"
     t.integer  "model"
     t.string   "uuid"
+    t.integer    "cost"
+    t.integer  "manufacturer_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
