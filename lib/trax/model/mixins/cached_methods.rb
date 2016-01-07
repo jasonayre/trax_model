@@ -19,7 +19,7 @@ module Trax
         end
 
         def cache_key_for_method(_name)
-          "#{self.__send__(self.class._cached_methods_key)}/#{_name}"
+          "#{self.__send__(self.class._cached_methods_key)}/instance/#{_name}"
         end
 
         module ClassMethods
@@ -28,16 +28,28 @@ module Trax
           end
 
           def _cached_methods_class_namespace
-            "#{_cached_methods_namespace}/class"
+            "#{self._cached_methods_namespace}/class"
           end
 
           def cache_key_for_class_method(_name)
             _name
           end
 
+          def cache_key_for_record(_id)
+            "#{self._cached_methods_namespace}/#{_id}/record"
+          end
+
           def clear_cache_for_class_method(_name)
             method_cache_key = cache_key_for_class_method(_name)
             ::Trax::Model.cache.clear(method_cache_key, _cached_methods_class_namespace)
+          end
+
+          def cached_record(id, **options)
+            cache_namespace_options = { :namespace => self._cached_methods_namespace }
+
+            ::Trax::Model.cache.fetch(cache_key_for_record(_id), cache_namespace_options.dup.merge(options)) do
+              self.__send__(_name)
+            end
           end
 
           def cached_method(_name, **options)

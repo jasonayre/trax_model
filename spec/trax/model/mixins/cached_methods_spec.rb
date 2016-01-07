@@ -19,7 +19,7 @@ describe ::Trax::Model::Mixins::CachedMethods do
 
     it "cache key exists" do
       subject.cached_vehicles
-      expect(::Rails.cache.exist?("manufacturer/#{subject.id}/vehicles")).to eq true
+      expect(::Rails.cache.exist?("#{subject.id}/instance/vehicles", :namespace => "manufacturer")).to eq true
     end
 
     it "caches instance method result" do
@@ -50,8 +50,8 @@ describe ::Trax::Model::Mixins::CachedMethods do
 
     it "cache key exists" do
       subject.cached_total_cost_of_vehicles_for_all_manufacturers
-      expect(::Rails.cache.exist?("manufacturer/class/total_cost_of_vehicles_for_all_manufacturers")).to eq true
-      expect(::Trax::Model.cache.exist?("manufacturer/class/total_cost_of_vehicles_for_all_manufacturers")).to eq true
+      expect(::Rails.cache.exist?("total_cost_of_vehicles_for_all_manufacturers", :namespace => "manufacturer/class")).to eq true
+      expect(::Trax::Model.cache.exist?("total_cost_of_vehicles_for_all_manufacturers", :namespace => "manufacturer/class")).to eq true
     end
 
     it "caches class methods" do
@@ -72,10 +72,7 @@ describe ::Trax::Model::Mixins::CachedMethods do
   end
 
   context "shared cache store" do
-
-    it {
-      # binding.pry
-      expect(::Trax::Model.cache).to eq ::Vehicle._cached_methods_store }
+    it { expect(::Trax::Model.cache).to eq ::Vehicle._cached_methods_store }
     it { expect(::Vehicle._cached_methods_store).to eq ::Manufacturer._cached_methods_store }
   end
 end

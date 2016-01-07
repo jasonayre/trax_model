@@ -76,15 +76,31 @@ module Products
   end
 end
 
+class Subscriber < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "4f" },
+         :cached_methods => true,
+         :cached_relations => true
+
+  has_many :manufacturers
+  # cached_has_many :manufacturers
+end
+
 class Manufacturer < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3d" },
-         :cached_methods => true
+         :cached_methods => true,
+         :cached_relations => true
 
   has_many :vehicles
   cached_method :vehicles
+
+  belongs_to :subscriber
+  cached_belongs_to :subscriber
 
   def self.total_cost_of_vehicles_for_all_manufacturers
     _costs = all.map { |record| record.vehicles.pluck(:cost) }.flatten.compact.reduce(:+)
@@ -98,7 +114,8 @@ class Vehicle < ::ActiveRecord::Base
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9c" },
          :sti_enum  => true,
-         :cached_methods => true
+         :cached_methods => true,
+         :cached_relations => true
 
   define_attributes do
     enum :kind do
@@ -109,7 +126,12 @@ class Vehicle < ::ActiveRecord::Base
     integer :cost
   end
 
+  def subscriber_id
+    self.manufacturer.subscriber_id
+  end
+
   belongs_to :manufacturer
+  cached_belongs_to :manufacturer, :scope => :subscriber_id
 
   class Car < ::Vehicle
   end
@@ -162,7 +184,11 @@ end
 class Person < ::ActiveRecord::Base
   include ::Trax::Model
 
-  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "5a" }
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "5a" },
+         :cached_relations => true
+
+  belongs_to :vehicle
+  cached_belongs_to :vehicle
 end
 
 class StoreCategory < ::Trax::Core::Types::Struct
