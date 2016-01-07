@@ -19,7 +19,7 @@ module Trax
         end
 
         def cache_key_for_method(_name)
-          "#{self._cached_methods_namespace}/#{self.__send__(self.class._cached_methods_key)}/#{_name}"
+          "#{self.__send__(self.class._cached_methods_key)}/#{_name}"
         end
 
         module ClassMethods
@@ -32,37 +32,40 @@ module Trax
           end
 
           def cache_key_for_class_method(_name)
-            "#{self._cached_methods_namespace}/class/#{_name}"
+            _name
           end
 
           def clear_cache_for_class_method(_name)
             method_cache_key = cache_key_for_class_method(_name)
-            ::Trax::Model.cache.clear(method_cache_key)
+            ::Trax::Model.cache.clear(method_cache_key, _cached_methods_class_namespace)
           end
 
           def cached_method(_name, **options)
+            cache_namespace_options = { :namespace => self._cached_methods_namespace }
+
             define_method("cached_#{_name}") do
-              ::Trax::Model.cache.fetch(cache_key_for_method(_name), options) do
+              ::Trax::Model.cache.fetch(cache_key_for_method(_name), cache_namespace_options.dup.merge(options)) do
                 self.__send__(_name)
               end
             end
 
             define_method("clear_cached_#{_name}") do
-              ::Trax::Model.cache.delete(cache_key_for_method(_name))
+              ::Trax::Model.cache.delete(cache_key_for_method(_name), cache_namespace_options)
             end
           end
 
           def cached_class_method(_name, **options)
+            cache_namespace_options = { :namespace => self._cached_methods_class_namespace }
             method_cache_key = cache_key_for_class_method(_name)
 
             define_singleton_method("cached_#{_name}") do
-              ::Trax::Model.cache.fetch(method_cache_key, options) do
+              ::Trax::Model.cache.fetch(method_cache_key, cache_namespace_options.dup.merge(options)) do
                 self.__send__(_name)
               end
             end
 
             define_singleton_method("clear_cached_#{_name}") do
-              ::Trax::Model.cache.delete(method_cache_key)
+              ::Trax::Model.cache.delete(method_cache_key, cache_namespace_options)
             end
           end
         end
