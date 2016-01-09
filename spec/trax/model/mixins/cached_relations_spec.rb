@@ -6,6 +6,10 @@ describe ::Trax::Model::Mixins::CachedRelations do
   end
 
   before { ::Vehicle.destroy_all }
+  before { ::Manufacturer.destroy_all }
+  before { ::Subscriber.destroy_all }
+  before { ::Person.destroy_all }
+  before { ::Trax::Model.cache.clear }
 
   let(:subscriber) { ::Subscriber.create(:name => "automatch_usa") }
   let(:subscriber_2) { ::Subscriber.create(:name => "larryhmiller") }
@@ -26,10 +30,11 @@ describe ::Trax::Model::Mixins::CachedRelations do
     it "cache key exists" do
       expect(person_1.cached_vehicle.cost).to eq 20_000
       subject.update_attributes(:cost => 30_000)
-      expect(person_2.cached_vehicle.cost).to eq 20_000
+      expect(person_1.cached_vehicle.cost).to eq 20_000
     end
 
     it "instance method result cache can be cleared" do
+      subject
       expect(person_1.cached_vehicle.cost).to eq 20_000
       subject.update_attributes(:cost => 30_000)
       expect(person_2.cached_vehicle.cost).to eq 20_000
@@ -45,7 +50,7 @@ describe ::Trax::Model::Mixins::CachedRelations do
         vehicle_1
 
         expect(vehicle_1.cached_manufacturer).to eq subject
-        expect(::Trax::Model.cache.exist?(*[subject.id, { :subscriber_id => subscriber.id, :namespace => "manufacturers" }])).to eq true
+        expect(::Trax::Model.cache.exist?(*[subject.id, { :subscriber_id => subscriber.id }])).to eq true
       end
 
       it "caches relation" do
