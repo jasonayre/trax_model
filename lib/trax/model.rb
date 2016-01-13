@@ -22,6 +22,7 @@ module Trax
     extend ::ActiveSupport::Autoload
 
     autoload :Attributes
+    autoload :CacheKey
     autoload :Config
     autoload :Concerns
     autoload :CoreExtensions
@@ -81,8 +82,7 @@ module Trax
     end
 
     def self.eager_autoload_mixins!
-      ::Trax::Model::Mixins::CachedMethods
-      ::Trax::Model::Mixins::CachedRelations
+      ::Trax::Model::Mixins::CachedFindBy
       ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes
