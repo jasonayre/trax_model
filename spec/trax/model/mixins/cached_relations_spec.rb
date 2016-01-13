@@ -49,6 +49,43 @@ describe ::Trax::Model::Mixins::CachedRelations do
     end
   end
 
+  context ".cached_has_one", :focus => true do
+    let(:admin_user) { ::User.create(:name => "milton") }
+    subject do
+      subscriber
+      subscriber.update_attributes(:admin_user_id => admin_user.id)
+      subscriber
+    end
+
+    let!(:cached_admin_user) { subject.cached_admin_user }
+
+    it "cache key exists" do
+      cache_key = ::Trax::Model::CacheKey.new('users', '.find_by', {:id => subject.admin_user_id} )
+      expect(::Trax::Model.cache.exist?(cache_key)).to eq true
+    end
+
+    it "caches relation" do
+      admin_user_name = admin_user.name
+      expect(cached_admin_user.name).to eq admin_user_name
+      _user = ::User.find(admin_user.id)
+      _user.update_attributes(:name => "bob")
+      _user.reload
+      expect(subject.cached_admin_user.name).to eq admin_user_name
+    end
+
+    it "clears cached has one relation" do
+      admin_user_name = admin_user.name
+      updated_admin_user_name = "bob"
+      expect(cached_admin_user.name).to eq admin_user_name
+      _user = ::User.find(admin_user.id)
+      _user.update_attributes(:name => updated_admin_user_name)
+      _user.reload
+      expect(subject.cached_admin_user.name).to eq admin_user_name
+      subject.clear_cached_admin_user
+      expect(subject.cached_admin_user.name).to eq updated_admin_user_name
+    end
+  end
+
   context ".cached_has_many" do
     before do
       ford

@@ -23,6 +23,22 @@ module Trax
             end
           end
 
+          def cached_has_one(relation_name, **options)
+            define_method("cached_#{relation_name}") do
+              relation = self.class.reflect_on_association(relation_name)
+              foreign_key = (relation.foreign_key || "#{relation.name}_id").to_sym
+              params = { :id => self.__send__(foreign_key) }.merge(options)
+              relation.klass.cached_find_by(params)
+            end
+
+            define_method("clear_cached_#{relation_name}") do
+              relation = self.class.reflect_on_association(relation_name)
+              foreign_key = (relation.foreign_key || :"#{relation.name}_id").to_sym
+              params = { :id => self.__send__(foreign_key) }.merge(options)
+              relation.klass.clear_cached_find_by(:id => self.__send__(foreign_key))
+            end
+          end
+
           def cached_has_many(relation_name, **options)
             define_method("cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)

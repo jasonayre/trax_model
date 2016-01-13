@@ -8,6 +8,8 @@ module Trax
           def cached_find_by(**params)
             cache_key = ::Trax::Model::CacheKey.new(self.name.underscore.pluralize, '.find_by', **params)
 
+            puts cache_key.inspect
+
             ::Trax::Model.cache.fetch(cache_key, cache_key.options) do
               self.find_by(cache_key.search_params)
             end

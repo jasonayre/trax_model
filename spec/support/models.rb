@@ -14,15 +14,6 @@ end
 if ENV["DB"] == "postgres"
   require_relative 'pg/models'
 end
-#
-# class Blueprint < ::Trax::Core::Blueprint
-#   class Vehicle < ::Trax::Core::Blueprint
-#     enum :kind do
-#       define :car, 1, :type => "Vehicle::Car"
-#       define :truck, 2, :type => "Vehicle::Truck"
-#     end
-#   end
-# end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
@@ -35,7 +26,6 @@ class Product < ::ActiveRecord::Base
 
   define_attributes do
     string :name
-    # float :price
 
     integer :in_stock_quantity
     integer :out_of_stock_quantity
@@ -86,6 +76,9 @@ class Subscriber < ::ActiveRecord::Base
 
   has_many :manufacturers, :class_name => "Manufacturer"
   cached_has_many :manufacturers
+
+  has_one :admin_user, :class_name => "User", :foreign_key => :admin_user_id
+  cached_has_one :admin_user
 end
 
 class Manufacturer < ::ActiveRecord::Base
@@ -200,4 +193,12 @@ class StoreCategory < ::Trax::Core::Types::Struct
     string :description
     string :keywords
   end
+end
+
+class User < ::ActiveRecord::Base
+  include ::Trax::Model
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3e" },
+         :cached_find_by => true,
+         :cached_relations => true
 end
