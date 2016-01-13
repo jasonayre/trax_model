@@ -4,6 +4,7 @@ module Trax
       extend ::ActiveSupport::Autoload
 
       autoload :CachedFindBy
+      autoload :CachedRelations
       autoload :FieldScopes
       autoload :Freezable
       autoload :IdScopes

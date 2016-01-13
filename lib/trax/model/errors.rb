@@ -17,7 +17,7 @@ module Trax
         argument :model
 
         message {
-          "#{model} tried to load mixin: #{mixin}, whichdoes not exist in " \
+          "#{model} tried to load mixin: #{mixin}, which does not exist in " \
           "registry. Registered mixins were #{::Trax::Model.mixin_registry.keys.join(', ')} \n"
         }
       end

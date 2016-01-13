@@ -16,67 +16,80 @@ describe ::Trax::Model::Mixins::CachedFindBy do
 
   let(:ford) { ::Manufacturer.create(:name => "ford", :url => "ford.com", :subscriber_id => subscriber.id) }
   let(:toyota) { ::Manufacturer.create(:name => "toyota", :url => "toyota.com", :subscriber_id => subscriber_2.id) }
-  let(:vehicle_1) { ::Vehicle.create(:kind => :car, :manufacturer => ford, :cost => 20_000) }
-  let(:vehicle_2) { ::Vehicle.create(:kind => :truck, :manufacturer => ford, :cost => 20_000) }
+  let(:vehicle_1) { ::Vehicle.create(:kind => :car, :manufacturer => ford, :cost => 20_000, :name => "pinto") }
+  let(:vehicle_2) { ::Vehicle.create(:kind => :truck, :manufacturer => ford, :cost => 20_000, :name => "f150")}
   let(:vehicle_3) { ::Vehicle.create(:kind => :truck, :manufacturer => toyota, :cost => 15_000) }
   let(:person_1) { ::Person.create(:name => "jason", :vehicle_id => vehicle_1.id) }
   let(:person_2) { ::Person.create(:name => "steve", :vehicle_id => vehicle_1.id) }
 
-  subject{ ::Manufacturer }
+  subject { ford }
 
   context ".cached_find_by" do
-    subject { vehicle_1 }
+    before do
+      person_1
+      person_2
+      subject
+    end
 
     it "cache key exists" do
-      expect(person_1.cached_vehicle.cost).to eq 20_000
-      subject.update_attributes(:cost => 30_000)
-      expect(person_1.cached_vehicle.cost).to eq 20_000
+      ::Manufacturer.cached_find_by(:id => vehicle_1.manufacturer_id)
+
+      cache_key = ::Trax::Model::CacheKey.new('manufacturers', '.find_by', {:id => vehicle_1.manufacturer_id})
+      expect(::Trax::Model.cache.exist?(cache_key)).to eq true
     end
 
-    it "instance method result cache can be cleared" do
+    it "caches relation" do
+      vehicle_1
+      expect(vehicle_1.cached_manufacturer.name).to eq subject.name
+
+      man = ::Manufacturer.find(vehicle_1.cached_manufacturer.id)
+      man.update_attributes(:name => "whatever")
+      vehicle_1.reload
+      expect(vehicle_1.cached_manufacturer.name).to eq "ford"
+    end
+
+    it "cache can be cleared by params" do
+      vehicle_1
+      expect(vehicle_1.cached_manufacturer.name).to eq subject.name
+
+      man = ::Manufacturer.find(vehicle_1.cached_manufacturer.id)
+      man.update_attributes(:name => "whatever")
+      vehicle_1.reload
+      expect(vehicle_1.cached_manufacturer.name).to eq "ford"
+      ::Manufacturer.clear_cached_find_by(:id => man.id)
+      expect(vehicle_1.cached_manufacturer.name).to eq "whatever"
+    end
+  end
+
+  context ".cached_where" do
+    subject { ::Vehicle.cached_where(:manufacturer_id => ford.id) }
+
+    before do
+      ford
+      vehicle_1
+      vehicle_2
       subject
-      expect(person_1.cached_vehicle.cost).to eq 20_000
-      subject.update_attributes(:cost => 30_000)
-      expect(person_2.cached_vehicle.cost).to eq 20_000
-      subject.reload
-      expect(person_2.cached_vehicle.cost).to eq 20_000
-      expect(subject.cost).to eq 30_000
     end
 
-    context "with scope" do
-      subject { ford }
+    it "cache key exists" do
+      cache_key = ::Trax::Model::CacheKey.new('vehicles', '.where', {:manufacturer_id => ford.id})
+      expect(::Trax::Model.cache.exist?(cache_key)).to eq true
+    end
 
-      it "cache key exists" do
-        vehicle_1
+    it "caches result" do
+      expect(subject[0].name).to eq vehicle_1.name
+      vehicle_1.update_attributes(:name => "whatever")
+      vehicle_1.reload
+      expect(subject[0].name).to eq "pinto"
+    end
 
-        expect(vehicle_1.cached_manufacturer).to eq subject
-        cache_key = ::Trax::Model::CacheKey.new('manufacturers', '.find_by', {:id => vehicle_1.manufacturer_id})
+    context ".clear_cached_where" do
+      it do
+        cache_key = ::Trax::Model::CacheKey.new('vehicles', '.where', {:manufacturer_id => ford.id})
         expect(::Trax::Model.cache.exist?(cache_key)).to eq true
+        ::Vehicle.clear_cached_where(cache_key.search_params)
+        expect(::Trax::Model.cache.exist?(cache_key)).to eq false
       end
-
-      it "caches relation" do
-        vehicle_1
-        expect(vehicle_1.cached_manufacturer.name).to eq subject.name
-
-        man = ::Manufacturer.find(vehicle_1.cached_manufacturer.id)
-        man.update_attributes(:name => "whatever")
-        vehicle_1.reload
-        expect(vehicle_1.cached_manufacturer.name).to eq "ford"
-      end
-
-      it "cache can be cleared by params" do
-        vehicle_1
-        expect(vehicle_1.cached_manufacturer.name).to eq subject.name
-
-        man = ::Manufacturer.find(vehicle_1.cached_manufacturer.id)
-        man.update_attributes(:name => "whatever")
-        vehicle_1.reload
-        expect(vehicle_1.cached_manufacturer.name).to eq "ford"
-        ::Manufacturer.clear_cached_find_by(:id => man.id)
-        expect(vehicle_1.cached_manufacturer.name).to eq "whatever"
-      end
-
-
     end
   end
 end

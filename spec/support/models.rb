@@ -81,9 +81,11 @@ class Subscriber < ::ActiveRecord::Base
   include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "4f" },
-         :cached_find_by => true
+         :cached_find_by => true,
+         :cached_relations => true
 
-  has_many :manufacturers
+  has_many :manufacturers, :class_name => "Manufacturer"
+  cached_has_many :manufacturers
 end
 
 class Manufacturer < ::ActiveRecord::Base
@@ -91,7 +93,8 @@ class Manufacturer < ::ActiveRecord::Base
   include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3d" },
-         :cached_find_by => true
+         :cached_find_by => true,
+         :cached_relations => true
 
   has_many :vehicles
   def cached_vehicles
@@ -99,6 +102,7 @@ class Manufacturer < ::ActiveRecord::Base
   end
 
   belongs_to :subscriber
+  cached_belongs_to :subscriber
 end
 
 class Vehicle < ::ActiveRecord::Base
@@ -108,6 +112,7 @@ class Vehicle < ::ActiveRecord::Base
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9c" },
          :sti_enum  => true,
          :cached_find_by => true
+
 
   define_attributes do
     enum :kind do
