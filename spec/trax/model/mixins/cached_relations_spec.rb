@@ -49,18 +49,13 @@ describe ::Trax::Model::Mixins::CachedRelations do
     end
   end
 
-  context ".cached_has_one", :focus => true do
-    let(:admin_user) { ::User.create(:name => "milton") }
-    subject do
-      subscriber
-      subscriber.update_attributes(:admin_user_id => admin_user.id)
-      subscriber
-    end
-
+  context ".cached_has_one" do
+    subject! { subscriber }
+    let!(:admin_user) { ::User.create(:name => "milton", :role => :admin, :subscriber_id => subscriber.id) }
     let!(:cached_admin_user) { subject.cached_admin_user }
 
     it "cache key exists" do
-      cache_key = ::Trax::Model::CacheKey.new('users', '.find_by', {:id => subject.admin_user_id} )
+      cache_key = ::Trax::Model::CacheKey.new('users', '.find_by', {:subscriber_id => subject.id} )
       expect(::Trax::Model.cache.exist?(cache_key)).to eq true
     end
 

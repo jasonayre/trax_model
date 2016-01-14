@@ -12,14 +12,14 @@ module Trax
               relation = self.class.reflect_on_association(relation_name)
               foreign_key = (relation.foreign_key || "#{relation.name}_id").to_sym
               params = { :id => self.__send__(foreign_key) }.merge(options)
-              relation.klass.cached_find_by(params)
+              relation.klass.cached_find_by(**params)
             end
 
             define_method("clear_cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)
               foreign_key = (relation.foreign_key || :"#{relation.name}_id").to_sym
               params = { :id => self.__send__(foreign_key) }.merge(options)
-              relation.klass.clear_cached_find_by(:id => self.__send__(foreign_key))
+              relation.klass.clear_cached_find_by(**params)
             end
           end
 
@@ -27,15 +27,15 @@ module Trax
             define_method("cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)
               foreign_key = (relation.foreign_key || "#{relation.name}_id").to_sym
-              params = { :id => self.__send__(foreign_key) }.merge(options)
-              relation.klass.cached_find_by(params)
+              params = { foreign_key => self.__send__(:id) }.merge(options)
+              relation.klass.cached_find_by(**params)
             end
 
             define_method("clear_cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)
               foreign_key = (relation.foreign_key || :"#{relation.name}_id").to_sym
-              params = { :id => self.__send__(foreign_key) }.merge(options)
-              relation.klass.clear_cached_find_by(:id => self.__send__(foreign_key))
+              params = { foreign_key => self.__send__(:id) }.merge(options)
+              relation.klass.clear_cached_find_by(**params)
             end
           end
 

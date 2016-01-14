@@ -2,7 +2,6 @@ DEFAULT_TABLES = Proc.new do
   create_table "subscribers", :force => true do |t|
     t.string   "name"
     t.string   "uuid"
-    t.integer  "admin_user_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -84,6 +83,7 @@ DEFAULT_TABLES = Proc.new do
     t.string "name"
     t.string "uuid"
     t.integer "role"
+    t.integer "subscriber_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

@@ -77,7 +77,7 @@ class Subscriber < ::ActiveRecord::Base
   has_many :manufacturers, :class_name => "Manufacturer"
   cached_has_many :manufacturers
 
-  has_one :admin_user, :class_name => "User", :foreign_key => :admin_user_id
+  has_one :admin_user, :class_name => "User", :foreign_key => :subscriber_id
   cached_has_one :admin_user
 end
 
@@ -197,8 +197,16 @@ end
 
 class User < ::ActiveRecord::Base
   include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3e" },
          :cached_find_by => true,
          :cached_relations => true
+
+  define_attributes do
+    enum :role, :default => :staff do
+      define :staff, 1
+      define :admin, 2
+    end
+  end
 end
