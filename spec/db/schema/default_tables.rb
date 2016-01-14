@@ -60,6 +60,8 @@ DEFAULT_TABLES = Proc.new do
     t.string  "subdomain"
     t.string  "website"
     t.integer  "status"
+    t.integer  "subscriber_id"
+    t.string   "name"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

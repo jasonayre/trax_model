@@ -77,8 +77,10 @@ class Subscriber < ::ActiveRecord::Base
   has_many :manufacturers, :class_name => "Manufacturer"
   cached_has_many :manufacturers
 
-  has_one :admin_user, :class_name => "User", :foreign_key => :subscriber_id
+  has_one :admin_user, -> { by_role(:admin) }, :class_name => "User", :foreign_key => :subscriber_id
   cached_has_one :admin_user
+  has_one :widget
+  cached_has_one :widget
 end
 
 class Manufacturer < ::ActiveRecord::Base
@@ -135,14 +137,15 @@ end
 class Widget < ::ActiveRecord::Base
   include ::Trax::Model
 
-  mixins :unique_id => {
-    :uuid_column => "uuid",
-    :uuid_prefix => "2a"
-  }
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "2a" },
+         :cached_relations => true
 
   validates :subdomain, :subdomain => true, :allow_nil => true
   validates :email_address, :email => true, :allow_nil => true
   validates :website, :url => true, :allow_nil => true
+
+  belongs_to :subscriber
+  cached_belongs_to :subscriber
 end
 
 class Message < ::ActiveRecord::Base
@@ -207,6 +210,7 @@ class User < ::ActiveRecord::Base
     enum :role, :default => :staff do
       define :staff, 1
       define :admin, 2
+      define :billing, 3
     end
   end
 end

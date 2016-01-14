@@ -51,33 +51,65 @@ describe ::Trax::Model::Mixins::CachedRelations do
 
   context ".cached_has_one" do
     subject! { subscriber }
-    let!(:admin_user) { ::User.create(:name => "milton", :role => :admin, :subscriber_id => subscriber.id) }
-    let!(:cached_admin_user) { subject.cached_admin_user }
+    let!(:widget) { ::Widget.create(:name => "anything", :subscriber_id => subscriber.id) }
+    let!(:cached_widget) { subject.cached_widget }
 
     it "cache key exists" do
-      cache_key = ::Trax::Model::CacheKey.new('users', '.find_by', {:subscriber_id => subject.id} )
+      cache_key = ::Trax::Model::CacheKey.new('widgets', '.find_by', {:subscriber_id => subject.id} )
       expect(::Trax::Model.cache.exist?(cache_key)).to eq true
     end
 
     it "caches relation" do
-      admin_user_name = admin_user.name
-      expect(cached_admin_user.name).to eq admin_user_name
-      _user = ::User.find(admin_user.id)
-      _user.update_attributes(:name => "bob")
-      _user.reload
-      expect(subject.cached_admin_user.name).to eq admin_user_name
+      widget_name = widget.name
+      expect(cached_widget.name).to eq widget_name
+      _widget = ::Widget.find(cached_widget.id)
+      _widget.update_attributes(:name => "bob")
+      _widget.reload
+      expect(subject.cached_widget.name).to eq widget_name
     end
 
     it "clears cached has one relation" do
-      admin_user_name = admin_user.name
-      updated_admin_user_name = "bob"
-      expect(cached_admin_user.name).to eq admin_user_name
-      _user = ::User.find(admin_user.id)
-      _user.update_attributes(:name => updated_admin_user_name)
-      _user.reload
-      expect(subject.cached_admin_user.name).to eq admin_user_name
-      subject.clear_cached_admin_user
-      expect(subject.cached_admin_user.name).to eq updated_admin_user_name
+      widget_name = widget.name
+      updated_widget_name = 'new_widget_name'
+      expect(cached_widget.name).to eq widget_name
+      _widget = ::Widget.find(cached_widget.id)
+      _widget.update_attributes(:name => updated_widget_name)
+      _widget.reload
+      expect(subject.cached_widget.name).to eq widget_name
+      subject.clear_cached_widget
+      expect(subject.cached_widget.name).to eq updated_widget_name
+    end
+
+    context "scoped by proc" do
+      subject! { subscriber }
+      let!(:admin_user) { ::User.create(:name => "milton", :role => :admin, :subscriber_id => subscriber.id) }
+      let!(:cached_admin_user) { subject.cached_admin_user }
+
+      it "cache key exists" do
+        cache_key = ::Trax::Model::CacheKey.new('users', '.find_by', {:subscriber_id => subject.id, :role => ::User::Fields::Role.new(:admin).to_i} )
+        expect(::Trax::Model.cache.exist?(cache_key)).to eq true
+      end
+
+      it "caches relation" do
+        admin_user_name = admin_user.name
+        expect(cached_admin_user.name).to eq admin_user_name
+        _user = ::User.find(admin_user.id)
+        _user.update_attributes(:name => "bob")
+        _user.reload
+        expect(subject.cached_admin_user.name).to eq admin_user_name
+      end
+
+      it "clears cached has one relation" do
+        admin_user_name = admin_user.name
+        updated_admin_user_name = "bob"
+        expect(cached_admin_user.name).to eq admin_user_name
+        _user = ::User.find(admin_user.id)
+        _user.update_attributes(:name => updated_admin_user_name)
+        _user.reload
+        expect(subject.cached_admin_user.name).to eq admin_user_name
+        subject.clear_cached_admin_user
+        expect(subject.cached_admin_user.name).to eq updated_admin_user_name
+      end
     end
   end
 

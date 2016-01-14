@@ -28,6 +28,7 @@ module Trax
               relation = self.class.reflect_on_association(relation_name)
               foreign_key = (relation.foreign_key || "#{relation.name}_id").to_sym
               params = { foreign_key => self.__send__(:id) }.merge(options)
+              params.merge!(relation.klass.instance_eval(&relation.scope).where_values_hash.symbolize_keys) if relation.scope
               relation.klass.cached_find_by(**params)
             end
 
@@ -35,6 +36,7 @@ module Trax
               relation = self.class.reflect_on_association(relation_name)
               foreign_key = (relation.foreign_key || :"#{relation.name}_id").to_sym
               params = { foreign_key => self.__send__(:id) }.merge(options)
+              params.merge!(relation.klass.instance_eval(&relation.scope).where_values_hash.symbolize_keys) if relation.scope
               relation.klass.clear_cached_find_by(**params)
             end
           end
