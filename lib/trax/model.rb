@@ -22,7 +22,9 @@ module Trax
     extend ::ActiveSupport::Autoload
 
     autoload :Attributes
+    autoload :CacheKey
     autoload :Config
+    autoload :Concerns
     autoload :CoreExtensions
     autoload :ExtensionsFor
     autoload :Errors
@@ -42,6 +44,7 @@ module Trax
     define_configuration_options! do
       option :auto_include, :default => false
       option :auto_include_mixins, :default => []
+      option :cache, :default => ::ActiveSupport::Cache::MemoryStore.new
     end
 
     #like reverse merge, only assigns attributes which have not yet been assigned
@@ -64,11 +67,23 @@ module Trax
       mixin_registry[mixin_key] = mixin_klass
     end
 
+    def self.cache
+      ::Trax::Model.config.cache
+    end
+
+    def self.cache=(cache_store)
+      ::Trax::Model.configure do |config|
+        config.cache = cache_store
+      end
+    end
+
     def self.root
       ::Pathname.new(::File.path(__FILE__))
     end
 
     def self.eager_autoload_mixins!
+      ::Trax::Model::Mixins::CachedFindBy
+      ::Trax::Model::Mixins::CachedRelations
       ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes

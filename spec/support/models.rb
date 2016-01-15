@@ -14,15 +14,6 @@ end
 if ENV["DB"] == "postgres"
   require_relative 'pg/models'
 end
-#
-# class Blueprint < ::Trax::Core::Blueprint
-#   class Vehicle < ::Trax::Core::Blueprint
-#     enum :kind do
-#       define :car, 1, :type => "Vehicle::Car"
-#       define :truck, 2, :type => "Vehicle::Truck"
-#     end
-#   end
-# end
 
 class Product < ::ActiveRecord::Base
   include ::Trax::Model
@@ -35,7 +26,6 @@ class Product < ::ActiveRecord::Base
 
   define_attributes do
     string :name
-    # float :price
 
     integer :in_stock_quantity
     integer :out_of_stock_quantity
@@ -76,18 +66,65 @@ module Products
   end
 end
 
+class Subscriber < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "4f" },
+         :cached_find_by => true,
+         :cached_relations => true
+
+  has_many :manufacturers, :class_name => "Manufacturer"
+  cached_has_many :manufacturers
+
+  has_one :admin_user, -> { by_role(:admin) }, :class_name => "User", :foreign_key => :subscriber_id
+  cached_has_one :admin_user
+  has_one :widget
+  cached_has_one :widget
+end
+
+class Manufacturer < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3d" },
+         :cached_find_by => true,
+         :cached_relations => true
+
+  has_many :vehicles
+  def cached_vehicles
+    ::Vehicle.cached_where(:manufacturer_id => self.id)
+  end
+
+  belongs_to :subscriber
+  cached_belongs_to :subscriber
+end
+
 class Vehicle < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Attributes::Dsl
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "9c" },
-         :sti_enum  => true
+         :sti_enum  => true,
+         :cached_find_by => true
+
 
   define_attributes do
     enum :kind do
       define :car, 1, :type => "Vehicle::Car"
       define :truck, 2, :type => "Vehicle::Truck"
     end
+
+    integer :cost
+  end
+
+  def subscriber_id
+    self.manufacturer.subscriber_id
+  end
+
+  belongs_to :manufacturer
+  def cached_manufacturer
+    ::Manufacturer.cached_find_by(:id => self.manufacturer_id)
   end
 
   class Car < ::Vehicle
@@ -100,14 +137,15 @@ end
 class Widget < ::ActiveRecord::Base
   include ::Trax::Model
 
-  mixins :unique_id => {
-    :uuid_column => "uuid",
-    :uuid_prefix => "2a"
-  }
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "2a" },
+         :cached_relations => true
 
   validates :subdomain, :subdomain => true, :allow_nil => true
   validates :email_address, :email => true, :allow_nil => true
   validates :website, :url => true, :allow_nil => true
+
+  belongs_to :subscriber
+  cached_belongs_to :subscriber
 end
 
 class Message < ::ActiveRecord::Base
@@ -141,7 +179,13 @@ end
 class Person < ::ActiveRecord::Base
   include ::Trax::Model
 
-  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "5a" }
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "5a" },
+         :cached_find_by => true
+
+  belongs_to :vehicle
+  def cached_vehicle
+    ::Vehicle.cached_find_by(:id => self.vehicle_id)
+  end
 end
 
 class StoreCategory < ::Trax::Core::Types::Struct
@@ -151,5 +195,22 @@ class StoreCategory < ::Trax::Core::Types::Struct
   struct :meta_attributes do
     string :description
     string :keywords
+  end
+end
+
+class User < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3e" },
+         :cached_find_by => true,
+         :cached_relations => true
+
+  define_attributes do
+    enum :role, :default => :staff do
+      define :staff, 1
+      define :admin, 2
+      define :billing, 3
+    end
   end
 end

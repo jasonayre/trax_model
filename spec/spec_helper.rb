@@ -5,6 +5,8 @@ require 'simplecov'
 require 'trax_model'
 require 'rails'
 require 'active_record'
+::Rails.cache = ::ActiveSupport::Cache::MemoryStore.new
+::Trax::Model.cache = ::Rails.cache
 
 SimpleCov.start do
   add_filter '/spec/'
