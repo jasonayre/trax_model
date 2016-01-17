@@ -119,7 +119,7 @@ module Trax
         raise ::Trax::Model::Errors::MixinNotRegistered.new(
           model: self.name,
           mixin: key
-        )  unless ::Trax::Model.mixin_registry.key?(key)
+        ) unless ::Trax::Model.mixin_registry.key?(key)
 
         mixin_module = ::Trax::Model.mixin_registry[key]
         self.registered_mixins[key] = mixin_module
