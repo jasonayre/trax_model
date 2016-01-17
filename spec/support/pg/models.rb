@@ -119,7 +119,7 @@ module Ecommerce
         string :name, :default => "Some Shoe Name"
         boolean :active, :default => true
 
-        struct :custom_fields, :extend => ::Ecommerce::Product::Fields::CustomFields do
+        struct :custom_fields, :extends => ::Ecommerce::Product::Fields::CustomFields do
           string :primary_utility, :default => "Skateboarding"
           string :sole_material
           boolean :has_shoelaces

@@ -140,13 +140,13 @@ describe ::Trax::Model::Mixins::CachedRelations do
       expect(subject).to eq subscriber.manufacturers
       first_manufacturer_name = subject.first.name
       updated_manufacturer_name = 'whatever'
-
       expect(subject.first.name).to eq subscriber.manufacturers.first.name
       _manufacturer = ::Manufacturer.find(subject.first.id)
       _manufacturer.update_attributes(:name => updated_manufacturer_name)
+      _manufacturer.reload
       expect(subject.first.name).to eq first_manufacturer_name
       subscriber.clear_cached_manufacturers
-      expect(subscriber.cached_manufacturers.first.name).to eq updated_manufacturer_name
+      expect(subscriber.cached_manufacturers.detect{|m| m.id == _manufacturer.id}.name).to eq updated_manufacturer_name
     end
   end
 end
