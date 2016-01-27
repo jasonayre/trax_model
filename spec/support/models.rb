@@ -218,19 +218,14 @@ end
 class Animal < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Attributes::Dsl
-
-  define_attributes do
-    struct :characteristics, :model_accessors => true do
-      boolean :is_edible
-    end
-  end
-
-  validates_presence_of :type
 end
 
 class Mammal < ::Animal
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
   define_attributes do
-    struct :characteristics, :extends => "Animal::Fields::Characteristics", :model_accessors => true do
+    struct :characteristics, :model_accessors => true do
       string :fun_facts
     end
   end
