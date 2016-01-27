@@ -13,17 +13,17 @@ module Trax
             self.instance_variable_set("@_attribute_definitions_block", block)
           end
 
-          #recursively search direct parent classes for attribute definitions, so we can fully support
-          #inheritance
-          def fetch_attribute_definitions_in_chain(_attribute_definitions_blocks = [], klass=nil)
-            _attribute_definitions_blocks.push(klass.instance_variable_get("@_attribute_definitions_block")) if klass && klass.instance_variable_defined?("@_attribute_definitions_block")
+          ##recursively search direct parent classes for attribute definitions, so we can fully support
+          ##inheritance
+          #def fetch_attribute_definitions_in_chain(_attribute_definitions_blocks = [], klass=nil)
+            #_attribute_definitions_blocks.push(klass.instance_variable_get("@_attribute_definitions_block")) if klass && klass.instance_variable_defined?("@_attribute_definitions_block")
 
-            if klass && klass.superclass != ::ActiveRecord::Base
-              return fetch_attribute_definitions_in_chain(_attribute_definitions_blocks, klass.superclass)
-            else
-              return _attribute_definitions_blocks.compact
-            end
-          end
+            #if klass && klass.superclass != ::ActiveRecord::Base
+              #return fetch_attribute_definitions_in_chain(_attribute_definitions_blocks, klass.superclass)
+            #else
+              #return _attribute_definitions_blocks.compact
+            #end
+          #end
 
           def fields_module
             @fields_module ||= begin
