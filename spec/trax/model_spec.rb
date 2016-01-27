@@ -7,21 +7,24 @@ describe ::Trax::Model do
   it { subject.unique_id_config.uuid_prefix }
 
   context "with model accessors for struct attribute" do
-    context "inheriting model" do
-      let(:name) { "platypus" }
-      let(:fun_facts) { ["is most like edible"] }
-      let(:characteristics) { {:fun_facts => fun_facts} }
-      subject { ::Mammal.create!(:name => name, :characteristics => characteristics) }
+    let(:name) { "platypus" }
+    subject { ::Animal.new(:name => name) }
 
-      it { expect(::Animal.fields.constants).to_not include(:Characteristics) }
+    it { expect(::Animal.fields.constants).to_not include(:Characteristics) }
+
+    context "inheriting model" do
+      let(:fun_facts) { "is most like edible" }
+      let(:characteristics) { {:fun_facts => fun_facts} }
+      subject { ::Mammal.new(:name => name, :characteristics => characteristics) }
+
       it { expect(::Mammal.fields.constants).to include(:Characteristics) }
 
-      its(:"characteristics.fun_facts") { is_expected.to eq(fun_facts.to_json) }
+      its(:"characteristics.fun_facts") { is_expected.to eq(fun_facts) }
       it { expect(subject.characteristics.respond_to?(:fun_facts)).to eq(true) }
 
       context "model accessors" do
         its(:name) { is_expected.to eq(name) }
-        its(:fun_facts) { is_expected.to eq(fun_facts.to_json) }
+        its(:fun_facts) { is_expected.to eq(fun_facts) }
         it { expect(subject.respond_to?(:fun_facts)).to eq(true) }
       end
     end
