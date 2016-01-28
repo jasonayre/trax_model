@@ -1,6 +1,6 @@
 language: ruby
 before_script:
-  - psql -c 'CREATE DATABASE trax_model_tests'; -U postgres
+  - psql -c 'CREATE DATABASE trax_model_tests;' -U postgres
 script:
   - bundle exec rspec
   - DB=postgres bundle exec rspec
