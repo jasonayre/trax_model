@@ -1,7 +1,15 @@
 language: ruby
-script: bundle exec rspec
+before_script:
+  - psql -c 'CREATE DATABASE trax_model_tests;' -U postgres
+script:
+  - bundle exec rspec
+  - DB=postgres bundle exec rspec
 rvm:
   - 2.2
   - 2.1
 notifications:
   email: false
+addons:
+  postgresql: "9.4"
+services:
+  - postgresql
