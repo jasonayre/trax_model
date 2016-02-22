@@ -214,3 +214,19 @@ class User < ::ActiveRecord::Base
     end
   end
 end
+
+class Animal < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+end
+
+class Mammal < ::Animal
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  define_attributes do
+    struct :characteristics, :model_accessors => true do
+      string :fun_facts
+    end
+  end
+end

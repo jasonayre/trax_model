@@ -17,7 +17,7 @@ module Trax
 
           class Value < ::Trax::Model::Attributes::Value
             include ::Trax::Model::ExtensionsFor::String
-            
+
             def self.type; :string end;
           end
 

@@ -89,4 +89,13 @@ DEFAULT_TABLES = Proc.new do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
+
+  create_table "animals", :force => true do |t|
+    t.string "name"
+    t.string "uuid"
+    t.string "type"
+    t.string "characteristics" # `string` is a workaround for lack of jsonb support in sqlite
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
 end

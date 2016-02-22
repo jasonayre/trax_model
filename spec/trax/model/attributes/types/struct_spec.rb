@@ -16,12 +16,6 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
         end
       }
 
-      it {
-        ::Ecommerce::ShippingAttributes.fields[:specifics].properties.each do |_property|
-          expect(subject.class.attribute_names).to include(_property.to_s)
-        end
-      }
-
       context "initializing model and setting delegated attributes directly", :delegated_attributes =>  { :cost => 5, :tax => 5, :delivery_time => "5 days" } do
         self::DELEGATED_ATTRIBUTES = { :cost => 5, :tax => 5, :delivery_time => "5 days" }
 
