@@ -81,6 +81,8 @@ module Ecommerce
       end
       boolean :active, :default => true
 
+      uuid_array :related_product_ids
+
       enum :status, :default => :in_stock do
         define :in_stock,     1
         define :out_of_stock, 2

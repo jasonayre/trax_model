@@ -12,6 +12,7 @@ PG_TABLES = Proc.new do
     t.integer  "status"
     t.jsonb    "custom_fields"
     t.jsonb    "stock"
+    t.jsonb    "related_product_ids"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

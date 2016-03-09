@@ -1,8 +1,6 @@
 module Trax
   module Model
-    class UUIDArray
-      include Enumerable
-
+    class UUIDArray < SimpleDelegator
       attr_reader :uuids
 
       def initialize(*uuids)
@@ -13,9 +11,23 @@ module Trax
         yield @uuids.each(&block)
       end
 
+      def __getobj__
+        @uuids
+      end
+
       def <<(val)
         reset_instance_variables(:record_types, :records_grouped_by_count, :records_grouped_by_uuid)
-        @uuids.push(::Trax::Model::UUID.new(val))
+
+        if val.is_a?(::Trax::Model::UUID)
+          @uuids << val
+        else
+          @uuids << ::Trax::Model::UUID.new(val)
+        end
+      end
+
+      #removing this line appears to be what was causing the duplication
+      def to_a
+        @uuids
       end
 
       def records
