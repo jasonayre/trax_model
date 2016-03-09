@@ -37,6 +37,10 @@ module Trax
         def struct(*args, **options, &block)
           attribute(*args, :type => :struct, **options, &block)
         end
+
+        def uuid_array(*args, **options, &block)
+          attribute(*args, :type => :uuid_array, **options, &block)
+        end
       end
     end
   end

@@ -30,6 +30,7 @@ module Trax
     autoload :Errors
     autoload :Registry
     autoload :UUID
+    autoload :UUIDArray
     autoload :UUIDPrefix
     autoload :Matchable
     autoload :Mixin
