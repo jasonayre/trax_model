@@ -34,6 +34,15 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
     }
   end
 
+  context "setting value" do
+    context "already a set" do
+      let(:val) { ::Ecommerce::Vote::Fields::UpvoterIds.new([1, 2]) }
+      subject { ::Ecommerce::Vote.new(:upvoter_ids => val) }
+      it { expect(subject.upvoter_ids).to eq ::Set.new([1,2]) }
+      it { expect(subject.upvoter_ids).to be_a(::Ecommerce::Vote::Fields::UpvoterIds) }
+    end
+  end
+
   #note: only supports string values for scopes at the moment
   #also note: I think this is the ideal api for the future.
   #I.e. define a scope on the model, by referencing the field directly.

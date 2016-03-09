@@ -34,16 +34,14 @@ module Trax
               @target_klass = target_klass
             end
 
-            def type
-              :set
-            end
+            def type; :set end
 
             def type_cast_from_user(value)
               case value.class.name
               when "Array", "Set"
                 @target_klass.new(value)
               when @target_klass.name
-                @target_klass
+                value
               else
                 @target_klass.new
               end
