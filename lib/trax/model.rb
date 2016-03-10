@@ -22,6 +22,7 @@ module Trax
     extend ::ActiveSupport::Autoload
 
     autoload :Attributes
+    autoload :Base
     autoload :CacheKey
     autoload :Config
     autoload :Concerns
@@ -38,6 +39,7 @@ module Trax
     autoload :Railtie
     autoload :Validators
 
+    include ::Trax::Model::Base
     include ::Trax::Model::Matchable
     include ::ActiveModel::Dirty
     include ::Trax::Core::InheritanceHooks

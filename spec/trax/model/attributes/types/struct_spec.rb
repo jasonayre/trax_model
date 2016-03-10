@@ -44,6 +44,12 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
       }
     end
 
+    context "#dig" do
+      subject { ::Ecommerce::Products::MensShoes.new(:custom_fields => {:cost => 10, :price => 20, :number_of_sales => 5}) }
+      it { expect(subject.dig(:custom_fields, :cost)).to eq 10 }
+      it { expect(subject.dig(:custom_fields, :non_existent_property)).to eq nil }
+    end
+
     context "search scopes" do
       context "enum property" do
         [ :mens_6, :mens_7, :mens_10 ].each_with_index do |enum_name|
