@@ -29,7 +29,7 @@ module Trax
             end
 
             def type_cast_from_user(value)
-              value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value)
+              value.is_a?(@target_klass) ? value : @target_klass.new(value)
             end
 
             def type_cast_from_database(value)
