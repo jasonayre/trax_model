@@ -62,6 +62,14 @@ module Products
       end
 
       integer :in_stock_quantity, :default => 0
+
+      scope :by_above_average_size, lambda{
+        fields[:size].in(:mens_10, :mens_11, :mens_12)
+      }
+
+      scope :by_quantity_in_stock, lambda{ |value|
+        fields[:in_stock_quantity].eq(value)
+      }
     end
   end
 end
