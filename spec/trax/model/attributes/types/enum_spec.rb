@@ -29,6 +29,9 @@ describe ::Trax::Model::Attributes::Types::Enum do
 
       it { expect(subject.by_size(:mens_6, :mens_7)).to include(mens_6, mens_7) }
       it { expect(subject.by_size(:mens_6, :mens_7)).to_not include(mens_10) }
+      it { expect(subject.fields[:size].eq(:mens_6)).to include(mens_6) }
+      it { expect(subject.fields[:size].in(:mens_6)).to include(mens_6) }
+      it { expect(subject.fields[:size].in(:mens_6, :mens_7)).to include(mens_6, mens_7) }
     end
 
     context "dirty attributes" do

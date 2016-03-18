@@ -6,6 +6,7 @@ module Trax
 
       autoload :Base
       autoload :Boolean
+      autoload :Enum
       autoload :Enumerable
       autoload :Integer
       autoload :Numeric

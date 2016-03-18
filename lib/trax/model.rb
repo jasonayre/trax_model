@@ -29,6 +29,7 @@ module Trax
     autoload :CoreExtensions
     autoload :ExtensionsFor
     autoload :Errors
+    autoload :RelationMethods
     autoload :Registry
     autoload :UUID
     autoload :UUIDArray
