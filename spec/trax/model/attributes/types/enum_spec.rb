@@ -19,9 +19,9 @@ describe ::Trax::Model::Attributes::Types::Enum do
     end
 
     context "search scopes" do
-      [ :mens_6, :mens_7, :mens_10 ].each_with_index do |enum_name|
+      [ :mens_6, :mens_7, :mens_10 ].each_with_index do |enum_name,i|
         let!(enum_name) do
-          ::Products::MensShoes.create(:size => enum_name)
+          ::Products::MensShoes.create(:size => enum_name, :in_stock_quantity => i)
         end
       end
 
@@ -29,6 +29,10 @@ describe ::Trax::Model::Attributes::Types::Enum do
 
       it { expect(subject.by_size(:mens_6, :mens_7)).to include(mens_6, mens_7) }
       it { expect(subject.by_size(:mens_6, :mens_7)).to_not include(mens_10) }
+      it { expect(subject.fields[:size].eq(:mens_6)).to include(mens_6) }
+      it { expect(subject.fields[:size].in(:mens_6)).to include(mens_6) }
+      it { expect(subject.fields[:size].in(:mens_6, :mens_7)).to include(mens_6, mens_7) }
+      it { expect(subject.by_above_average_size.by_quantity_in_stock(2)).to include(mens_10) }
     end
 
     context "dirty attributes" do
