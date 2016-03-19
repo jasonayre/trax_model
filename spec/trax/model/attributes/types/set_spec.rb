@@ -51,7 +51,7 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
       ::Ecommerce::Vote.create(:upvoter_ids => ['1', '2'], :downvoter_ids => ['3', '4', '5'] )
     }
     let!(:record_two) {
-      ::Ecommerce::Vote.create(:upvoter_ids => ['3', '4'], :downvoter_ids => ['6', '7', '8'] )
+      ::Ecommerce::Vote.create(:upvoter_ids => ['3', '4', '9'], :downvoter_ids => ['6', '7', '8', '20'] )
     }
     it {
       expect(
@@ -73,5 +73,31 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
         ::Ecommerce::Vote::Fields::UpvoterIds.contains("4")
       ).to_not include record_one
     }
+
+    context "length methods" do
+      subject { ::Ecommerce::Vote::Fields::UpvoterIds }
+      context "length_eq" do
+        it { expect(subject.length_eq(2)).to include record_one }
+        it { expect(subject.length_eq(2)).to_not include record_two }
+      end
+
+      context "length_gt" do
+        it { expect(subject.length_gt(2)).to include record_two}
+        it { expect(subject.length_gt(2)).to_not include record_one }
+      end
+
+      context "length_lt" do
+        it { expect(subject.length_lt(3)).to include record_one}
+        it { expect(subject.length_lt(3)).to_not include record_two }
+      end
+
+      context "length_gte" do
+        it { expect(subject.length_gte(2)).to include(record_one, record_two) }
+      end
+
+      context "length_lte" do
+        it { expect(subject.length_lte(1)).to_not include(record_one, record_two) }
+      end
+    end
   end
 end
