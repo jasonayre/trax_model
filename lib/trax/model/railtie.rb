@@ -9,6 +9,7 @@ module Trax
           end
 
           super(subklass)
+          subklass::ActiveRecord_Relation.include(::Trax::Model::RelationMethods)
 
           ::Trax::Model.config.auto_include_mixins.each do |mixin|
             subklass.mixin(mixin)
