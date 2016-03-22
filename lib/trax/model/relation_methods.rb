@@ -4,7 +4,7 @@ module Trax
       extend ::ActiveSupport::Concern
 
       def fields
-        self.parent.fields
+        self.klass.fields
       end
     end
   end
