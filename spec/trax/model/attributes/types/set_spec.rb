@@ -60,6 +60,11 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
     }
     it {
       expect(
+        ::Ecommerce::Vote::Fields::UpvoterIds.does_not_contain("1")
+      ).to_not include record_one
+    }
+    it {
+      expect(
         ::Ecommerce::Vote::Fields::UpvoterIds.contains("1")
       ).to_not include record_two
     }
