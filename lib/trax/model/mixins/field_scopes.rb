@@ -6,6 +6,12 @@ module Trax
 
         mixed_in do |**options|
           options.each_pair do |field_scope_name, field_scope_options|
+            field_scope(field_scope_name, field_scope_options)
+          end
+        end
+
+        module ClassMethods
+          def field_scope(field_scope_name, field_scope_options)
             field_scope_options = {} if [ true, false ].include?(field_scope_options)
 
             field_scope_options[:field] ||= field_scope_name.to_s.include?("by_") ? field_scope_name.to_s.split("by_").pop.to_sym : field_scope_name
@@ -24,9 +30,7 @@ module Trax
               define_where_scope_for_field(field_scope_name, **field_scope_options)
             end
           end
-        end
 
-        module ClassMethods
           private
           def define_where_scope_for_field(field_scope_name, **options)
             scope field_scope_name, lambda{ |*_values|
