@@ -12,6 +12,10 @@ module Trax
           @value
         end
 
+        def nil?
+          __getobj__.nil?
+        end
+
         def self.symbolic_name
           name.demodulize.underscore.to_sym
         end
