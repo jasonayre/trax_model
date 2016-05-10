@@ -36,6 +36,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'guard', '~> 2'
   spec.add_development_dependency 'guard-rspec', '~> 4'
   spec.add_development_dependency 'guard-bundler', '~> 2'
-  spec.add_development_dependency 'rb-fsevent'
-  spec.add_development_dependency 'terminal-notifier-guard'
+  spec.add_development_dependency 'listen', '~> 3.0.3'
+  spec.add_development_dependency 'rb-fsevent', '~> 0.9.6'
 end
