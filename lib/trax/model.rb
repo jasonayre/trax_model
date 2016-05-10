@@ -92,7 +92,7 @@ module Trax
       ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes
       ::Trax::Model::Mixins::Restorable
-      ::Trax::Model::Mixins::SortByScopes
+      ::Trax::Model::Mixins::SortScopes
       ::Trax::Model::Mixins::StiEnum
       ::Trax::Model::Mixins::UniqueId
     end
