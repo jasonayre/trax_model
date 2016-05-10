@@ -27,6 +27,7 @@ DEFAULT_TABLES = Proc.new do
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
+
   create_table "products", :force => true do |t|
     t.string   "name"
     t.integer  "category_id"
@@ -38,6 +39,12 @@ DEFAULT_TABLES = Proc.new do
     t.string   "uuid"
     t.integer  "status"
     t.integer  "size"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "categories", :force => true do |t|
+    t.string   "name"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

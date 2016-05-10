@@ -19,16 +19,20 @@ class Product < ::ActiveRecord::Base
   include ::Trax::Model
   include ::Trax::Model::Attributes::Dsl
 
-  mixins :unique_id => {
-    :uuid_column => "uuid",
-    :uuid_prefix => "1a"
-  }
+  mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "1a" },
+         :sort_scopes => true
+
+  sort_scope :name
+  sort_scope :in_stock_quantity, :as => :quantity_in_stock
+  sort_scope :on_order_quantity, :as => :quantity_out_of_stock
+
+  belongs_to :category
 
   define_attributes do
     string :name
 
     integer :in_stock_quantity
-    integer :out_of_stock_quantity
+    integer :on_order_quantity
 
     enum :status, :default => :in_stock do
       define :in_stock,     1
@@ -38,6 +42,23 @@ class Product < ::ActiveRecord::Base
 
     boolean :active, :default => false
   end
+end
+
+class Category < ::ActiveRecord::Base
+  include ::Trax::Model
+  include ::Trax::Model::Attributes::Dsl
+
+  mixins :sort_scopes => true
+
+  has_many :products
+
+  sort_scope :name
+  sort_scope :in_stock_quantity, :as => :most_in_stock, :class_name => "Product", :with => :with_products
+  sort_scope :on_order_quantity, :as => :least_oversold, :class_name => "Product", :with => :with_products
+
+  scope :with_products, lambda{
+    includes(:products).references(:products)
+  }
 end
 
 module Products
