@@ -9,7 +9,7 @@ module Trax
       autoload :Freezable
       autoload :IdScopes
       autoload :Restorable
-      autoload :SortByScopes
+      autoload :SortScopes
       autoload :StiEnum
       autoload :UniqueId
     end
