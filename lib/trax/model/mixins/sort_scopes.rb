@@ -54,14 +54,10 @@ module Trax
             end
           end
 
-          def define_order_by_scope_for_string_field(field_name, **options)
-            define_order_by_lower_scope_for_field(field_name)
-          end
-
           def define_order_by_lower_scope_for_field(field_name, as:, model:, prefix:'sort_by', with:nil)
             SORT_DIRECTIONS.each do |dir|
               scope :"#{prefix}_#{as}_#{dir}", lambda{|*args|
-                order_by_lower(field_name, dir, model)
+                order_by_lower(field_name, dir, model, with:with)
               }
             end
           end
