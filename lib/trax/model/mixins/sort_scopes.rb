@@ -10,12 +10,12 @@ module Trax
           scope :order_by_lower, lambda{|field_name, dir='ASC', model=self, with:nil|
             field = model.arel_table[field_name]
             order_relation = ::Arel::Nodes::SqlLiteral.new(field.lower.to_sql).__send__(dir.to_s.downcase)
-            relation = with ? __send__(with) : all
+            relation = with ? all.__send__(with) : all
             relation.order(order_relation)
           }
           scope :order_by, lambda{|field_name, dir='ASC', model=self, with:nil|
             field = model.arel_table[field_name].__send__(dir.to_s.downcase)
-            relation = with ? __send__(with) : all
+            relation = with ? all.__send__(with) : all
             relation.order(field)
           }
           scope :sort_by_most_recent, lambda{|field_name='created_at'|
