@@ -17,6 +17,14 @@ module Trax
               model_class.where("lower(#{parent_definition.field_name} ->> '#{field_name}') IN(?)", _scope_values.map(&:downcase))
             end
 
+            def is_nil(*_)
+              model_class.where("(#{parent_definition.field_name} -> '#{field_name}')::text = 'null'")
+            end
+
+            def not_nil(*_)
+              model_class.where("(#{parent_definition.field_name} -> '#{field_name}')::text != 'null'")
+            end
+
             def matches(*_scope_values)
               _scope_values.flat_compact_uniq!
               model_class.where("(#{parent_definition.field_name} ->> '#{field_name}') ilike ANY(array[?])", _scope_values.map(&:to_matchable))
