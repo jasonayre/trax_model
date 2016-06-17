@@ -36,7 +36,7 @@ module Trax
                 unscope(:where => self.restorable_config.field).where(self.restorable_config.field => true)
               }
               scope :by_not_deleted, lambda { |*|
-                where(self.restorable_config.field => false)
+                where(self.restorable_config.field => [nil, false])
               }
 
               default_value_for(self.restorable_config.field) { false }
