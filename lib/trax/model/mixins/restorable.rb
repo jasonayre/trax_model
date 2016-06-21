@@ -32,9 +32,16 @@ module Trax
               end
 
               ### Clear default deleted scope ###
-              scope :by_is_deleted, lambda { |*|
-                unscope(:where => self.restorable_config.field).where(self.restorable_config.field => true)
-              }
+              if(self.restorable_config.hide_deleted)
+                scope :by_is_deleted, lambda { |*|
+                  unscope(:where => self.restorable_config.field).where(self.restorable_config.field => true)
+                }
+              else
+                scope :by_is_deleted, lambda { |*|
+                  where(self.restorable_config.field => true)
+                }
+              end
+
               scope :by_not_deleted, lambda { |*|
                 where(self.restorable_config.field => [nil, false])
               }
