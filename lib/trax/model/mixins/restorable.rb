@@ -42,9 +42,15 @@ module Trax
                 }
               end
 
-              scope :by_not_deleted, lambda { |*|
-                where(self.restorable_config.field => [nil, false])
-              }
+              if(self.restorable_config.hide_deleted)
+                scope :by_not_deleted, lambda { |*|
+                  where(self.restorable_config.field => false)
+                }
+              else
+                scope :by_not_deleted, lambda { |*|
+                  where(self.restorable_config.field => [nil, false])
+                }
+              end
 
               default_value_for(self.restorable_config.field) { false }
             end

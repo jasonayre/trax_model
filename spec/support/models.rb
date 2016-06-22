@@ -182,7 +182,7 @@ class Message < ::ActiveRecord::Base
 
   mixins :unique_id => { :uuid_column => "uuid", :uuid_prefix => "3a" },
          :freezable => true,
-         :restorable => { :field => :deleted },
+         :restorable => { :field => :deleted, :hide_deleted => true },
          :field_scopes => {
            :by_title => true,
            :by_title_case_insensitive => { :field => :title, :type => :where_lower}
