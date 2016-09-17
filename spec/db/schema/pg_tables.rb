@@ -21,6 +21,8 @@ PG_TABLES = Proc.new do
     t.uuid "voteable_id"
     t.jsonb "upvoter_ids"
     t.jsonb "downvoter_ids"
+    t.jsonb "upvoter_ids_array"
+    t.jsonb "downvoter_ids_array"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

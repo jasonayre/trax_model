@@ -14,6 +14,10 @@ module Trax
           @model.trax_attribute(*args, type: type, **options, &block)
         end
 
+        def array(*args, **options, &block)
+          attribute(*args, :type => :array, **options, &block)
+        end
+
         def boolean(*args, **options, &block)
           attribute(*args, :type => :boolean, **options, &block)
         end
