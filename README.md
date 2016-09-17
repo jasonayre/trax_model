@@ -5,19 +5,32 @@ A higher level, even more opinionated active record model. Some of the features 
 
 An declarative, more explicit attributes dsl for your models. Biggest feature at the moment is
 support for struct (json), fields, as well as enum (integer) fields.
+Also supports faux array/set fields in postgres (using jsonb instead of the text array type)
+
+
+**Assume this structure for all of the following examples**
 
 ``` ruby
 class Post
   define_attributes do
+    string :title
+
     enum :category, :default => :tutorials do
       define :tutorials, 1
       define :rants, 2
       define :news, 3
+      define :politics, 4
     end
 
-    struct :custom_fields do
-      boolean :is_published
+    set :related_categories
+    set :upvoters
+    set :downvoters
 
+    #pretend we want to keep running record of each time an ip views post
+    #regardless of whether it was unique
+    array :ip_addresses_who_viewed
+
+    struct :custom_fields do
       enum :subtype do
         define :video, 1
         define :text, 2
@@ -26,6 +39,68 @@ class Post
     end
   end
 end
+
+# Our migration for the example above would like this this:
+
+class CreatePosts < ActiveRecord::Migration
+  def change
+    create_table :posts, do |t|
+      t.string :title
+      t.integer :category
+      #NOTE:
+      #once again, we are using jsonb instead of postgres array type
+      #as the storage type for array/set columns. In my experience,
+      #array types in postgres are difficult to work with, jsonb
+      #is much more matured and easier to work with in general. I don't
+      #have benchmarks but I would imagine performance might even be better
+      t.jsonb :related_categories
+      t.jsonb :upvoters
+      t.jsonb :downvoters
+      t.jsonb :custom_fields
+      t.timestamps null: false
+    end
+  end
+end
+
+#fake records
+::Post.create(
+  :id => 1,
+  :title => "Trax Model, new ruby library",
+  :category => 1,
+  :upvoters => ["steve"],
+  :downvoters => ["cindy"],
+  :related_categories => [1, 3]
+)
+
+::Post.create(
+  :id => 2,
+  :title => "Giant Douche and Turd Sandwich battle for the presidency",
+  :category => 3,
+  :upvoters => ["kyle", "steve"],
+  :downvoters => [],
+  :related_categories => [2, 4]
+)
+```
+
+**Searching Enum Fields**
+
+``` ruby
+#All of the following are synonymous, eq behaves like arel.in and accepts multiple values
+Post.fields[:category].eq(:tutorials, :rants)
+#returns post #1
+Post.fields[:category].eq("tutorials", "rants")
+#returns post #1
+Post.fields[:category].eq(1, 2)
+#returns post #1
+```
+
+### String Type ###
+
+``` ruby
+#All of the following are synonymous
+Post.fields[:title].eq(:tutorials, :rants)
+Post.fields[:category].eq("tutorials", "rants")
+Post.fields[:category].eq(1, 2)
 ```
 
 ### Struct Field (json/jsonb) ###
@@ -38,7 +113,7 @@ for anything before, you probably soon after trying to use it, ran into at least
 3. Setting from user input/how the database casts it is messy to implement and prone to error
 
 So you realize, hey what a waste of time, Ill just create a new model because thats by far a better solution than doing all the above. However,
-there are alot of cases where this will end up making your application messier via unnecessary relations.
+there are many cases where this will end up making your application messier via unnecessary relations.
 
 **The solution**
 ``` ruby
@@ -46,7 +121,7 @@ struct :custom_fields do
   string :title
   boolean :is_published
 
-  enum :subtype, :define_scopes => true do
+  enum :subtype do
     define :video, 1
     define :text, 2
     define :audio, 3
