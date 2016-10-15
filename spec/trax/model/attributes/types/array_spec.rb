@@ -3,8 +3,8 @@ require 'spec_helper'
 describe ::Trax::Model::Attributes::Types::Array, :postgres => true do
   subject{ ::Ecommerce::Vote.new(:upvoter_ids_array => ["1", "2"], :downvoter_ids_array => ["3", "4", "5"] )}
 
-  it { expect(subject.upvoter_ids.__getobj__).to be_a(::Array) }
-  it { expect(subject.upvoter_ids).to include("1") }
+  it { expect(subject.upvoter_ids_array.__getobj__).to be_a(::Array) }
+  it { expect(subject.upvoter_ids_array).to include("1") }
 
   context "attribute definition" do
     subject { ::Ecommerce::Vote::Fields::UpvoterIdsArray.new }
@@ -19,26 +19,26 @@ describe ::Trax::Model::Attributes::Types::Array, :postgres => true do
     }
   end
 
-  context "does not allow duplicate values" do
+  context "does allow duplicate values" do
     it {
       subject.upvoter_ids_array << "1"
-      expect(subject.upvoter_ids_array.length).to eq 2
+      expect(subject.upvoter_ids_array.length).to eq 3
     }
   end
 
   context "dirty tracking" do
     it {
       subject.save
-      subject.upvoter_ids = ["2","3"]
-      expect(subject.upvoter_ids_was).to eq ::Array.new(["1","2"])
+      subject.upvoter_ids_array = ["2","3"]
+      expect(subject.upvoter_ids_array_was).to eq ::Array.new(["1","2"])
     }
   end
 
   context "setting value" do
-    context "already a set" do
+    context "already an array" do
       let(:val) { ::Ecommerce::Vote::Fields::UpvoterIdsArray.new(["1", "2"]) }
       subject { ::Ecommerce::Vote.new(:upvoter_ids_array => val) }
-      it { expect(subject.upvoter_ids_array).to eq ::Set.new(["1","2"]) }
+      it { expect(subject.upvoter_ids_array).to eq ["1","2"] }
       it { expect(subject.upvoter_ids_array).to be_a(::Ecommerce::Vote::Fields::UpvoterIdsArray) }
     end
   end
@@ -48,10 +48,10 @@ describe ::Trax::Model::Attributes::Types::Array, :postgres => true do
   #I.e. define a scope on the model, by referencing the field directly.
   context "relations" do
     let!(:record_one) {
-      ::Ecommerce::Vote.create(:upvoter_ids => ['1', '2'], :downvoter_ids => ['3', '4', '5'] )
+      ::Ecommerce::Vote.create(:upvoter_ids_array => ['1', '2'], :downvoter_ids_array => ['3', '4', '5'] )
     }
     let!(:record_two) {
-      ::Ecommerce::Vote.create(:upvoter_ids => ['3', '4', '9'], :downvoter_ids => ['6', '7', '8', '20'] )
+      ::Ecommerce::Vote.create(:upvoter_ids_array => ['3', '4', '9'], :downvoter_ids_array => ['6', '7', '8', '20'] )
     }
     it {
       expect(
