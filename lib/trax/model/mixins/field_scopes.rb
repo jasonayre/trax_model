@@ -55,7 +55,7 @@ module Trax
               _relation = if _values.first.is_a?(::ActiveRecord::Relation)
                 where(_query, _values.first)
               else
-                _values.map!(&:downcase)
+                _values.flat_compact_uniq!.map!(&:downcase)
                 where(_query, _values)
               end
 
