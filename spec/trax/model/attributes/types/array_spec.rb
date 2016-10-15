@@ -23,6 +23,7 @@ describe ::Trax::Model::Attributes::Types::Array, :postgres => true do
     it {
       subject.upvoter_ids_array << "1"
       expect(subject.upvoter_ids_array.length).to eq 3
+      expect(subject.upvoter_ids_array.select{|v| v == "1"}.length).to eq 2
     }
   end
 
