@@ -10,7 +10,7 @@ module Trax
 
         module ClassMethods
           def define_attributes(&block)
-            @_attribute_definitions_block ||= []
+            @_attribute_definitions_block ||= ::Set.new
             @_attribute_definitions_block << block
           end
 
@@ -39,7 +39,7 @@ module Trax
           def evaluate_attribute_definitions_blocks
             model_klass_proxy = ::Trax::Model::Attributes::Definitions.new(self)
             attribute_definition_blocks = self.superclasses_until(::ActiveRecord::Base, self, [ self ])
-                                              .map{ |klass| klass.instance_variable_get(:@_attribute_definitions_block) }
+                                              .map{ |klass| klass.instance_variable_get(:@_attribute_definitions_block).to_a }
                                               .flatten
                                               .compact
 
