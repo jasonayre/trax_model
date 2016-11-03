@@ -8,15 +8,15 @@ module Trax
           def cached_class_method(method_name, **config_options)
             define_singleton_method("cached_#{method_name}") do |*args, **options|
               method_cache_key = ::Trax::Model::CacheKey.for_class_method(self, method_name, *args, **config_options.merge(options))
-              has_args = method(method_name).arity != 0
-              has_options = method(method_name).parameters.any?
+              accepts_args = method(method_name).arity != 0
+              has_options = !options.empty?
 
               ::Trax::Model.cache.fetch(method_cache_key) do
-                result = if !has_args && !has_options
+                result = if !accepts_args && !has_options
                   __send__(method_name)
-                elsif has_args && has_options
+                elsif accepts_args && has_options
                   __send__(method_name, *args, **options)
-                elsif has_args
+                elsif accepts_args
                   __send__(method_name, *args)
                 elsif has_options
                   __send__(method_name, **options)
@@ -30,15 +30,15 @@ module Trax
           def cached_instance_method(method_name, **config_options)
             define_method("cached_#{method_name}") do |*args, **options|
               method_cache_key = ::Trax::Model::CacheKey.for_instance_method(self.class, method_name, *args, **config_options.merge(options))
-              has_args = method(method_name).arity != 0
+              accepts_args = method(method_name).arity != 0
               has_options = method(method_name).parameters.any?
 
               ::Trax::Model.cache.fetch(method_cache_key) do
-                result = if !has_args && !has_options
+                result = if !accepts_args && !has_options
                   __send__(method_name)
-                elsif has_args && has_options
+                elsif accepts_args && has_options
                   __send__(method_name, *args, **options)
-                elsif has_args
+                elsif accepts_args
                   __send__(method_name, *args)
                 elsif has_options
                   __send__(method_name, **options)
