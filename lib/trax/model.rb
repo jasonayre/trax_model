@@ -46,12 +46,6 @@ module Trax
     include ::ActiveModel::Dirty
     include ::Trax::Core::InheritanceHooks
 
-    define_configuration_options! do
-      option :auto_include, :default => false
-      option :auto_include_mixins, :default => []
-      option :cache, :default => ::ActiveSupport::Cache::MemoryStore.new
-    end
-
     #like reverse merge, only assigns attributes which have not yet been assigned
     def reverse_assign_attributes(attributes_hash)
       attributes_to_assign = attributes_hash.keys.reject{|_attribute_name| attribute_present?(_attribute_name) }
@@ -64,6 +58,12 @@ module Trax
     end
 
     @mixin_registry = {}
+
+    define_configuration_options! do
+      option :auto_include, :default => false
+      option :auto_include_mixins, :default => []
+      option :cache, :default => ::Trax::Model::CacheStoreExtensions.extend_cache_store(::ActiveSupport::Cache::MemoryStore.new)
+    end
 
     def self.register_mixin(mixin_klass, key = nil)
       mixin_key = mixin_klass.respond_to?(:mixin_registry_key) ? mixin_klass.mixin_registry_key : (key || mixin_klass.name.demodulize.underscore.to_sym)
@@ -78,8 +78,7 @@ module Trax
 
     def self.cache=(cache_store)
       ::Trax::Model.configure do |config|
-        config.cache = cache_store
-        config.cache.singleton_class.include(::Trax::Model::CacheStoreExtensions)
+        config.cache = ::Trax::Model::CacheStoreExtensions.extend_cache_store(cache_store)
       end
     end
 
@@ -98,7 +97,6 @@ module Trax
       ::Trax::Model::Mixins::StiEnum
       ::Trax::Model::Mixins::UniqueId
     end
-
     eager_autoload_mixins!
 
     def self.find_by_uuid(uuid)
