@@ -88,6 +88,7 @@ module Trax
 
     def self.eager_autoload_mixins!
       ::Trax::Model::Mixins::CachedFindBy
+      ::Trax::Model::Mixins::CachedMethods
       ::Trax::Model::Mixins::CachedRelations
       ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::Freezable
