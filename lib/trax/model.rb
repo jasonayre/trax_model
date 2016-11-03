@@ -24,6 +24,7 @@ module Trax
     autoload :Attributes
     autoload :Base
     autoload :CacheKey
+    autoload :CacheStoreExtensions
     autoload :Config
     autoload :Concerns
     autoload :CoreExtensions
@@ -78,6 +79,7 @@ module Trax
     def self.cache=(cache_store)
       ::Trax::Model.configure do |config|
         config.cache = cache_store
+        config.cache.singleton_class.include(::Trax::Model::CacheStoreExtensions)
       end
     end
 
