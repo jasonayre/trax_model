@@ -9,11 +9,15 @@ module Trax
         params.symbolize_keys!
         @options = params.extract!(*CACHE_OPTION_KEYS)
         @search_params = params
-        @obj = ::Set[*args.sort, params.sort].flatten.to_a
+        @obj = ::Set[*args.sort, params.sort].to_a.flatten
       end
 
       def __getobj__
         @obj
+      end
+
+      def to_s
+        @obj.join("/")
       end
     end
   end
