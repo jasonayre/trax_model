@@ -8,12 +8,28 @@ describe ::Trax::Model::CacheStoreExtensions do
   subject{ ::Trax::Model.cache }
 
   context "#fetch" do
-    let(:cache_key) { ::Trax::Model::CacheKey.new("posts", :expires_in => 2.seconds) }
-    it {
-      subject.fetch(cache_key) { "one" }
-      expect(subject.fetch(cache_key)).to eq "one"
-      sleep(2)
-      expect(subject.fetch(cache_key) { "two" }).to eq "two"
-    }
+    context "manually instantiated cache key" do
+      let(:cache_key) { ::Trax::Model::CacheKey.new("posts", :expires_in => 10.seconds) }
+
+      it do
+        subject.fetch(cache_key) { "one" }
+        expect(subject.fetch(cache_key, cache_key.options)).to eq "one"
+
+        Timecop.freeze(Time.now + 20.seconds) do
+          expect(subject.fetch(cache_key) { "two" }).to eq "two"
+        end
+      end
+    end
+
+    context "args/options passed directly to fetch" do
+      it do
+        subject.fetch("some_class", ".find", :id => 5, :expires_in => 10.seconds) { "one" }
+        expect(subject.fetch("some_class", ".find", :id => 5)).to eq "one"
+
+        Timecop.freeze(Time.now + 20.seconds) do
+          expect(subject.fetch("some_class", ".find", :id => 5)).to eq nil
+        end
+      end
+    end
   end
 end
