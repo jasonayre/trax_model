@@ -49,7 +49,7 @@ class Product < ::ActiveRecord::Base
   def some_cached_instance_method
     self.class.inventory_cost
   end
-  cached_instance_method(:some_cached_instance_method, :expires_in => 20.minutes)
+  cached_instance_method(:some_cached_instance_method, :as => :some_instance_method, :expires_in => 20.minutes)
 
   mixins :field_scopes => {
     :by_id => true
