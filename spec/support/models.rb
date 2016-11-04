@@ -27,7 +27,7 @@ class Product < ::ActiveRecord::Base
   sort_scope :in_stock_quantity, :as => :quantity_in_stock
   sort_scope :on_order_quantity, :as => :quantity_out_of_stock
 
-  class_attribute :inventory_cost
+  class_attribute :inventory_cost, :instance_writer => false
   self.inventory_cost = 0
   cached_class_method(:inventory_cost, :expires_in => 20.minutes)
 
@@ -46,10 +46,10 @@ class Product < ::ActiveRecord::Base
   end
   cached_class_method(:in_stock_quantities_keywords, :expires_in => 20.minutes)
 
-  def self.in_stock_quantities_too_many_params(_whatevers=[], something_else=nil, *args, ids:[])
-    by_id(*ids).sum(:in_stock_quantity)
+  def some_cached_instance_method
+    self.class.inventory_cost
   end
-  # cached_class_method(:in_stock_quantities_keywords, :expires_in => 20.minutes)
+  cached_instance_method(:some_cached_instance_method, :expires_in => 20.minutes)
 
   mixins :field_scopes => {
     :by_id => true
