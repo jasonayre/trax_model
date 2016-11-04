@@ -3,6 +3,7 @@ require 'bundler'
 require 'simplecov'
 # require 'pry'
 require 'trax_model'
+require 'timecop'
 require 'rails'
 require 'active_record'
 ::Rails.cache = ::ActiveSupport::Cache::MemoryStore.new
