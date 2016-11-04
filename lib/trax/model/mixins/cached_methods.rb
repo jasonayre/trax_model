@@ -11,9 +11,13 @@ module Trax
               accepts_args = method(method_name).arity != 0
               has_options = !options.empty?
 
+              binding.pry
+
               ::Trax::Model.cache.fetch(method_cache_key) do
-                result = if !accepts_args && !has_options
+                result = if !accepts_args
                   __send__(method_name)
+                elsif accepts_args
+                  __send__(method_name, *args, **options)
                 elsif accepts_args && has_options
                   __send__(method_name, *args, **options)
                 elsif accepts_args

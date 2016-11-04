@@ -22,23 +22,59 @@ describe ::Trax::Model::Mixins::CachedMethods do
     context "method that accepts args" do
       let!(:product_1) { Product.create(:in_stock_quantity => 5) }
       let!(:product_2) { Product.create(:in_stock_quantity => 5) }
-      let!(:product_3) { Product.create(:in_stock_quantity => 1) }
 
       it {
         expect(subject.cached_in_stock_quantities([product_1.id])).to eq 5
         expect(subject.cached_in_stock_quantities([product_1.id, product_2.id])).to eq 10
-        expect(subject.cached_in_stock_quantities([product_3.id])).to eq 1
-        expect(subject.cached_in_stock_quantities([product_1.id, product_3.id])).to eq 6
-        expect(keys_in_cache).to include("product.in_stock_quantities/[1]")
-        expect(keys_in_cache).to include("product.in_stock_quantities/[1, 2]")
-        expect(keys_in_cache).to include("product.in_stock_quantities/[1, 3]")
+        expect(keys_in_cache).to include("product.in_stock_quantities/[#{product_1.id}]")
+        expect(keys_in_cache).to include("product.in_stock_quantities/[#{product_1.id}, #{product_2.id}]")
 
-        product_3.update_attributes(:in_stock_quantity => 20)
-        product_3.reload
-        expect(subject.cached_in_stock_quantities([product_3.id])).to eq 1
+        product_1.update_attributes(:in_stock_quantity => 20)
+        product_1.reload
+        expect(subject.cached_in_stock_quantities([product_1.id])).to eq 5
 
         Timecop.freeze(Time.now + 30.minutes) do
-          expect(subject.cached_in_stock_quantities([product_3.id])).to eq 20
+          expect(subject.cached_in_stock_quantities([product_1.id])).to eq 20
+        end
+      }
+    end
+
+    context "method that accepts args which splats" do
+      let!(:product_1) { Product.create(:in_stock_quantity => 5) }
+      let!(:product_2) { Product.create(:in_stock_quantity => 5) }
+
+      it {
+        expect(subject.cached_in_stock_quantities_splat(product_1.id)).to eq 5
+        expect(subject.cached_in_stock_quantities_splat(product_1.id, product_2.id)).to eq 10
+        expect(keys_in_cache).to include("product.in_stock_quantities_splat/#{product_1.id}")
+        expect(keys_in_cache).to include("product.in_stock_quantities_splat/#{product_1.id}/#{product_2.id}")
+
+        product_1.update_attributes(:in_stock_quantity => 20)
+        product_1.reload
+        expect(subject.cached_in_stock_quantities_splat(product_1.id)).to eq 5
+
+        Timecop.freeze(Time.now + 30.minutes) do
+          expect(subject.cached_in_stock_quantities_splat(product_1.id)).to eq 20
+        end
+      }
+    end
+
+    context "method that accepts keyword args" do
+      let!(:product_1) { Product.create(:in_stock_quantity => 5) }
+      let!(:product_2) { Product.create(:in_stock_quantity => 5) }
+
+      it {
+        expect(subject.cached_in_stock_quantities_keywords(:ids => [product_1.id])).to eq 5
+        expect(subject.cached_in_stock_quantities_keywords(:ids => [product_1.id, product_2.id])).to eq 10
+        expect(keys_in_cache).to include("product.in_stock_quantities_keywords/ids/#{product_1.id}")
+        expect(keys_in_cache).to include("product.in_stock_quantities_keywords/ids/#{product_1.id}/#{product_2.id}")
+
+        product_1.update_attributes(:in_stock_quantity => 20)
+        product_1.reload
+        expect(subject.cached_in_stock_quantities_keywords(:ids => [product_1.id])).to eq 5
+
+        Timecop.freeze(Time.now + 30.minutes) do
+          expect(subject.cached_in_stock_quantities_keywords(:ids => [product_1.id])).to eq 20
         end
       }
     end

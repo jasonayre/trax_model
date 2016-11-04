@@ -36,6 +36,21 @@ class Product < ::ActiveRecord::Base
   end
   cached_class_method(:in_stock_quantities, :expires_in => 20.minutes)
 
+  def self.in_stock_quantities_splat(*_ids)
+    by_id(*_ids).sum(:in_stock_quantity)
+  end
+  cached_class_method(:in_stock_quantities_splat, :expires_in => 20.minutes)
+
+  def self.in_stock_quantities_keywords(ids:[])
+    by_id(*ids).sum(:in_stock_quantity)
+  end
+  cached_class_method(:in_stock_quantities_keywords, :expires_in => 20.minutes)
+
+  def self.in_stock_quantities_too_many_params(_whatevers=[], something_else=nil, *args, ids:[])
+    by_id(*ids).sum(:in_stock_quantity)
+  end
+  # cached_class_method(:in_stock_quantities_keywords, :expires_in => 20.minutes)
+
   mixins :field_scopes => {
     :by_id => true
   }
