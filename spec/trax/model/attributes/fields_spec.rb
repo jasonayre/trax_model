@@ -34,6 +34,7 @@ describe ::Trax::Model::Attributes::Fields do
       context "includes full choice definitions" do
         let(:expectation) do
           {
+            "attributes"=> {},
             "source"=>"Products::MensShoes::Fields::Status::InStock",
              "name"=>"in_stock",
              "type"=>:enum_value,
