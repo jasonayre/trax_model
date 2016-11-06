@@ -62,6 +62,8 @@ module Ecommerce
     define_attributes do
       set :upvoter_ids
       set :downvoter_ids
+      array :upvoter_ids_array
+      array :downvoter_ids_array
     end
   end
 

@@ -4,6 +4,7 @@ module Trax
     module ExtensionsFor
       extend ::ActiveSupport::Autoload
 
+      autoload :Array
       autoload :Base
       autoload :Boolean
       autoload :Enum

@@ -1,41 +1,27 @@
-require 'hashie/extensions/ignore_undeclared'
-#totally not working atm :), dont use me!
 module Trax
   module Model
     module Attributes
       module Types
         class Array < ::Trax::Model::Attributes::Type
-          def self.define_attribute(source_klass, attribute_name, **options, &block)
-            klass.fields_module.const_set(attributes_klass_name, ::Class.new(::Trax::Model::Attributes[:array]::Value))
-          end
+          def self.define_attribute(klass, attribute_name, **options, &block)
+            klass_name = "#{klass.fields_module.name.underscore}/#{attribute_name}".camelize
+            attribute_klass = if options.key?(:extends)
+              _klass_prototype = options[:extends].is_a?(::String) ? options[:extends].safe_constantize : options[:extends]
+              _klass = ::Trax::Core::NamedClass.new(klass_name, _klass_prototype, :parent_definition => klass, &block)
+              _klass
+            else
+              ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
+            end
 
-          class Attribute < ::Trax::Model::Attributes::Attribute
-            self.type = :array
+            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
+            klass.default_value_for(attribute_name) { attribute_klass.new }
           end
 
           class Value < ::Trax::Model::Attributes::Value
-            class_attribute :element_class
-            include ::Enumerable
+            include ::Trax::Model::ExtensionsFor::Array
 
             def initialize(*args)
-              @array = super(*args)
-              @array.map!{ |ele| self.class.element_class.new(ele) } if self.class.element_class && @array.any?
-            end
-
-            def __getobj__
-              @array
-            end
-
-            def <<(val)
-              if self.class.element_class && val.class == self.class.element_class
-                super(val)
-              else
-                super(self.class.element_class.new(val))
-              end
-            end
-
-            def each(&block)
-              yield __getobj__.each(&block)
+              @value = ::Array.new(*args)
             end
           end
 
@@ -48,26 +34,30 @@ module Trax
               @target_klass = target_klass
             end
 
-            def type
-              :array
-            end
+            def type; :array end
 
             def type_cast_from_user(value)
-              value.is_a?(@target_klass) ? @target_klass : @target_klass.new(value || {})
+              case value.class.name
+              when "Array"
+                @target_klass.new(value)
+              when @target_klass.name
+                value
+              else
+                @target_klass.new
+              end
             end
 
             def type_cast_from_database(value)
-              value.present? ? @target_klass.new(JSON.parse(value)) : value
+              value.present? ? @target_klass.new(::JSON.parse(value)) : value
             end
 
             def type_cast_for_database(value)
-              if value.present?
-                value.map{ |element| element.try(:to_json) }
-              else
-                nil
-              end
+              value.try(:to_json)
             end
           end
+
+          self.value_klass = ::Trax::Model::Attributes::Types::Array::Value
+          self.typecaster_klass = ::Trax::Model::Attributes::Types::Array::TypeCaster
         end
       end
     end
