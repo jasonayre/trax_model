@@ -3,7 +3,7 @@ services:
   postgres:
     image: postgres:9.5
     environment:
-      - POSTGRES_USER=trax_model
+      - POSTGRES_USER=postgres
       - POSTGRES_DB=trax_model_tests
     ports:
       - "6432:5432"
