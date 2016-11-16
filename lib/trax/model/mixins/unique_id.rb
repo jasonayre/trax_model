@@ -47,9 +47,13 @@ module Trax
 
           if(self.unique_id_config.uuid_prefix)
             default_value_for(:"#{self.unique_id_config.uuid_column}") {
-              ::Trax::Model::UUID.generate(self.unique_id_config.uuid_prefix)
+              generate_uuid
             }
           end
+        end
+
+        def generate_uuid!
+          self[self.class.unique_id_config.uuid_column] = self.class.generate_uuid
         end
 
         def uuid
@@ -75,6 +79,10 @@ module Trax
         end
 
         module ClassMethods
+          def generate_uuid
+            ::Trax::Model::UUID.generate(uuid_prefix)
+          end
+
           def uuid_prefix
             self.unique_id_config.uuid_prefix
           end
