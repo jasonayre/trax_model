@@ -30,12 +30,23 @@ describe ::Trax::Model::Mixins::UniqueId do
   end
 
   context "Instance Methods" do
+    describe "#regenerate_uuid!" do
+      subject { ::Product.new }
+      its(:uuid) {
+        current_uuid = subject.uuid
+        subject.regenerate_uuid!
+        expect(subject.uuid).to_not eq current_uuid
+      }
+    end
+
     describe "#generate_uuid!" do
       subject { ::Product.new }
       its(:uuid) {
         current_uuid = subject.uuid
         subject.generate_uuid!
-        expect(subject.uuid).to_not eq current_uuid
+        expect(subject.uuid).to eq current_uuid
+        subject.uuid = nil
+        expect(subject.generate_uuid!).to start_with("1a")
       }
     end
   end

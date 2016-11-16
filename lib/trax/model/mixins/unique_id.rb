@@ -53,6 +53,10 @@ module Trax
         end
 
         def generate_uuid!
+          self[self.class.unique_id_config.uuid_column] ||= self.class.generate_uuid
+        end
+
+        def regenerate_uuid!
           self[self.class.unique_id_config.uuid_column] = self.class.generate_uuid
         end
 
