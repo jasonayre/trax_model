@@ -16,6 +16,12 @@ end
 ENV["DB"] ||= "sqllite"
 ENV["DB"] = "postgres" if ENV["DB"] == "pg" || ENV["pg"] == "true"
 
+if ENV["DB"] == "postgres" && ENV["CI"] == "true"
+  ENV["DATABASE_URL"] = "localhost"
+else
+  ENV["DATABASE_URL"] = "localhost:6432"
+end
+
 RSpec.configure do |config|
   config.filter_run :focus
   config.filter_run_excluding :postgres => true unless ENV["DB"] == "postgres"

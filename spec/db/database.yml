@@ -11,6 +11,6 @@ postgres:
   encoding: unicode
   database: trax_model_tests
   pool: 5
-  host: localhost
+  host: <%= ENV['DATABASE_URL'] || 'localhost' %>
   username: postgres
   password:
