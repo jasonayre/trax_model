@@ -10,12 +10,17 @@ describe ::Trax::Model::Attributes::Types::Enum do
   it { expect(subject.names.map(&:to_sym)).to eq names }
 
   context "model" do
-    subject {
-      ::Products::MensShoes.new
-    }
+    subject { ::Products::MensShoes.new }
 
     context "default value" do
       it { subject.size.should eq :mens_9 }
+      it { expect(subject.form).to eq :sandals }
+
+      context "record gets passed to block" do
+        subject { ::Products::MensShoes.new(:is_fancy => true) }
+
+        it { expect(subject.form).to eq :dress_shoes }
+      end
     end
 
     context "search scopes" do
