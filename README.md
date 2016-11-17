@@ -441,9 +441,15 @@ Or install it yourself as:
 
     $ gem install trax_model
 
-## Usage
+## Running Specs
 
-TODO: Write usage instructions here
+Install docker
+
+` bash
+docker-compose up
+bx rake db:prepare
+DB=pg bx rspec
+`
 
 ## Contributing
 

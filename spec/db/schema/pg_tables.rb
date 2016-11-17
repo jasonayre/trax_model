@@ -30,6 +30,7 @@ PG_TABLES = Proc.new do
   create_table "ecommerce_users", :id => :uuid, :force => true do |t|
     t.string "name"
     t.text "watched_product_ids", :array => true
+    t.jsonb "locales"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

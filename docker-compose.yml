@@ -1,0 +1,11 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=trax_model_tests
+    ports:
+      - "6432:5432"
+    volumes:
+      - /var/lib/postgresql/data

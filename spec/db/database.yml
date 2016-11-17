@@ -9,8 +9,4 @@ postgres:
   <<: *default
   adapter: postgresql
   encoding: unicode
-  database: trax_model_tests
-  pool: 5
-  host: localhost
-  username: postgres
-  password:
+  url: <%= ENV['DATABASE_URL'] %>

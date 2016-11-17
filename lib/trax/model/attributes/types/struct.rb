@@ -18,7 +18,13 @@ module Trax
 
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.validates(attribute_name, :json_attribute => true) unless options.key?(:validate) && !options[:validate]
-            klass.default_value_for(attribute_name) { {} }
+
+            if options[:default] && options[:default].is_a?(Proc)
+              klass.default_value_for(attribute_name, &options[:default])
+            else
+              klass.default_value_for(attribute_name, options[:default] || {})
+            end
+
             define_model_accessors(klass, attribute_name, attribute_klass, options[:model_accessors]) if options.key?(:model_accessors) && options[:model_accessors]
           end
 

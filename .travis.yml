@@ -3,7 +3,7 @@ before_script:
   - psql -c 'CREATE DATABASE trax_model_tests;' -U postgres
 script:
   - bundle exec rspec
-  - DB=postgres bundle exec rspec
+  - DB=postgres CI=true bundle exec rspec
 rvm:
   - 2.2
   - 2.1
