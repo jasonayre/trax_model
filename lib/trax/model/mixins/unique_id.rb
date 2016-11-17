@@ -52,6 +52,12 @@ module Trax
           end
         end
 
+        def dup(*args)
+          record = super(*args)
+          record.generate_uuid!
+          record
+        end
+
         def generate_uuid!
           self[self.class.unique_id_config.uuid_column] ||= self.class.generate_uuid
         end

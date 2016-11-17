@@ -49,5 +49,13 @@ describe ::Trax::Model::Mixins::UniqueId do
         expect(subject.generate_uuid!).to start_with("1a")
       }
     end
+
+    describe "#dup!" do
+      subject { ::Product.new }
+      its(:uuid) {
+        new_record = subject.dup
+        expect(new_record.uuid).to_not be nil
+      }
+    end
   end
 end
