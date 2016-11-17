@@ -93,6 +93,19 @@ module Products
   class Shoes < Product
     include ::Trax::Model
     include ::Trax::Model::Attributes::Dsl
+    attr_accessor :is_fancy
+
+    def is_fancy
+      @is_fancy ||= false
+    end
+
+    define_attributes do
+      enum :form, :default => ->(r) { r.is_fancy ? :dress_shoes : :sandals } do
+        define :sandals,     1
+        define :sneakers,    2
+        define :dress_shoes, 3
+      end
+    end
   end
 
   class MensShoes < Shoes

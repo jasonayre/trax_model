@@ -38,6 +38,7 @@ DEFAULT_TABLES = Proc.new do
     t.boolean  "active"
     t.string   "uuid"
     t.integer  "status"
+    t.integer  "form"
     t.integer  "size"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
