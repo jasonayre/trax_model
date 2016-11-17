@@ -6,7 +6,6 @@ module Trax
 
         mixed_in do |**options|
           default_options = { :type_column => :type, :enum_column => :kind }
-
           options = default_options.merge!(options)
         end
 
@@ -15,12 +14,48 @@ module Trax
           after_initialize :set_type_from_kind
         end
 
+        def kind=(val)
+          result = super(val)
+          set_type_from_kind! if set_type_from_kind?
+          result
+        end
+
+        def type_for_kind
+          self.class.kind_to_type_mapping[self[:kind].to_sym]
+        end
+
+        def kind_for_type
+          self.class.type_to_kind_mapping[self[:type]]
+        end
+
+        def set_type_from_kind?
+          self.has_attribute?(:kind) && self.has_attribute?(:type) && self[:type] != type_for_kind
+        end
+
+        def set_kind_from_type?
+          self.has_attribute?(:kind) && self.has_attribute?(:type) && self[:kind] != kind_for_type
+        end
+
         def set_type_from_kind
-          self[:type] = self.class.kind_to_type_mapping[self[:kind]] if self.has_attribute?(:kind) && self.has_attribute?(:type) && !self[:type]
+          self[:type] = type_for_kind if set_type_from_kind?
         end
 
         def set_kind_from_type
-          self[:kind] = self.class.type_to_kind_mapping[self[:type]] if self.has_attribute?(:kind) && self.has_attribute?(:type) && self.has_attribute?(:type) && !self[:kind]
+          self[:kind] = kind_for_type if set_kind_from_type?
+        end
+
+        def set_type_from_kind!
+          self[:type] = type_for_kind
+        end
+
+        def set_kind_from_type!
+          self[:kind] = kind_for_type
+        end
+
+        def type=(val)
+          result = super(val)
+          set_kind_from_type! if set_kind_from_type?
+          result
         end
 
         module ClassMethods

@@ -168,8 +168,8 @@ class Vehicle < ::ActiveRecord::Base
 
   define_attributes do
     enum :kind do
-      define :car, 1, :type => "Vehicle::Car"
-      define :truck, 2, :type => "Vehicle::Truck"
+      define :car, 1, :type => "Vehicles::Car"
+      define :truck, 2, :type => "Vehicles::Truck"
     end
 
     integer :cost
@@ -183,11 +183,17 @@ class Vehicle < ::ActiveRecord::Base
   def cached_manufacturer
     ::Manufacturer.cached_find_by(:id => self.manufacturer_id)
   end
+end
 
+module Vehicles
   class Car < ::Vehicle
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Dsl
   end
 
   class Truck < ::Vehicle
+    include ::Trax::Model
+    include ::Trax::Model::Attributes::Dsl
   end
 end
 
