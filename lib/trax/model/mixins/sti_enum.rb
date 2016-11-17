@@ -21,7 +21,7 @@ module Trax
         end
 
         def type_for_kind
-          self.class.kind_to_type_mapping[self[:kind].to_sym]
+          self.class.kind_to_type_mapping[self[:kind].try(:to_sym)]
         end
 
         def kind_for_type
