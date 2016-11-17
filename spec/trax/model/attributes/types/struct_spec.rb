@@ -6,6 +6,17 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
   it { expect(subject.new.primary_utility).to eq "Skateboarding" }
   it { expect(subject.new.sole_material).to eq nil }
 
+  context "default value" do
+    subject { ::Ecommerce::User.new }
+
+    it { expect(subject.locales[:es]).to be false }
+
+    context "record gets passed to block" do
+      subject { ::Ecommerce::User.new(:speaks_spanish => true) }
+      it { expect(subject.locales[:es]).to be true }
+    end
+  end
+
   context "attribute definition" do
     subject { ::Ecommerce::ShippingAttributes.new }
 

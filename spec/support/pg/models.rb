@@ -44,11 +44,25 @@ module Ecommerce
 
   class User < ::ActiveRecord::Base
     self.table_name = "ecommerce_users"
+    attr_accessor :speaks_spanish
 
     include ::Trax::Model
     include ::Trax::Model::Attributes::Dsl
 
     mixins :unique_id => { :uuid_prefix => "9b" }
+
+    def speaks_spanish
+      @speaks_spanish ||= false
+    end
+
+    define_attributes do
+      struct :locales, :default => lambda{ |record|
+        { :en => false, :es => record.speaks_spanish }
+      } do
+        boolean :en, :default => false
+        boolean :es, :default => false
+      end
+    end
   end
 
   class Vote < ::ActiveRecord::Base
