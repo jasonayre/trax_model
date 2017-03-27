@@ -10,8 +10,8 @@ module Trax
           def cached_belongs_to(relation_name, **options)
             define_method("cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)
-              foreign_key = (options.delete(:foreign_key) || relation.foreign_key || "#{relation.name}_id").to_sym
-              params = { :id => self.__send__(foreign_key) }.merge(options)
+              foreign_key = (relation.foreign_key || "#{relation.name}_id").to_sym
+              params = { :id => self.__send__(foreign_key) }.merge(options.except(:foreign_key))
               relation.klass.cached_find_by(**params)
             end
 
@@ -26,8 +26,8 @@ module Trax
           def cached_has_one(relation_name, **options)
             define_method("cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)
-              foreign_key = (options.delete(:foreign_key) || relation.foreign_key || "#{relation.name}_id").to_sym
-              params = { foreign_key => self.__send__(:id) }.merge(options)
+              foreign_key = (relation.foreign_key || "#{relation.name}_id").to_sym
+              params = { foreign_key => self.__send__(:id) }.merge(options.except(:foreign_key))
               params.merge!(relation.klass.instance_eval(&relation.scope).where_values_hash.symbolize_keys) if relation.scope
               relation.klass.cached_find_by(**params)
             end
@@ -44,8 +44,8 @@ module Trax
           def cached_has_many(relation_name, **options)
             define_method("cached_#{relation_name}") do
               relation = self.class.reflect_on_association(relation_name)
-              foreign_key = options.delete(:foreign_key) || :"#{relation.foreign_key}"
-              params = {foreign_key => self.__send__(:id)}.merge(options)
+              foreign_key = :"#{relation.foreign_key}"
+              params = {foreign_key => self.__send__(:id)}.merge(options.except(:foreign_key))
               relation.klass.cached_where(**params)
             end
 
