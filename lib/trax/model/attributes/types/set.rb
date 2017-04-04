@@ -13,17 +13,30 @@ module Trax
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
             end
 
+            attribute_klass.of = options[:of] if options[:of]
+
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.default_value_for(attribute_name) { attribute_klass.new }
           end
 
-          class Value < ::Trax::Model::Attributes::Value
+          class Value < ::Trax::Core::Types::Set
             include ::Trax::Model::ExtensionsFor::Set
-
-            def initialize(*args)
-              @value = ::Set.new(*args)
-            end
           end
+
+          # class Value < ::Trax::Model::Attributes::Value
+          #
+          #
+          #   class_attribute :of
+          #
+          #   def initialize(*args)
+          #     @value = if self.of
+          #       binding.pry
+          #       ::Set.new(*args.map{ |arg| self.of.new(arg) } )
+          #     else
+          #       ::Set.new(*args)
+          #     end
+          #   end
+          # end
 
           class TypeCaster < ActiveRecord::Type::Value
             include ::ActiveRecord::Type::Mutable
