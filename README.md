@@ -214,6 +214,10 @@ end
 Model.new(:upvoter_ids => [1,2,3])
 ```
 
+## Arrays/Sets of specific types
+
+Useful when you want to have an array that contains structs or what have you.
+
 ``` ruby
 class SharedDefinitions < ::Trax::Core::Blueprint
   struct :location do
@@ -231,19 +235,7 @@ class User < ActiveRecord::Base
   define_attributes do
     set :sign_in_locations, :contains_instances_of => ::SharedDefinitions::Fields::Location
   end
-
-
 end
-```
-
-
-
-
-## Arrays/Sets of specific types
-
-Useful when you want to have an array that contains structs or what have you.
-
-``` ruby
 ```
 
 ## Mixins
