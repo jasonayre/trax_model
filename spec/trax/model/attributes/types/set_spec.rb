@@ -136,10 +136,9 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
 
         it {
           subject.reload
-          binding.pry
-          expect(subject.shopping_cart_sessions[0][0]).to be_a(::Ecommerce::PageView)
+          expect(subject.shopping_cart_sessions.to_a[0]).to be_a(::Ecommerce::SessionHistorySet)
+          expect(subject.shopping_cart_sessions.to_a[0].to_a[0]).to be_a(::Ecommerce::PageView)
         }
-
       end
     end
   end

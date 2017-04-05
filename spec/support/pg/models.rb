@@ -11,7 +11,6 @@ module Ecommerce
   end
 
   class SessionHistorySet < ::Trax::Core::Types::Set
-    # binding.pry
     contains_instances_of ::Ecommerce::PageView
   end
 
@@ -25,8 +24,6 @@ module Ecommerce
         define :canada, 2
       end
     end
-
-    set :shopping_cart_sessions, :contains_instances_of => ::Ecommerce::SessionHistorySet
   end
 
   class ProductAttributeSet < ::ActiveRecord::Base
@@ -94,6 +91,7 @@ module Ecommerce
       end
 
       set :sign_in_locations, :contains_instances_of => ::Ecommerce::SharedDefinitions::Fields::Location
+      set :shopping_cart_sessions, :contains_instances_of => ::Ecommerce::SessionHistorySet
     end
   end
 
