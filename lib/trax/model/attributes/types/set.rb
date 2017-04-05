@@ -13,7 +13,7 @@ module Trax
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
             end
 
-            attribute_klass.contains_instances_of(options[:of]) if options[:of]
+            attribute_klass.contains_instances_of(options[:contains_instances_of]) if options[:contains_instances_of]
 
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.default_value_for(attribute_name) { attribute_klass.new }
