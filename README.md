@@ -51,8 +51,7 @@ class CreatePosts < ActiveRecord::Migration
       #once again, we are using jsonb instead of postgres array type
       #as the storage type for array/set columns. In my experience,
       #array types in postgres are difficult to work with, jsonb
-      #is much more matured and easier to work with in general. I don't
-      #have benchmarks but I would imagine performance might even be better
+      #is much more matured and easier to work with in general.
       t.jsonb :related_categories
       t.jsonb :upvoters
       t.jsonb :downvoters
@@ -198,6 +197,45 @@ multiple enum args as input.
 ``` ruby
 Post.by_subtype(:video, :text)
 => Post.where(:subtype => [1, 2])
+```
+
+## Arrays/Sets
+
+NOTE: these types are intended to be used with the postgres jsonb field type as well.
+That way searching/scoping is consistent, we just store the data as an array
+rather than an object
+
+``` ruby
+define_attributes do
+  set :upvoter_ids
+  set :downvoter_ids
+end
+
+Model.new(:upvoter_ids => [1,2,3])
+```
+
+## Arrays/Sets of specific types
+
+Useful when you want to have an array that contains structs or what have you.
+
+``` ruby
+class SharedDefinitions < ::Trax::Core::Blueprint
+  struct :location do
+    string :street_address
+    string :ip_address
+
+    enum :country do
+      define :united_states, 1
+      define :canada, 2
+    end
+  end
+end
+
+class User < ActiveRecord::Base
+  define_attributes do
+    set :sign_in_locations, :contains_instances_of => ::SharedDefinitions::Fields::Location
+  end
+end
 ```
 
 ## Mixins

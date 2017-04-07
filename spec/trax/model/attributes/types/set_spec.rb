@@ -104,5 +104,42 @@ describe ::Trax::Model::Attributes::Types::Set, :postgres => true do
         it { expect(subject.length_lte(1)).to_not include(record_one, record_two) }
       end
     end
+
+    context "Sets containing things" do
+      let(:locations) { [{:country => :canada, :street_address => "Somewhere in quebec"} ] }
+      subject { Ecommerce::User.create(:sign_in_locations => locations) }
+
+      it {
+        subject.reload
+        expect(subject.sign_in_locations.first).to be_a(Ecommerce::SharedDefinitions::Fields::Location)
+        expect(subject.sign_in_locations.first.country.to_i).to eq 2
+      }
+
+      context "setception (sets within a set)" do
+        let(:session1) {
+          [
+            {:site => :website_1, :url => "https://whatever.com"},
+            {:site => :website_1, :url => "https://whatever.com/products"}
+          ]
+        }
+        let(:session2) {
+          [
+            {:site => :website_2, :url => "https://whatever.com"},
+          ]
+        }
+
+        let(:sessions) {
+          [session1, session2]
+        }
+
+        subject { Ecommerce::User.create(:shopping_cart_sessions => sessions) }
+
+        it {
+          subject.reload
+          expect(subject.shopping_cart_sessions.to_a[0]).to be_a(::Ecommerce::SessionHistorySet)
+          expect(subject.shopping_cart_sessions.to_a[0].to_a[0]).to be_a(::Ecommerce::PageView)
+        }
+      end
+    end
   end
 end

@@ -1,4 +1,31 @@
+
+
 module Ecommerce
+  class PageView < ::Trax::Core::Types::Struct
+    enum :site do
+      define :website_1
+      define :website_2
+    end
+
+    string :url
+  end
+
+  class SessionHistorySet < ::Trax::Core::Types::Set
+    contains_instances_of ::Ecommerce::PageView
+  end
+
+  class SharedDefinitions < ::Trax::Core::Blueprint
+    struct :location do
+      string :street_address
+      string :ip_address
+
+      enum :country do
+        define :united_states, 1
+        define :canada, 2
+      end
+    end
+  end
+
   class ProductAttributeSet < ::ActiveRecord::Base
     self.table_name = "ecommerce_product_attribute_sets"
 
@@ -62,6 +89,9 @@ module Ecommerce
         boolean :en, :default => false
         boolean :es, :default => false
       end
+
+      set :sign_in_locations, :contains_instances_of => ::Ecommerce::SharedDefinitions::Fields::Location
+      set :shopping_cart_sessions, :contains_instances_of => ::Ecommerce::SessionHistorySet
     end
   end
 

@@ -13,16 +13,14 @@ module Trax
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
             end
 
+            attribute_klass.contains_instances_of(options[:contains_instances_of]) if options[:contains_instances_of]
+
             klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
             klass.default_value_for(attribute_name) { attribute_klass.new }
           end
 
-          class Value < ::Trax::Model::Attributes::Value
+          class Value < ::Trax::Core::Types::Set
             include ::Trax::Model::ExtensionsFor::Set
-
-            def initialize(*args)
-              @value = ::Set.new(*args)
-            end
           end
 
           class TypeCaster < ActiveRecord::Type::Value

@@ -31,6 +31,8 @@ PG_TABLES = Proc.new do
     t.string "name"
     t.text "watched_product_ids", :array => true
     t.jsonb "locales"
+    t.jsonb "sign_in_locations"
+    t.jsonb "shopping_cart_sessions"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
