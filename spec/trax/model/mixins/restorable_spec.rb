@@ -16,6 +16,11 @@ describe ::Trax::Model::Mixins::Restorable do
       subject.restore
       expect(subject.deleted).to be false
     end
+
+    it "allows subject to be really destroyed via bang" do
+      subject.destroy!
+      expect{ subject.reload }.to raise_error(::ActiveRecord::RecordNotFound)
+    end
   end
 
   context "scopes" do
