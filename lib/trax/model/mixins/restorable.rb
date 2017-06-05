@@ -4,6 +4,12 @@ module Trax
       module Restorable
         extend ::Trax::Model::Mixin
 
+        module DeferredInstanceMethods
+          def destroy
+            self.update_attributes(self.class.restorable_config.field => true, self.class.restorable_config.timestamp_field => ::DateTime.now)
+          end
+        end
+
         define_configuration_options! do
           option :field, :default => :is_deleted
           option :timestamp_field, :default => :deleted_at
@@ -57,18 +63,14 @@ module Trax
           end
         end
 
-        def destroy
-          self.update_attributes(self.class.restorable_config.field => true, self.class.restorable_config.timestamp_field => ::DateTime.now)
-        end
-
         def restore
           self.update_attributes(self.class.restorable_config.field => false, self.class.restorable_config.timestamp_field => ::DateTime.now)
         end
 
         def self.apply_mixin(target, options)
           target.restorable_config.merge!(options)
-
           target.setup_restorable!
+          target.include(::Trax::Model::Mixins::Restorable::DeferredInstanceMethods)
         end
       end
     end
