@@ -100,6 +100,11 @@ module Trax
     end
     eager_autoload_mixins!
 
+    def self.eager_autoload_validators!
+      ::Trax::Model::Validators::AssociatedBubblingValidator
+    end
+    eager_autoload_validators!
+
     def self.find_by_uuid(uuid)
       ::Trax::Model::UUID.new(uuid).record
     end

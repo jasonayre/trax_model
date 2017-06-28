@@ -64,12 +64,13 @@ DEFAULT_TABLES = Proc.new do
 
   create_table "widgets", :force => true do |t|
     t.string "uuid"
-    t.string  "email_address"
-    t.string  "subdomain"
-    t.string  "website"
-    t.integer  "status"
-    t.integer  "subscriber_id"
-    t.string   "name"
+    t.string "email_address"
+    t.string "subdomain"
+    t.string "website"
+    t.integer "status"
+    t.integer "subscriber_id"
+    t.string  "name"
+    t.integer "user_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end
@@ -103,6 +104,19 @@ DEFAULT_TABLES = Proc.new do
     t.string "uuid"
     t.string "type"
     t.string "characteristics" # `string` is a workaround for lack of jsonb support in sqlite
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "associated_bubbling_things", :force => true do |t|
+    t.string "name"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "associated_bubbling_related_things", :force => true do |t|
+    t.string "name"
+    t.integer "associated_bubbling_thing_id"
     t.datetime "created_at",        :null => false
     t.datetime "updated_at",        :null => false
   end

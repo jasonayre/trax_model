@@ -289,6 +289,10 @@ class User < ::ActiveRecord::Base
       define :billing, 3
     end
   end
+
+  validates_presence_of(:name)
+
+  has_many :widgets
 end
 
 class Animal < ::ActiveRecord::Base
@@ -305,4 +309,15 @@ class Mammal < ::Animal
       string :fun_facts
     end
   end
+end
+
+class AssociatedBubblingThing < ::ActiveRecord::Base
+  has_one :associated_bubbling_related_thing
+  validates_associated_with_bubbling :associated_bubbling_related_thing
+end
+
+class AssociatedBubblingRelatedThing < ::ActiveRecord::Base
+  belongs_to :associated_bubbling_thing
+
+  validates_presence_of :name
 end

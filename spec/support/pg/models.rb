@@ -1,5 +1,3 @@
-
-
 module Ecommerce
   class PageView < ::Trax::Core::Types::Struct
     enum :site do
