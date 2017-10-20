@@ -11,7 +11,7 @@ module Trax
               ::Trax::Core::NamedClass.new(klass_name, Value, :parent_definition => klass, &block)
             end
 
-            klass.attribute(attribute_name, typecaster_klass.new(target_klass: attribute_klass))
+            klass.attribute(attribute_name, typecaster_klass.new)
             klass.default_value_for(attribute_name) { options[:default] } if options.key?(:default)
           end
 
@@ -21,24 +21,24 @@ module Trax
             def self.type; :string end;
           end
 
-          class TypeCaster < ActiveRecord::Type::String
-            def initialize(*args, target_klass:)
-              super(*args)
-
-              @target_klass = target_klass
-            end
-
-            def type_cast_from_user(value)
-              value.is_a?(@target_klass) ? value : @target_klass.new(value)
-            end
-
-            def type_cast_from_database(value)
-              value.present? ? @target_klass.new(value) : value
-            end
-
-            def type_cast_for_database(value)
-              value.try(:to_s)
-            end
+          class TypeCaster < ActiveModel::Type::String
+            # def initialize(*args, target_klass:, **options)
+            #   super(*args, **options)
+            #
+            #   @target_klass = target_klass
+            # end
+            #
+            # def type_cast_from_user(value)
+            #   value.is_a?(@target_klass) ? value : @target_klass.new(value)
+            # end
+            #
+            # def type_cast_from_database(value)
+            #   value.present? ? @target_klass.new(value) : value
+            # end
+            #
+            # def type_cast_for_database(value)
+            #   value.try(:to_s)
+            # end
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::String::Value

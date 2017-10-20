@@ -32,11 +32,11 @@ module Trax
             include ::Trax::Model::ExtensionsFor::Struct
           end
 
-          class TypeCaster < ActiveRecord::Type::Value
-            include ::ActiveRecord::Type::Mutable
+          class TypeCaster < ::ActiveModel::Type::Value
+            include ::ActiveModel::Type::Helpers::Mutable
 
-            def initialize(*args, target_klass:)
-              super(*args)
+            def initialize(*args, target_klass:, **options)
+              super(*args, **options)
 
               @target_klass = target_klass
             end
@@ -45,17 +45,52 @@ module Trax
               :struct
             end
 
-            def type_cast_from_user(value)
+            def cast(value)
               value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
             end
 
-            def type_cast_from_database(value)
+            def deserialize(value)
+              return value unless value.is_a?(::String)
               value.present? ? @target_klass.new(::JSON.parse(value)) : value
             end
 
-            def type_cast_for_database(value)
+            def serialize(value)
+
               value.present? ? value.to_serializable_hash.to_json : {}.to_json
             end
+
+            # def cast(value)
+            #   # binding.pry
+            #   value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
+            # end
+            #
+            # def deserialize(value)
+            #   return value unless value.is_a?(::String)
+            #   value.present? ? @target_klass.new(::JSON.parse(value)) : value
+            #   # cast(value)
+            #
+            #   # binding.pry
+            #   #
+            #   # value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
+            #   # @target_klass === value ? @target_klass.new(value) : nil
+            # end
+            #
+            # def serialize(value)
+            #   {}.to_json
+            #   # value.present? ? value.to_serializable_hash.to_json : {}.to_json
+            # end
+
+            # def type_cast_from_user(value)
+            #   value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
+            # end
+            #
+            # def type_cast_from_database(value)
+            #   value.present? ? @target_klass.new(::JSON.parse(value)) : value
+            # end
+            #
+            # def type_cast_for_database(value)
+            #   value.present? ? value.to_serializable_hash.to_json : {}.to_json
+            # end
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::Struct::Value

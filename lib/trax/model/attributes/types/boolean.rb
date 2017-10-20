@@ -41,7 +41,7 @@ module Trax
             end
           end
 
-          class TypeCaster < ActiveRecord::Type::Boolean
+          class TypeCaster < ::ActiveModel::Type::Boolean
           end
         end
       end

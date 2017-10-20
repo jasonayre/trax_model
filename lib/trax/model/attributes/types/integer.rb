@@ -21,7 +21,7 @@ module Trax
             def self.type; :integer end;
           end
 
-          class TypeCaster < ::ActiveRecord::Type::Integer
+          class TypeCaster < ::ActiveModel::Type::Integer
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::Integer::Value
