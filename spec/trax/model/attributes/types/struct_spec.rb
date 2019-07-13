@@ -180,6 +180,18 @@ describe ::Trax::Model::Attributes::Types::Struct, :postgres => true do
         it { expect(subject["custom_fields"]["size"]).to eq :mens_7 }
         it { expect(subject.changed_attributes["custom_fields"]["size"]).to eq :mens_6 }
       end
+
+      context "is not always dirty" do
+        before do
+          subject.custom_fields.size = :mens_7
+        end
+
+        it {
+          subject.save
+          subject.reload
+          expect(subject.changed?).to be false
+        }
+      end      
     end
 
     context "validation" do

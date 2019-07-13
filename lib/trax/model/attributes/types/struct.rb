@@ -30,6 +30,8 @@ module Trax
 
           class Value < ::Trax::Core::Types::Struct
             include ::Trax::Model::ExtensionsFor::Struct
+
+
           end
 
           class TypeCaster < ::ActiveModel::Type::Value
@@ -59,38 +61,10 @@ module Trax
               value.present? ? value.to_serializable_hash.to_json : {}.to_json
             end
 
-            # def cast(value)
-            #   # binding.pry
-            #   value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
-            # end
-            #
-            # def deserialize(value)
-            #   return value unless value.is_a?(::String)
-            #   value.present? ? @target_klass.new(::JSON.parse(value)) : value
-            #   # cast(value)
-            #
-            #   # binding.pry
-            #   #
-            #   # value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
-            #   # @target_klass === value ? @target_klass.new(value) : nil
-            # end
-            #
-            # def serialize(value)
-            #   {}.to_json
-            #   # value.present? ? value.to_serializable_hash.to_json : {}.to_json
-            # end
-
-            # def type_cast_from_user(value)
-            #   value.is_a?(@target_klass) ? value : @target_klass.new(value || {})
-            # end
-            #
-            # def type_cast_from_database(value)
-            #   value.present? ? @target_klass.new(::JSON.parse(value)) : value
-            # end
-            #
-            # def type_cast_for_database(value)
-            #   value.present? ? value.to_serializable_hash.to_json : {}.to_json
-            # end
+            def changed_in_place?(raw_old_value, new_value)
+              return false if new_value.nil?
+              raw_old_value == serialize(new_value)
+            end
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::Struct::Value
