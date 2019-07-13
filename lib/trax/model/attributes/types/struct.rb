@@ -57,13 +57,7 @@ module Trax
             end
 
             def serialize(value)
-
               value.present? ? value.to_serializable_hash.to_json : {}.to_json
-            end
-
-            def changed_in_place?(raw_old_value, new_value)
-              return false if new_value.nil?
-              raw_old_value == serialize(new_value)
             end
           end
 
