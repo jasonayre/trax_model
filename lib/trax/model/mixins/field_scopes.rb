@@ -26,6 +26,8 @@ module Trax
               define_matching_scope_for_field(field_scope_name, **field_scope_options)
             when :where_not, :not
               define_where_not_scope_for_field(field_scope_name, **field_scope_options)
+            when :integer
+              define_numeric_scopes_for_field(field_scope_name, **field_scope_options)
             else
               define_where_scope_for_field(field_scope_name, **field_scope_options)
             end
@@ -46,6 +48,24 @@ module Trax
 
             # Alias scope names with pluralized versions, i.e. by_id also => by_ids
             singleton_class.__send__(:alias_method, :"#{field_scope_name.to_s.pluralize}", field_scope_name)
+          end
+
+          def define_numeric_scopes_for_field(field_scope_name, **options)
+            [:eq, :gt, :gte, :lt, :lte].each do |comparison|
+              scope :"#{field_scope_name}_#{comparison}", lambda{ |*_values|
+                _relation = if _values.first.is_a?(::ActiveRecord::Relation)
+                  fields[options[:field]].__send__(comparison, _values.first)
+                else
+                  _values.flat_compact_uniq!
+                  fields[options[:field]].__send__(comparison, _values)
+                end
+
+                _relation
+              }
+            end
+
+            # Alias scope names with pluralized versions, i.e. by_id also => by_ids
+            # singleton_class.__send__(:alias_method, :"#{field_scope_name.to_s.pluralize}", field_scope_name)
           end
 
           def define_where_lower_scope_for_field(field_scope_name, **options)
