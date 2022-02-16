@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "trax_core", "~> 0.0.84"
-  spec.add_dependency "default_value_for", "~> 3.0.0"
+  spec.add_dependency "default_value_for"
   # spec.add_development_dependency "hashie", ">= 3.4.4"
   spec.add_development_dependency "rails", "~> 5.1.4"
   spec.add_development_dependency "activerecord", "~> 5.1.4"
