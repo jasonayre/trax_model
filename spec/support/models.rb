@@ -52,7 +52,13 @@ class Product < ::ActiveRecord::Base
   cached_instance_method(:some_cached_instance_method, :as => :some_instance_method, :expires_in => 20.minutes)
 
   mixins :field_scopes => {
-    :by_id => true
+    :by_id => true,
+    :by_name => true,
+    :by_name_matches => { :field => :name, :type => :match }
+  }
+
+  mixins :relation_scopes => {
+    :by_category_name_matches => { :class_name => "Category", :source_scope => :by_name_matches, :scope => :by_category_id  }
   }
 
   belongs_to :category
@@ -77,6 +83,10 @@ class Category < ::ActiveRecord::Base
   include ::Trax::Model::Attributes::Dsl
 
   mixins :sort_scopes => true
+
+  mixins :field_scopes => {
+    :by_name_matches => { :field => :name, :type => :match }
+  }
 
   has_many :products
 

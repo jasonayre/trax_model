@@ -93,6 +93,7 @@ module Trax
       ::Trax::Model::Mixins::FieldScopes
       ::Trax::Model::Mixins::Freezable
       ::Trax::Model::Mixins::IdScopes
+      ::Trax::Model::Mixins::RelationScopes
       ::Trax::Model::Mixins::Restorable
       ::Trax::Model::Mixins::SortScopes
       ::Trax::Model::Mixins::StiEnum
