@@ -52,25 +52,6 @@ module Trax
             def deserialize(value)
               value.present? ? @target_klass.new(::JSON.parse(value)) : value
             end
-
-            # def type_cast_from_user(value)
-            #   case value.class.name
-            #   when "Array", "Set"
-            #     @target_klass.new(value)
-            #   when @target_klass.name
-            #     value
-            #   else
-            #     @target_klass.new
-            #   end
-            # end
-            #
-            # def type_cast_from_database(value)
-            #   value.present? ? @target_klass.new(::JSON.parse(value)) : value
-            # end
-            #
-            # def type_cast_for_database(value)
-            #   value.try(:to_json)
-            # end
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::Set::Value

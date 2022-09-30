@@ -57,29 +57,6 @@ module Trax
             def serialize(value)
               value.try(:to_json)
             end
-
-            # def type_cast_from_user(value)
-            #   case value.class.name
-            #   when @target_klass.name
-            #     value
-            #   when "Array"
-            #     @target_klass.new(*value)
-            #   else
-            #     @target_klass.new
-            #   end
-            # end
-            #
-            # def type_cast_from_database(value)
-            #   value.present? ? @target_klass.new(*value) : value
-            # end
-            #
-            # def type_cast_for_database(value)
-            #   if value.present?
-            #     value.to_json
-            #   else
-            #     nil
-            #   end
-            # end
           end
         end
       end

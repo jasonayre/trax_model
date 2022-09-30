@@ -22,23 +22,6 @@ module Trax
           end
 
           class TypeCaster < ActiveModel::Type::String
-            # def initialize(*args, target_klass:, **options)
-            #   super(*args, **options)
-            #
-            #   @target_klass = target_klass
-            # end
-            #
-            # def type_cast_from_user(value)
-            #   value.is_a?(@target_klass) ? value : @target_klass.new(value)
-            # end
-            #
-            # def type_cast_from_database(value)
-            #   value.present? ? @target_klass.new(value) : value
-            # end
-            #
-            # def type_cast_for_database(value)
-            #   value.try(:to_s)
-            # end
           end
 
           self.value_klass = ::Trax::Model::Attributes::Types::String::Value
