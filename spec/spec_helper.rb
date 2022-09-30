@@ -28,6 +28,9 @@ RSpec.configure do |config|
 
     ::ActiveRecord::Base.establish_connection(db_config[ENV["DB"]])
 
+    # ::ActiveRecord::Base.connection.execute("drop extension pgcrypto;")
+    # ::ActiveRecord::Base.connection.execute("CREATE EXTENSION pgcrypto;")
+
     ::ActiveRecord::Base.connection.tables.each do |table|
       ::ActiveRecord::Base.connection.drop_table(table)
     end

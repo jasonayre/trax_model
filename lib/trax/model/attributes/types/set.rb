@@ -23,18 +23,18 @@ module Trax
             include ::Trax::Model::ExtensionsFor::Set
           end
 
-          class TypeCaster < ActiveRecord::Type::Value
-            include ::ActiveRecord::Type::Mutable
+          class TypeCaster < ::ActiveModel::Type::Value
+            include ::ActiveModel::Type::Helpers::Mutable
 
-            def initialize(*args, target_klass:)
-              super(*args)
+            def initialize(*args, target_klass:, **options)
+              super(*args, **options)
 
               @target_klass = target_klass
             end
 
             def type; :set end
 
-            def type_cast_from_user(value)
+            def cast(value)
               case value.class.name
               when "Array", "Set"
                 @target_klass.new(value)
@@ -45,12 +45,12 @@ module Trax
               end
             end
 
-            def type_cast_from_database(value)
-              value.present? ? @target_klass.new(::JSON.parse(value)) : value
+            def serialize(value)
+              value.try(:to_json)
             end
 
-            def type_cast_for_database(value)
-              value.try(:to_json)
+            def deserialize(value)
+              value.present? ? @target_klass.new(::JSON.parse(value)) : value
             end
           end
 

@@ -41,7 +41,12 @@ module Trax
           def define_order_by_scope_for_field(field_name, as:field_name, class_name:self.name, prefix:'sort_by', with:nil, **options)
             klass = class_name.is_a?(String) ? class_name.constantize : class_name
             return unless klass.table_exists?
-            column_type = klass.column_types[field_name.to_s].type
+
+            binding.pry if klass.columns.group_by(&:name)[field_name.to_s].nil?
+
+            column_type = klass.columns.group_by(&:name)[field_name.to_s][0].sql_type_metadata.type
+
+            # binding.pry if column_type.nil?
 
             case column_type
             when :string

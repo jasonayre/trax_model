@@ -46,35 +46,29 @@ module Trax
             end
           end
 
-          class TypeCaster < ActiveRecord::Type::Value
-            include ::ActiveRecord::Type::Mutable
+          class TypeCaster < ::ActiveModel::Type::Value
+            include ::ActiveModel::Type::Helpers::Mutable
 
             def type; :enum end;
 
-            def initialize(*args, target_klass:)
-              super(*args)
+            def initialize(*args, target_klass:, **options)
+              super(*args, **options)
 
               @target_klass = target_klass
             end
 
-            def type_cast_from_user(value)
-              @target_klass === value ? @target_klass.new(value) : nil
+            def cast(value)
+              @target_klass.new(value)
             end
 
-            def type_cast_from_database(value)
-              return if value.nil?
-
-              value.present? ? @target_klass.new(value.to_i) : value
+            def deserialize(value)
+              @target_klass === value ? cast(value) : nil
             end
 
-            def type_cast_for_database(value)
+            def serialize(value)
               return if value.nil?
 
               value.try(:to_i) { @target_klass.new(value).to_i }
-            end
-
-            def changed_in_place?(raw_old_value, new_value)
-              raw_old_value.try(:to_i) != type_cast_for_database(new_value)
             end
           end
         end

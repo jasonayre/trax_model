@@ -25,18 +25,18 @@ module Trax
             end
           end
 
-          class TypeCaster < ActiveRecord::Type::Value
-            include ::ActiveRecord::Type::Mutable
+          class TypeCaster < ::ActiveModel::Type::Value
+            include ::ActiveModel::Type::Helpers::Mutable
 
-            def initialize(*args, target_klass:)
-              super(*args)
+            def initialize(*args, target_klass:, **options)
+              super(*args, **options)
 
               @target_klass = target_klass
             end
 
             def type; :array end
 
-            def type_cast_from_user(value)
+            def cast(value)
               case value.class.name
               when "Array"
                 @target_klass.new(value)
@@ -47,11 +47,11 @@ module Trax
               end
             end
 
-            def type_cast_from_database(value)
+            def deserialize(value)
               value.present? ? @target_klass.new(::JSON.parse(value)) : value
             end
 
-            def type_cast_for_database(value)
+            def serialize(value)
               value.try(:to_json)
             end
           end
