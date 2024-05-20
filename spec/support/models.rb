@@ -54,7 +54,8 @@ class Product < ::ActiveRecord::Base
   mixins :field_scopes => {
     :by_id => true,
     :by_name => true,
-    :by_name_matches => { :field => :name, :type => :match }
+    :by_name_matches => { :field => :name, :type => :match },
+    :by_category_id => true
   }
 
   mixins :relation_scopes => {

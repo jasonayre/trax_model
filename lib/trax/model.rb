@@ -144,8 +144,7 @@ module Trax
 
           if mixin_module.instance_variable_defined?(:@_after_included_block)
             block = mixin_module.instance_variable_get(:@_after_included_block)
-
-            instance_exec(options, &block)
+            instance_exec(**options, &block)
           end
         end
       end
