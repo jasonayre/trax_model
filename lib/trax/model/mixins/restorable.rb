@@ -6,7 +6,7 @@ module Trax
 
         module DeferredInstanceMethods
           def destroy
-            self.update_attributes(self.class.restorable_config.field => true, self.class.restorable_config.timestamp_field => ::DateTime.now)
+            self.update(self.class.restorable_config.field => true, self.class.restorable_config.timestamp_field => ::DateTime.now)
           end
         end
 
@@ -64,7 +64,7 @@ module Trax
         end
 
         def restore
-          self.update_attributes(self.class.restorable_config.field => false, self.class.restorable_config.timestamp_field => ::DateTime.now)
+          self.update(self.class.restorable_config.field => false, self.class.restorable_config.timestamp_field => ::DateTime.now)
         end
 
         def self.apply_mixin(target, options)
