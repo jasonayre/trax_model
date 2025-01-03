@@ -14,8 +14,8 @@ module Trax
           self.to_hash.inspect
         end
 
-        def to_json
-          self.to_hash.to_json
+        def to_json(*args)
+          self.to_hash.to_json(*args)
         end
 
         def value
